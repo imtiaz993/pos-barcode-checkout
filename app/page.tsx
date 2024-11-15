@@ -34,7 +34,7 @@ const App = () => {
         beepSound.play();
       }
       try {
-        const response = await axios.get(`https://34.102.44.108:8000/`, {
+        const response = await axios.get(`http://34.102.44.108:8000/`, {
           params: {
             action: "getProductByBarcode",
             barcode: code,
