@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
@@ -34,7 +35,7 @@ const App = () => {
         beepSound.play();
       }
       try {
-        const response = await axios.get(`http://34.102.44.108:8000/`, {
+        const response: any = await axios.get(`http://34.102.44.108:8000/`, {
           params: {
             action: "getProductByBarcode",
             barcode: code,
@@ -42,7 +43,7 @@ const App = () => {
             access_token: "AIzaSyAAlqEYx2CDm5ck_64dc5b7371872a01b653",
           },
         });
-        setProductFetched(response);
+        setProductFetched(response?.result);
       } catch (error) {
         console.error("Error fetching product:", error);
       }
@@ -62,7 +63,36 @@ const App = () => {
             Point at code to scan
           </h1>
           <BarcodeScanner onScan={handleDetected} onError={handleError} />
-          <p>{productFetched?.name}</p>
+          {barcode && (
+            <p className="text-center text-white mt-5">
+              Detected Barcode: {barcode}
+            </p>
+          )}
+          {productFetched && (
+            <div className="text-white mt-5">
+              <h2 className="font-semibold">Product Fetched:</h2>
+              <div className="flex items-start mt-4">
+                {productFetched?.images &&
+                  productFetched?.images?.length > 0 && (
+                    <Image
+                      src={productFetched.images[0].src}
+                      width={50}
+                      height={50}
+                      className="object-cover"
+                      alt={productFetched.images[0].alt}
+                    />
+                  )}
+                <div className="ml-5">
+                  <p>{productFetched?.name}</p>
+                  <div className="flex my-2.5">
+                    <p>Price: {productFetched?.price}</p>
+                    <p className="ml-5">Tax: {productFetched?.tax_rate}</p>
+                  </div>
+                  <p className="text-xs">{productFetched?.description}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <div className="pt-10 pb-16">
           <button
@@ -82,11 +112,6 @@ const App = () => {
           >
             Type Code Instead
           </button>
-          {barcode && (
-            <p className="text-center text-white mt-5">
-              Detected Barcode: {barcode}
-            </p>
-          )}
         </div>
       </div>
       {isInputTabOpen && (
