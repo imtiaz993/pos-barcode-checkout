@@ -30,6 +30,8 @@ const App = () => {
   };
 
   const handleDetected = async (code: any, beepSound: any) => {
+    console.log(code, barcode, code != barcode);
+    
     if (code != barcode) {
       setBarcode(code);
       if (beepSound) {
