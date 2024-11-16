@@ -5,6 +5,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { toast } from "sonner";
+import Loader from "@/components/loader";
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
@@ -16,6 +17,7 @@ const App = () => {
   const [inputBarcode, setInputBarcode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [productFetched, setProductFetched] = useState<any>(null);
+  const [productFetching, setProductFetching] = useState(false);
   const lastScannedRef = useRef<{ code: string; timestamp: number }>({
     code: "",
     timestamp: 0,
@@ -57,6 +59,7 @@ const App = () => {
     setBarcode(code);
 
     try {
+      setProductFetching(true);
       const response: any = await axios.get(`http://34.102.44.108:8000/`, {
         params: {
           action: "getProductByBarcode",
@@ -65,8 +68,10 @@ const App = () => {
           access_token: "AIzaSyAAlqEYx2CDm5ck_64dc5b7371872a01b653",
         },
       });
+      setProductFetching(false);
       setProductFetched(response?.result);
     } catch (error: any) {
+      setProductFetching(false);
       toast(error?.message);
       console.error("Error fetching product:", error);
     }
@@ -78,6 +83,7 @@ const App = () => {
 
   return (
     <div className="bg-[rgba(0,0,0,0.9)]">
+      {productFetching && <Loader />}
       <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
         <div></div>
         <div>
@@ -136,46 +142,6 @@ const App = () => {
           </button>
         </div>
       </div>
-      {isInputTabOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-950 border border-white px-5 pt-5 pb-10 rounded-xl w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all">
-            <div className="flex justify-between">
-              <p className="text-white text-lg font-semibold">
-                Enter Barcode Manually
-              </p>
-              <p
-                className="mb-10 text-2xl text-white cursor-pointer"
-                onClick={() => {
-                  setIsInputTabOpen(false);
-                  setErrorMessage("");
-                }}
-              >
-                &#10006;
-              </p>
-            </div>
-            <input
-              type="number"
-              value={inputBarcode}
-              onChange={(e) => setInputBarcode(e.target.value)}
-              placeholder="Enter barcode"
-              className="w-full p-3 rounded mb-2"
-            />
-            <p
-              className={`text-red-500 text-sm min-h-5 ${
-                errorMessage ? "visible" : "invisible"
-              }`}
-            >
-              {errorMessage}
-            </p>
-            <button
-              onClick={handleInputSubmit}
-              className="w-full rounded-full bg-blue-600 text-white font-medium py-3 mt-2"
-            >
-              Submit
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
