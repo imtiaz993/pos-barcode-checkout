@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { toast } from "sonner"
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
@@ -44,7 +45,8 @@ const App = () => {
           },
         });
         setProductFetched(response?.result);
-      } catch (error) {
+      } catch (error:any) {
+        toast(error?.message)
         console.error("Error fetching product:", error);
       }
     }
@@ -56,7 +58,7 @@ const App = () => {
 
   return (
     <div className="bg-[rgba(0,0,0,0.9)]">
-      <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto">
+      <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
         <div></div>
         <div>
           <h1 className="text-center text-lg font-medium text-white my-10">
