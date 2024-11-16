@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
@@ -16,6 +16,10 @@ const App = () => {
   const [inputBarcode, setInputBarcode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [productFetched, setProductFetched] = useState<any>(null);
+  const lastScannedRef = useRef<{ code: string; timestamp: number }>({
+    code: "",
+    timestamp: 0,
+  });
 
   const handleInputSubmit = () => {
     if (!inputBarcode) {
@@ -30,27 +34,41 @@ const App = () => {
   };
 
   const handleDetected = async (code: any, beepSound: any) => {
-    console.log(code, barcode, code != barcode);
-    
-    if (code != barcode) {
-      setBarcode(code);
-      if (beepSound) {
-        beepSound.play();
-      }
-      try {
-        const response: any = await axios.get(`http://34.102.44.108:8000/`, {
-          params: {
-            action: "getProductByBarcode",
-            barcode: code,
-            store_id: 111,
-            access_token: "AIzaSyAAlqEYx2CDm5ck_64dc5b7371872a01b653",
-          },
-        });
-        setProductFetched(response?.result);
-      } catch (error:any) {
-        toast(error?.message)
-        console.error("Error fetching product:", error);
-      }
+    if (!code) return;
+
+    const now = Date.now();
+    const timeThreshold = 5000;
+
+    const { code: lastCode, timestamp: lastTimestamp } = lastScannedRef.current;
+
+    // Check if the code is the same and within the time threshold
+    if (code === lastCode && now - lastTimestamp < timeThreshold) {
+      console.log("Ignoring immediate repeated scan");
+      return; // Ignore the scan
+    }
+
+    // Update the last scanned code and timestamp
+    lastScannedRef.current = { code, timestamp: now };
+
+    if (beepSound) {
+      beepSound.play();
+    }
+
+    setBarcode(code);
+
+    try {
+      const response: any = await axios.get(`http://34.102.44.108:8000/`, {
+        params: {
+          action: "getProductByBarcode",
+          barcode: code,
+          store_id: 111,
+          access_token: "AIzaSyAAlqEYx2CDm5ck_64dc5b7371872a01b653",
+        },
+      });
+      setProductFetched(response?.result);
+    } catch (error: any) {
+      toast(error?.message);
+      console.error("Error fetching product:", error);
     }
   };
 
