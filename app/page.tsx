@@ -60,7 +60,7 @@ const App = () => {
 
     try {
       setProductFetching(true);
-      const response: any = await axios.get(`http://34.102.44.108:8000/`, {
+      const response: any = await axios.get(`https://ecoboutiquemarket.com/apps/checkout/`, {
         params: {
           action: "getProductByBarcode",
           barcode: code,
