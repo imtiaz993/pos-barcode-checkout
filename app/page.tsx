@@ -53,7 +53,7 @@ const App = () => {
     lastScannedRef.current = { code, timestamp: now };
 
     if (beepSound) {
-      beepSound.play();
+      beepSound();
     }
 
     setBarcode(code);
