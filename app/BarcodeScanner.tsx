@@ -1,12 +1,23 @@
 import React, { useEffect, useRef } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
+import { DecodeHintType, BarcodeFormat } from "@zxing/library";
 
 const ZXingScanner = ({ onScan, onError }:any) => {
   const videoRef = useRef<any>(null);
   const beepSound = new Audio("/beep.mp3");
 
   useEffect(() => {
-    const codeReader = new BrowserMultiFormatReader();
+    const hints = new Map();
+    hints.set(DecodeHintType.TRY_HARDER, true);
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.CODE_39,
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      // Include other formats if needed
+    ]);
+
+    const codeReader = new BrowserMultiFormatReader(hints);
 
     codeReader.decodeFromVideoDevice(
       '',
@@ -14,8 +25,7 @@ const ZXingScanner = ({ onScan, onError }:any) => {
       (result, error) => {
         if (result) {
           onScan(result.getText(), beepSound);
-        }
-        if (error) {
+        } else if (error) {
           onError && onError(error);
         }
       }
