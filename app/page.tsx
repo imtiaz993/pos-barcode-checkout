@@ -61,7 +61,7 @@ const App = () => {
     try {
       setProductFetching(true);
       const response: any = await axios.get(
-        `https://ecoboutiquemarket.com/apps/checkout/`,
+        `https://api.ecoboutiquemarket.com/`,
         {
           params: {
             action: "getProductByBarcode",
@@ -90,8 +90,8 @@ const App = () => {
       <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
         <div></div>
         <div>
-          <h1 className="text-center text-lg font-medium text-white my-10">
-            Point at code to scan
+          <h1 className="text-center font-medium text-white my-10">
+            Position barcode inside the red rectangle
           </h1>
           <BarcodeScanner onScan={handleDetected} onError={handleError} />
           {barcode && (

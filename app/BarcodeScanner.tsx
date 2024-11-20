@@ -18,8 +18,23 @@ const ZXingScanner = ({ onScan, onError }: any) => {
   }, [onScan, onError]);
 
   return (
-    <div className="h-80">
-      <video ref={videoRef} style={{ width: "100%", height: "100%" }} />
+    <div className="h-80 relative border-2 border-white">
+      <video
+        ref={videoRef}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: "5%",
+          left: "5%",
+          width: "90%",
+          height: "90%",
+          border: "2px solid red",
+          boxSizing: "border-box",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 };
