@@ -9,14 +9,14 @@ import {
   NotFoundException,
 } from "@zxing/library";
 
-const ZXingScanner = ({ onScan, onError }:any) => {
+const ZXingScanner = ({ onScan, onError }: any) => {
   const videoRef = useRef<any>(null);
   const canvasRef = useRef<any>(null);
   const beepSound = new Audio("/beep.mp3");
 
   useEffect(() => {
     const codeReader = new MultiFormatReader();
-    let animationFrameId:any;
+    let animationFrameId: any;
     let isScanning = true;
 
     // Define the barcode formats to scan for
@@ -34,7 +34,11 @@ const ZXingScanner = ({ onScan, onError }:any) => {
     codeReader.setHints(hints);
 
     const captureFrame = () => {
-      if (!videoRef.current || videoRef.current.readyState !== 4 || !isScanning) {
+      if (
+        !videoRef.current ||
+        videoRef.current.readyState !== 4 ||
+        !isScanning
+      ) {
         animationFrameId = requestAnimationFrame(captureFrame);
         return;
       }
@@ -75,7 +79,12 @@ const ZXingScanner = ({ onScan, onError }:any) => {
           context.restore();
 
           // Get the image data from the canvas
-          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+          const imageData = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
 
           // Create a luminance source and binary bitmap
           const luminanceSource = new RGBLuminanceSource(
@@ -83,7 +92,9 @@ const ZXingScanner = ({ onScan, onError }:any) => {
             imageData.width,
             imageData.height
           );
-          const binaryBitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+          const binaryBitmap = new BinaryBitmap(
+            new HybridBinarizer(luminanceSource)
+          );
 
           try {
             // Try to decode the barcode
@@ -115,14 +126,17 @@ const ZXingScanner = ({ onScan, onError }:any) => {
 
     const startScanner = async () => {
       try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoInputDevices = devices.filter(
-          (device) => device.kind === "videoinput"
-        );
-        const selectedDeviceId = videoInputDevices[0]?.deviceId || undefined;
+        // const devices = await navigator.mediaDevices.enumerateDevices();
+        // const videoInputDevices = devices.filter(
+        //   (device) => device.kind === "videoinput"
+        // );
+        // const selectedDeviceId = videoInputDevices[0]?.deviceId || undefined;
 
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: selectedDeviceId },
+          video: {
+            // deviceId: selectedDeviceId,
+            facingMode: { exact: "environment" },
+          },
         });
         videoRef.current.srcObject = stream;
         videoRef.current.setAttribute("playsinline", true); // Required for iOS
@@ -144,7 +158,9 @@ const ZXingScanner = ({ onScan, onError }:any) => {
         cancelAnimationFrame(animationFrameId);
       }
       if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach((track:any) => track.stop());
+        videoRef.current.srcObject
+          .getTracks()
+          .forEach((track: any) => track.stop());
       }
       codeReader.reset();
     };
