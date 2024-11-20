@@ -23,18 +23,19 @@ const ZXingScanner = ({ onScan, onError }: any) => {
         ref={videoRef}
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
-      <div
-        style={{
-          position: "absolute",
-          top: "5%",
-          left: "5%",
-          width: "90%",
-          height: "90%",
-          border: "2px solid red",
-          boxSizing: "border-box",
-          pointerEvents: "none",
-        }}
-      />
+     <div className="absolute inset-0 pointer-events-none">
+        {/* Top Left */}
+        <div className="absolute top-2.5 left-2.5 border-t-2 border-l-2 border-red-500 w-12 h-12"></div>
+
+        {/* Top Right */}
+        <div className="absolute top-2.5 right-2.5 border-t-2 border-r-2 border-red-500 w-12 h-12"></div>
+
+        {/* Bottom Left */}
+        <div className="absolute bottom-2.5 left-5 border-b-2 border-l-2 border-red-500 w-12 h-12"></div>
+
+        {/* Bottom Right */}
+        <div className="absolute bottom-2.5 right-2.5 border-b-2 border-r-2 border-red-500 w-12 h-12"></div>
+      </div>
     </div>
   );
 };
