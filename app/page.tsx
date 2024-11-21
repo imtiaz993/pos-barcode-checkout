@@ -87,11 +87,10 @@ const App = () => {
   return (
     <div className="bg-[rgba(0,0,0,0.9)]">
       {productFetching && <Loader />}
-      <div className="min-h-dvh flex flex-col justify-between mx-auto max-w-[540px]">
-        <div className="relative w-full h-dvh">
+      <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
+        <div></div>
+        <div>
           <BarcodeScanner onScan={handleDetected} onError={handleError} />
-        </div>
-        <div className="relative top-0 z-50">
           {barcode && (
             <p className="text-center text-white mt-5">
               Detected Barcode: {barcode}
@@ -138,17 +137,17 @@ const App = () => {
               />
             </div>
           </div>
-          <div className="pt-10 pb-5">
-            <button
-              className="w-full rounded-full bg-blue-600 text-white font-medium py-3"
-              onClick={() => {
-                setIsInputTabOpen(!isInputTabOpen);
-                setErrorMessage("");
-              }}
-            >
-              Type Code Instead
-            </button>
-          </div>
+        </div>
+        <div className="pt-10 pb-5">
+          <button
+            className="w-full rounded-full bg-blue-600 text-white font-medium py-3"
+            onClick={() => {
+              setIsInputTabOpen(!isInputTabOpen);
+              setErrorMessage("");
+            }}
+          >
+            Type Code Instead
+          </button>
         </div>
       </div>
       {isInputTabOpen && (
