@@ -72,7 +72,7 @@ const App = () => {
         }
       );
       setProductFetching(false);
-      setProductFetched(response?.result);
+      setProductFetched(response.data?.result);
     } catch (error: any) {
       setProductFetching(false);
       toast(error?.message);
