@@ -116,7 +116,7 @@ const App = () => {
                     <p>Price: {productFetched?.price}</p>
                     <p className="ml-5">Tax: {productFetched?.tax_rate}</p>
                   </div>
-                  <p className="text-xs">{productFetched?.description}</p>
+                  <p className="text-xs line-clamp-2">{productFetched?.description}</p>
                 </div>
               </div>
             </div>
