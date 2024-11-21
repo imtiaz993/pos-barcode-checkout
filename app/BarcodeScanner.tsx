@@ -8,31 +8,56 @@ const ZXingScanner = ({ onScan, onError }: any) => {
   useEffect(() => {
     const codeReader = new BrowserMultiFormatReader();
 
-    codeReader.decodeFromVideoDevice("", videoRef.current, (result, error) => {
-      if (result) {
-        onScan(result.getText(), beepSound);
-      } else if (error) {
-        onError && onError(error);
+    codeReader.decodeFromVideoDevice(
+      "",
+      videoRef.current,
+      (result: any, error: any) => {
+        if (result) {
+          const visibleArea = document.getElementById("visible-box");
+          if (visibleArea) {
+            const rect = visibleArea.getBoundingClientRect();
+
+            // Restrict scanning to the visible area (center box)
+            if (
+              rect.left < result.x &&
+              rect.right > result.x &&
+              rect.top < result.y &&
+              rect.bottom > result.y
+            ) {
+              onScan(result.getText(), beepSound);
+            }
+          } else if (error) {
+            onError && onError(error);
+          }
+        }
       }
-    });
+    );
   }, [onScan, onError]);
 
   return (
-    <div className="h-44 w-3/4 mx-auto relative border-2 border-white">
+    <div>
       <video
         ref={videoRef}
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        className="absolute top-0 left-0 w-full h-full object-cover"
       />
-      <div
-        style={{
-          position: "absolute",
-          top: "50%", // Adjust to position the line vertically
-          left: "10px",
-          width: "calc(100% - 20px)",
-          height: "2px", // Thickness of the line
-          backgroundColor: "red", // Line color
-        }}
-      ></div>
+
+      {/* Overlay */}
+      <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 pointer-events-none">
+        {/* Transparent Box */}
+        <div
+          id="visible-box"
+          className="absolute bg-transparent border-4 border-red-500 pointer-events-none"
+          style={{
+            top: "calc(50% - 100px)",
+            left: "calc(50% - 150px)",
+            width: "300px",
+            height: "200px",
+          }}
+        >
+          {/* Optional scanning line */}
+          <div className="absolute top-1/2 left-0 w-full h-[2px] bg-red-500 animate-pulse"></div>
+        </div>
+      </div>
     </div>
   );
 };
