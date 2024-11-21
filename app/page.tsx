@@ -90,9 +90,6 @@ const App = () => {
       <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
         <div></div>
         <div>
-          <h1 className="text-center font-medium text-white my-10">
-            Position barcode inside the red rectangle
-          </h1>
           <BarcodeScanner onScan={handleDetected} onError={handleError} />
           {barcode && (
             <p className="text-center text-white mt-5">
@@ -124,16 +121,24 @@ const App = () => {
               </div>
             </div>
           )}
+          <div className=" w-4/5 mx-auto">
+            <h1 className="text-center font-medium text-white my-5">
+              Make sure the barcode is horizontal, <br />
+              See example below
+            </h1>
+            <div className="bg-white p-0.5 w-3/4 mx-auto">
+              <Image
+                src="/exampleBarCode.png"
+                width={0}
+                height={0}
+                sizes="100vw"
+                alt=""
+                className="w-full"
+              />
+            </div>
+          </div>
         </div>
-        <div className="pt-10 pb-16">
-          <button
-            onClick={() => {
-              handleDetected("850033937077", null);
-            }}
-            className="w-full rounded-full bg-gray-300 text-black font-medium py-3 mb-5"
-          >
-            TEST 850033937077
-          </button>
+        <div className="pt-10 pb-5">
           <button
             className="w-full rounded-full bg-blue-600 text-white font-medium py-3"
             onClick={() => {
