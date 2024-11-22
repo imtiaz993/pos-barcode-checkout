@@ -116,25 +116,39 @@ const App = () => {
                     <p>Price: {productFetched?.price}</p>
                     <p className="ml-5">Tax: {productFetched?.tax_rate}</p>
                   </div>
-                  <p className="text-xs line-clamp-2">{productFetched?.description}</p>
+                  <p className="text-xs line-clamp-2">
+                    {productFetched?.description}
+                  </p>
                 </div>
               </div>
             </div>
           )}
-          <div className=" w-4/5 mx-auto">
+          <div className="w-3/4 mx-auto">
             <h1 className="text-center font-medium text-white my-5">
               Make sure the barcode is horizontal, <br />
               See example below
             </h1>
-            <div className="bg-white p-0.5 w-3/4 mx-auto">
-              <Image
-                src="/exampleBarCode.png"
-                width={0}
-                height={0}
-                sizes="100vw"
-                alt=""
-                className="w-full"
-              />
+            <div className="h-44 border-2 border-white bg-[rgba(255,255,255,0.2)] p-0.5 mx-auto relative">
+              <div className="p-5">
+                <Image
+                  src="/exampleBarCode.png"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  alt=""
+                  className="w-full"
+                />
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "10px",
+                  width: "calc(100% - 20px)",
+                  height: "2px",
+                  backgroundColor: "red",
+                }}
+              ></div>
             </div>
           </div>
         </div>
