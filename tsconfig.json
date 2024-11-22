@@ -29,6 +29,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js"
-, "app/BarcodeScanner.tsx", "app/page.tsx"  ],
+, "app/pos/BarcodeScanner.tsx", "app/page.tsx"  ],
   "exclude": ["node_modules"]
 }
