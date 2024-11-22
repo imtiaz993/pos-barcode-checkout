@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 
-const ZXingScanner = ({ onScan, onError }: any) => {
+const ZXingScanner = ({ onScan }: any) => {
   const videoRef = useRef<any>(null);
   const beepSound = new Audio("/beep.mp3");
 
@@ -11,11 +11,9 @@ const ZXingScanner = ({ onScan, onError }: any) => {
     codeReader.decodeFromVideoDevice("", videoRef.current, (result, error) => {
       if (result) {
         onScan(result.getText(), beepSound);
-      } else if (error) {
-        onError && onError(error);
       }
     });
-  }, [onScan, onError]);
+  }, [onScan]);
 
   return (
     <div className="h-44 w-3/4 mx-auto relative border-2 border-white">
