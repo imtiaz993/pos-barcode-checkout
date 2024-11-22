@@ -11,7 +11,7 @@ const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
 });
 
-const POS = async () => {
+const POS = () => {
   const [barcode, setBarcode] = useState("");
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
   const [inputBarcode, setInputBarcode] = useState("");
