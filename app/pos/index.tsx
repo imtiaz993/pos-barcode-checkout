@@ -17,7 +17,7 @@ const POS = () => {
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
   const [inputBarcode, setInputBarcode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [products, setProducts] = useState<any>(null);
+  const [products, setProducts] = useState<any>([]);
   const [productFetching, setProductFetching] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const lastScannedRef = useRef<{ code: string; timestamp: number }>({
@@ -46,7 +46,11 @@ const POS = () => {
     const { code: lastCode, timestamp: lastTimestamp } = lastScannedRef.current;
 
     // Check if the code is the same and within the time threshold
-    if (code === lastCode && now - lastTimestamp < timeThreshold) {
+    if (
+      code === lastCode &&
+      now - lastTimestamp < timeThreshold &&
+      productFetching
+    ) {
       console.log("Ignoring immediate repeated scan");
       return; // Ignore the scan
     }
@@ -74,7 +78,25 @@ const POS = () => {
         }
       );
       setProductFetching(false);
-      setProducts((prev: any) => [...prev, response.data?.result]);
+      setProducts((prev: any) => {
+        const alreadyAddedIndex = prev.findIndex(
+          (item: any) => item.id === response.data?.result.id
+        );
+
+        if (alreadyAddedIndex !== -1) {
+          return prev.map((item: any, index: number) =>
+            index === alreadyAddedIndex
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        } else {
+          return [...prev, { ...response.data?.result, quantity: 1 }];
+        }
+      });
+      setOpenCart(true);
+      setTimeout(() => {
+        setOpenCart(false);
+      }, 1000);
     } catch (error: any) {
       setProductFetching(false);
       toast(error?.message);
@@ -86,7 +108,7 @@ const POS = () => {
     <>
       <Cart
         products={products}
-        total={products?.length}
+        setProducts={setProducts}
         isOpen={openCart}
         openCart={() => {
           setOpenCart(true);
@@ -114,7 +136,7 @@ const POS = () => {
               <div className="h-44 border-2 border-white bg-[rgba(255,255,255,0.2)] p-0.5 mx-auto relative">
                 <div className="p-5 h-full">
                   <Image
-                    src="/exampleBarCode.png"
+                    src="/images/exampleBarCode.png"
                     width={0}
                     height={0}
                     sizes="100vw"
