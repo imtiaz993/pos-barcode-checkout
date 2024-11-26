@@ -22,24 +22,25 @@ const Cart = (props: any) => {
 
   return (
     <div
-      className={`fixed top-0 w-full h-full bg-primary z-[100] transition-all ${
-        isOpen ? "right-0" : "-right-full"
+      className={`sm:w-[450px] fixed top-0 w-full h-full bg-[#1b1a20] z-[100] transition-all ${
+        isOpen ? "right-0" : "-right-full sm:right-[-450px]"
       }`}
     >
       <button
-        className={`absolute top-0  w-12 h-12 bg-primary text-white text-center leading-[50px] z-10 ${
-          isOpen ? "bg-black left-0" : "left-[-50px]"
-        } hover:brightness-90`}
+        className={`absolute top-0  w-12 h-12 bg-[#1b1a20] text-white text-center leading-[50px] z-10 ${
+          isOpen ? "bg-[#1b1a20]  left-0 sm:left-[-48px]" : "left-[-50px] sm:left-[-48px]"
+        } hover:bg-black`}
         onClick={handleToggleCart(isOpen)}
       >
         {isOpen ? (
           <span>X</span>
         ) : (
-          <div
-            className="relative w-12 h-12 bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/cart-icon.png')" }}
-          >
-            <div className="absolute bottom-0 right-1 w-4 h-4 bg-secondary text-xs font-bold text-black rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#1b1a20] p-2">
+            <div
+              className="w-7 h-7 relative bg-cover bg-center "
+              style={{ backgroundImage: "url('/images/cart-icon.png')" }}
+            ></div>
+            <div className="absolute bottom-0 right-1 w-4 h-4 bg-white text-xs font-bold text-black rounded-full flex items-center justify-center">
               {total?.productQuantity}
             </div>
           </div>
@@ -48,27 +49,28 @@ const Cart = (props: any) => {
 
       {isOpen && (
         <div className="h-full overflow-y-auto">
-          <div className="text-white text-center py-12">
-            <div
-              className="relative inline-block w-14 h-14 bg-cover bg-center mb-2"
-              style={{ backgroundImage: "url('/images/cart-icon.png')" }}
-            >
-              <div className="absolute bottom-0 right-1 w-4 h-4 bg-secondary text-xs font-bold text-black rounded-full flex items-center justify-center">
+          <div className="text-white text-center py-12 flex justify-center">
+            <div className="relative w-14 h-14 mb-2">
+              <div
+                className=" w-10 h-10 inline-block  bg-cover bg-center "
+                style={{ backgroundImage: "url('/images/cart-icon.png')" }}
+              ></div>
+              <div className="absolute z-20 bottom-0 right-1 w-4 h-4 text-xs bg-white font-bold text-black rounded-full flex items-center justify-center">
                 {total?.productQuantity}
               </div>
             </div>
-            <span className="font-bold text-lg">Cart</span>
+            <span className="font-bold text-lg ml-4 mt-2">Cart</span>
           </div>
 
           <CartProducts products={products} setProducts={setProducts} />
 
-          <div className="absolute bottom-0 w-full h-48 p-5 bg-primary">
-            <p className="inline-block w-1/5 text-gray-500">SUBTOTAL</p>
-            <div className="inline-block w-4/5 text-right text-gray-500">
-              <p className="text-2xl text-secondary m-0">{total?.totalPrice}</p>
+          <div className="absolute bottom-0 w-full h-[200px] p-[5%] bg-[#1b1a20] cartFooterShadow">
+            <p className="inline-block w-1/5 text-[#5b5a5e]">SUBTOTAL</p>
+            <div className="inline-block w-4/5 text-right text-[#5b5a5e]">
+              <p className="text-2xl text-secondary m-0">${total?.totalPrice}</p>
             </div>
             <button
-              className="w-full bg-black text-white uppercase py-3 mt-10 hover:bg-gray-900 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+              className="w-full bg-[#0c0b10] text-[#ececec] uppercase py-3 mt-10 hover:bg-black transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
               onClick={handleCheckout}
               autoFocus
             >

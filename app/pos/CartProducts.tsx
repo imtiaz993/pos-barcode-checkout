@@ -13,7 +13,7 @@ const CartProducts = ({ products, setProducts }: any) => {
           />
         ))
       ) : (
-        <p className="text-center text-gray-100 leading-10">
+        <p className="text-center text-[#ececec] leading-10">
           Add some products in the cart <br />
           :)
         </p>

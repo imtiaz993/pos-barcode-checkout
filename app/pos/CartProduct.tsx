@@ -26,11 +26,11 @@ const CartProduct = ({ product, products, setProducts }: any) => {
   };
 
   return (
-    <div className="relative box-border p-5 transition-all before:content-[''] before:w-[90%] before:h-[2px] before:bg-black/20 before:absolute before:top-0 before:left-[5%]">
+    <div className="relative box-border p-[5%] transition-all productAddedToCart">
       <button
         onClick={handleRemoveProduct}
         title="remove product from cart"
-        className="absolute top-4 right-[5%] w-4 h-4 bg-transparent bg-[url('/images/delete-icon.png')] bg-no-repeat bg-auto cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary hover:bg-[left_-17px] rounded-full"
+        className="absolute top-4 right-[5%] w-4 h-4 bg-transparent bg-[url('/images/delete-icon.png')] bg-no-repeat bg-auto cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary hover:invert rounded-full"
       />
       <img
         src={
@@ -45,32 +45,32 @@ const CartProduct = ({ product, products, setProducts }: any) => {
             product?.images[0].alt) ||
           ""
         }
-        className="inline-block align-middle w-20 h-auto mr-5"
+        className="inline-block align-middle w-[15%] h-auto mr-[3%]"
       />
       <div className="inline-block align-middle w-[57%]">
-        <p className="text-gray-100 m-0">{product?.name}</p>
-        <p className="text-gray-500 m-0">Barcode: {product?.barcode}</p>
-        <p className="text-gray-500 m-0 line-clamp-1">
+        <p className="text-[#ececec] m-0">{product?.name}</p>
+        <p className="text-[#5b5a5e] m-0">Barcode: {product?.barcode}</p>
+        <p className="text-[#5b5a5e] m-0 line-clamp-1">
           Description: {product?.description}
         </p>
-        <p className="text-gray-500 m-0">Quantity: {product?.quantity}</p>
+        <p className="text-[#5b5a5e] m-0">Quantity: {product?.quantity}</p>
       </div>
       <div className="inline-block align-middle text-right w-[25%] text-secondary">
-        <p>
-          Price: $ {product?.price}{" "}
+        <p className="text-sm md:text-base mb-2">
+          Price: ${product?.price}{" "}
           <span className="ml-5">Tax: ${product?.tax_rate}</span>
         </p>
         <div>
           <button
             onClick={handleDecreaseProductQuantity}
             disabled={product?.quantity === 1}
-            className="w-6 h-6 bg-black text-gray-400 border-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary disabled:opacity-20"
+            className="w-6 h-6 bg-black text-[#b7b7b7] border-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary disabled:opacity-20"
           >
             -
           </button>
           <button
             onClick={handleIncreaseProductQuantity}
-            className="w-6 h-6 bg-black text-gray-400 border-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary"
+            className="w-6 h-6 bg-black text-[#b7b7b7] border-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary"
           >
             +
           </button>
