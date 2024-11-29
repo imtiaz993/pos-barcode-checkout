@@ -3,15 +3,15 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyD2H_8gfdpY-8Jqz8XRFKCdVqYGKgt6QLM",
+  authDomain: "pos-barcode-checkout.firebaseapp.com",
+  projectId: "pos-barcode-checkout",
+  storageBucket: "pos-barcode-checkout.firebasestorage.app",
+  messagingSenderId: "1083321940368",
+  appId: "1:1083321940368:web:f5da6eebf90bbe6eb69b15",
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export { auth };
+export { auth, app };

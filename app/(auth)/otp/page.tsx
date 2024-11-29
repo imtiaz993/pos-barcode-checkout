@@ -1,7 +1,7 @@
+"use client"
+
 import React, { useState } from "react";
-import { useRouter } from "next/router";
-import { auth } from "../../../firebase";
-import { signInWithPhoneNumber } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 declare global {
   interface Window {
