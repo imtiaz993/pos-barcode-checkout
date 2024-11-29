@@ -24,11 +24,11 @@ const ZXingScanner = ({ onScan }: any) => {
       <div
         style={{
           position: "absolute",
-          top: "50%", // Adjust to position the line vertically
+          top: "50%",
           left: "10px",
           width: "calc(100% - 20px)",
-          height: "2px", // Thickness of the line
-          backgroundColor: "red", // Line color
+          height: "2px",
+          backgroundColor: "red",
         }}
       ></div>
     </div>

@@ -33,7 +33,7 @@ const POS = () => {
       setErrorMessage("Barcode cannot be empty");
       return;
     }
-    setErrorMessage(""); // Clear any previous error
+    setErrorMessage("");
     handleDetected(inputBarcode, null);
     setIsInputTabOpen(false);
     setErrorMessage("");
@@ -48,17 +48,15 @@ const POS = () => {
 
     const { code: lastCode, timestamp: lastTimestamp } = lastScannedRef.current;
 
-    // Check if the code is the same and within the time threshold
     if (
       code === lastCode &&
       now - lastTimestamp < timeThreshold &&
       productFetching
     ) {
       console.log("Ignoring immediate repeated scan");
-      return; // Ignore the scan
+      return;
     }
 
-    // Update the last scanned code and timestamp
     lastScannedRef.current = { code, timestamp: now };
 
     if (beepSound) {

@@ -1,4 +1,3 @@
-// utils/firebaseAuth.ts
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { app } from "../app/firebase";
 
@@ -8,9 +7,9 @@ export const checkAuthState = (): Promise<boolean> => {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        resolve(true); // User is logged in
+        resolve(true);
       } else {
-        resolve(false); // User is not logged in
+        resolve(false);
       }
     });
   });

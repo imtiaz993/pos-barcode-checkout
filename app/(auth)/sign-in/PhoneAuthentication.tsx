@@ -80,7 +80,6 @@ const PhoneAuthentication = ({
           {loading ? "Sending OTP..." : "Continue"}
         </button>
       </div>
-      <div id="recaptcha-container"></div>
     </div>
   );
 };

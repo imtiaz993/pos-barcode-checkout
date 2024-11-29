@@ -12,16 +12,21 @@ const App = () => {
   useEffect(() => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
-      setCheckingAuth(false);
       if (!isLoggedIn) {
-        router.replace("/sign-in"); // Redirect to login if not logged in
+        router.replace("/sign-in");
+        return;
       }
+      setCheckingAuth(false);
     };
 
     handleAuth();
   }, []);
 
-  return checkingAuth ? <></> : <POS />;
+  if (checkingAuth) {
+    return null;
+  }
+
+  return <POS />;
 };
 
 export default App;
