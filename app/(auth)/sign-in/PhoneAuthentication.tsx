@@ -44,7 +44,7 @@ const PhoneAuthentication = ({
   };
 
   return (
-    <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-screen">
+    <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-dvh">
       <div className="bg-[rgba(0,0,0,0.7)] rounded-lg shadow-md p-6 w-full max-w-sm">
         <h1 className="text-2xl font-bold text-white text-center">
           Welcome! Let&apos;s Get Started
@@ -64,7 +64,7 @@ const PhoneAuthentication = ({
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="Enter your phone number"
+            placeholder="+1234567890"
             className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700"
           />
         </div>
