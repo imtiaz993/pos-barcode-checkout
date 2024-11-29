@@ -37,7 +37,7 @@ const VerifyOTP = ({ confirmationResult, phone }: any) => {
           Verify Your Phone Number
         </h1>
         <p className="text-white text-center text-sm mt-2">
-          We've sent a one-time passcode (OTP) to <b>{phone}</b>. Enter it below
+          We&apos;ve sent a one-time passcode (OTP) to <b>{phone}</b>. Enter it below
           to log in or create your account.
         </p>
 

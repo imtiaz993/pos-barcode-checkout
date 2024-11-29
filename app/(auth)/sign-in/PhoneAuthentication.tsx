@@ -35,7 +35,7 @@ const PhoneAuthentication = ({
     <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-screen">
       <div className="bg-[rgba(0,0,0,0.7)] rounded-lg shadow-md p-6 w-full max-w-sm">
         <h1 className="text-2xl font-bold text-white text-center">
-          Welcome! Let's Get Started
+          Welcome! Let&apos;s Get Started
         </h1>
         <p className="text-white text-sm text-center mt-2">
           Enter your phone number to sign in or create an account.
