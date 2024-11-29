@@ -4,15 +4,18 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Cart from "./Cart";
+import { logout } from "../../utils/firebaseAuth";
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
 });
 
 const POS = () => {
+  const router = useRouter();
   const [barcode, setBarcode] = useState("");
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
   const [inputBarcode, setInputBarcode] = useState("");
@@ -104,6 +107,16 @@ const POS = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/sign-in");
+    } catch (error) {
+      alert("Failed to log out. Please try again.");
+      console.error("Error during logout:", error);
+    }
+  };
+
   return (
     <>
       <Cart
@@ -118,6 +131,17 @@ const POS = () => {
         }}
       />
       <div className="bg-[rgba(0,0,0,0.9)]">
+        <div className="p-2 start-0">
+          <Image
+            src="/images/logout.svg"
+            width={0}
+            height={0}
+            sizes="100vw"
+            alt=""
+            className="w-auto cursor-pointer"
+            onClick={handleLogout}
+          />
+        </div>
         {productFetching && <Loader />}
         <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
           <div></div>

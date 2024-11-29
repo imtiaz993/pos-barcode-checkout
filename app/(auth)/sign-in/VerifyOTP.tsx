@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const VerifyOTP = ({ confirmationResult }: any) => {
+const VerifyOTP = ({ confirmationResult, phone }: any) => {
   const router = useRouter();
   const [otp, setOtp] = useState("");
 
@@ -31,20 +31,18 @@ const VerifyOTP = ({ confirmationResult }: any) => {
   };
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-      <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-gray-800 text-center">
+    <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-screen">
+      <div className="bg-[rgba(0,0,0,0.7)] rounded-lg shadow-md p-6 w-full max-w-sm">
+        <h1 className="text-2xl font-bold text-white text-center">
           Verify Your Phone Number
         </h1>
-        <p className="text-gray-600 text-center mt-2">
-          Enter the OTP sent to your phone number.
+        <p className="text-white text-center text-sm mt-2">
+          We've sent a one-time passcode (OTP) to <b>{phone}</b>. Enter it below
+          to log in or create your account.
         </p>
 
         <div className="mt-6">
-          <label
-            htmlFor="otp"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="otp" className="block text-sm font-medium text-white">
             OTP
           </label>
           <input
@@ -59,7 +57,7 @@ const VerifyOTP = ({ confirmationResult }: any) => {
 
         <button
           onClick={verifyOtp}
-          className={`mt-6 w-full bg-blue-600 text-white py-2 rounded-lg text-lg font-semibold hover:bg-blue-700 transition ${
+          className={`mt-6 w-full bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 transition ${
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={loading}

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
-import { app } from "../../../firebase";
+import { app } from "../../firebase";
 
-const PhoneAuthentication = ({ setConfirmationResult }: any) => {
-  const [phone, setPhone] = useState("");
+const PhoneAuthentication = ({
+  setConfirmationResult,
+  phone,
+  setPhone,
+}: any) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -29,19 +32,19 @@ const PhoneAuthentication = ({ setConfirmationResult }: any) => {
   };
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-      <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-gray-800 text-center">
+    <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-screen">
+      <div className="bg-[rgba(0,0,0,0.7)] rounded-lg shadow-md p-6 w-full max-w-sm">
+        <h1 className="text-2xl font-bold text-white text-center">
           Welcome! Let's Get Started
         </h1>
-        <p className="text-gray-600 text-center mt-2">
+        <p className="text-white text-sm text-center mt-2">
           Enter your phone number to sign in or create an account.
         </p>
 
         <div className="mt-6">
           <label
             htmlFor="phone"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-white"
           >
             Phone Number
           </label>
@@ -57,14 +60,13 @@ const PhoneAuthentication = ({ setConfirmationResult }: any) => {
 
         <button
           onClick={sendOtp}
-          className={`mt-6 w-full bg-blue-600 text-white py-2 rounded-lg text-lg font-semibold hover:bg-blue-700 transition ${
+          className={`mt-6 w-full bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 transition ${
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={loading}
         >
           {loading ? "Sending OTP..." : "Continue"}
         </button>
-        <div id="recaptcha-container"></div>
       </div>
     </div>
   );
