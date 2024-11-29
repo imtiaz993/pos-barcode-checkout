@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { getAuth, RecaptchaVerifier } from "firebase/auth";
+import { app } from "../../firebase";
 import { checkAuthState } from "../../../utils/firebaseAuth";
 import VerifyOTP from "./VerifyOTP";
 import PhoneAuthentication from "./PhoneAuthentication";
 
 const PhoneAuth = () => {
   const router = useRouter();
+  const recaptchaContainerRef = useRef(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [phone, setPhone] = useState("");
@@ -24,6 +27,7 @@ const PhoneAuth = () => {
     handleAuth();
   }, []);
 
+
   return checkingAuth ? (
     <></>
   ) : (
@@ -37,6 +41,7 @@ const PhoneAuth = () => {
       ) : (
         <VerifyOTP confirmationResult={confirmationResult} phone={phone} />
       )}
+      
     </div>
   );
 };

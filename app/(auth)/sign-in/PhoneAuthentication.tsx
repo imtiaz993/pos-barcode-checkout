@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { getAuth, signInWithPhoneNumber } from "firebase/auth";
+import {
+  getAuth,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+} from "firebase/auth";
 import { app } from "../../firebase";
 
 const PhoneAuthentication = ({
@@ -9,18 +13,26 @@ const PhoneAuthentication = ({
 }: any) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const auth = getAuth(app);
 
   const sendOtp = async (e: any) => {
+    const recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        size: "invisible",
+      }
+    );
+
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
       const auth = getAuth(app);
-      const appVerifier = window.recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(
         auth,
         phone,
-        appVerifier
+        recaptchaVerifier
       );
       setConfirmationResult(confirmation);
     } catch (error) {
@@ -68,6 +80,7 @@ const PhoneAuthentication = ({
           {loading ? "Sending OTP..." : "Continue"}
         </button>
       </div>
+      <div id="recaptcha-container"></div>
     </div>
   );
 };
