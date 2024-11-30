@@ -4,7 +4,7 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Cart from "./Cart";
@@ -16,6 +16,8 @@ const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
 
 const POS = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("st");
   const [barcode, setBarcode] = useState("");
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
   const [inputBarcode, setInputBarcode] = useState("");
@@ -73,7 +75,7 @@ const POS = () => {
           params: {
             action: "getProductByBarcode",
             barcode: code,
-            store_id: 111,
+            store_id: storeId,
             access_token: "AIzaSyAAlqEYx2CDm5ck_64dc5b7371872a01b653",
           },
         }
@@ -108,7 +110,7 @@ const POS = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push("/sign-in");
+      router.push(`/sign-in?st=${storeId}`);
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);

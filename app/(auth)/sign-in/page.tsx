@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { checkAuthState } from "../../../utils/firebaseAuth";
 import VerifyOTP from "./VerifyOTP";
 import PhoneAuthentication from "./PhoneAuthentication";
 
 const PhoneAuth = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("st");
+  let recaptchaVerifier = useRef<any>();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [phone, setPhone] = useState("");
@@ -16,7 +19,7 @@ const PhoneAuth = () => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
       if (isLoggedIn) {
-        router.replace("/");
+        router.replace(`/?st=${storeId}`);
         return;
       }
       setCheckingAuth(false);
@@ -34,11 +37,15 @@ const PhoneAuth = () => {
       {!confirmationResult ? (
         <PhoneAuthentication
           setConfirmationResult={setConfirmationResult}
-          phone={phone}
           setPhone={setPhone}
+          recaptchaVerifier={recaptchaVerifier}
         />
       ) : (
-        <VerifyOTP confirmationResult={confirmationResult} phone={phone} />
+        <VerifyOTP
+          confirmationResult={confirmationResult}
+          phone={phone}
+          recaptchaVerifier={recaptchaVerifier}
+        />
       )}
       <div id="recaptcha-container"></div>
     </div>

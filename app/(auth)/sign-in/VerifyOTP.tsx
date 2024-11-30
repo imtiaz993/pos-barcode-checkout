@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-  getAuth,
-  signInWithPhoneNumber,
-  RecaptchaVerifier,
-} from "firebase/auth";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 import { app } from "../../firebase";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-const VerifyOTP = ({ confirmationResult, phone }: any) => {
+const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
-  const [otp, setOtp] = useState("");
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("st");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -59,20 +58,12 @@ const VerifyOTP = ({ confirmationResult, phone }: any) => {
   const resendOtp = async () => {
     setResendOtpEnabled(false);
     setTimer(59);
-    const auth = getAuth(app);
-    const recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-      }
-    );
 
     setError("");
     setLoading(true);
     try {
       const auth = getAuth(app);
-      await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
+      await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
     } catch (error) {
       setError("Failed to send OTP. Please try again.");
       console.error("Error during signInWithPhoneNumber", error);
@@ -81,27 +72,36 @@ const VerifyOTP = ({ confirmationResult, phone }: any) => {
     }
   };
 
-  const verifyOtp = async (e: any) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const formik = useFormik({
+    initialValues: {
+      otp: "",
+    },
+    validationSchema: Yup.object({
+      otp: Yup.string()
+        .required("OTP is required")
+        .matches(/^\d{6}$/, "OTP must be a 6-digit number"),
+    }),
+    onSubmit: async (values) => {
+      setError("");
+      setLoading(true);
 
-    if (!confirmationResult) {
-      setError("No OTP request found. Please start again.");
-      setLoading(false);
-      return;
-    }
+      if (!confirmationResult) {
+        setError("No OTP request found. Please start again.");
+        setLoading(false);
+        return;
+      }
 
-    try {
-      await confirmationResult.confirm(otp);
-      router.push("/");
-    } catch (error) {
-      setError("Invalid OTP. Please try again.");
-      console.error("Error during confirmationResult.confirm", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        await confirmationResult.confirm(values.otp);
+        router.push(`/?st=${storeId}`);
+      } catch (error) {
+        setError("Invalid OTP. Please try again.");
+        console.error("Error during confirmationResult.confirm", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
 
   return (
     <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-dvh">
@@ -114,32 +114,44 @@ const VerifyOTP = ({ confirmationResult, phone }: any) => {
           below to log in or create your account.
         </p>
 
-        <div className="mt-6">
+        <form onSubmit={formik.handleSubmit} className="mt-6">
           <label htmlFor="otp" className="block text-sm font-medium text-white">
             OTP
           </label>
           <input
+            id="otp"
+            name="otp"
             type="text"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            value={formik.values.otp}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             placeholder="Enter your OTP here"
-            className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+            className={`mt-2 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
+              formik.touched.otp && formik.errors.otp
+                ? "border-red-500"
+                : "border-gray-300"
+            } text-gray-700`}
           />
-        </div>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          {formik.touched.otp && formik.errors.otp && (
+            <p className="text-red-500 text-sm mt-2">{formik.errors.otp}</p>
+          )}
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-        <button
-          onClick={verifyOtp}
-          className={`mt-6 w-full bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 transition ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={loading}
-        >
-          {loading ? "Verifying..." : "Verify and Continue"}
-        </button>
+          <button
+            type="submit"
+            className={`mt-6 w-full bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 transition ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={loading}
+          >
+            {loading ? "Verifying..." : "Verify and Continue"}
+          </button>
+        </form>
+
         <div className="mt-4 flex justify-center">
           <button
             onClick={resendOtp}
+            type="button"
             className={`text-blue-500 hover:underline ${
               !resendOtpEnabled ? "cursor-not-allowed opacity-50" : ""
             }`}
