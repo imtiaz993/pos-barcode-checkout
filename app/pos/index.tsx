@@ -51,8 +51,7 @@ const POS = () => {
     const { code: lastCode, timestamp: lastTimestamp } = lastScannedRef.current;
 
     if (
-      code === lastCode &&
-      now - lastTimestamp < timeThreshold &&
+      (code === lastCode && now - lastTimestamp < timeThreshold) ||
       productFetching
     ) {
       console.log("Ignoring immediate repeated scan");
