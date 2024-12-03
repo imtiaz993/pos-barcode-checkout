@@ -30,7 +30,7 @@ const CartProduct = ({ product, products, setProducts }: any) => {
       <button
         onClick={handleRemoveProduct}
         title="remove product from cart"
-        className="absolute top-4 right-[5%] w-4 h-4 bg-transparent bg-[url('/images/delete-icon.png')] bg-no-repeat bg-auto cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary hover:invert rounded-full"
+        className="absolute top-2 right-[5%] w-4 h-4 bg-transparent bg-[url('/images/delete-icon.png')] bg-no-repeat bg-auto cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary hover:invert rounded-full"
       />
       <img
         src={
@@ -48,17 +48,25 @@ const CartProduct = ({ product, products, setProducts }: any) => {
         className="inline-block align-middle w-[15%] h-auto mr-[3%]"
       />
       <div className="inline-block align-middle w-[57%]">
-        <p className="text-[#ececec] m-0">{product?.name}</p>
-        <p className="text-[#5b5a5e] m-0">Barcode: {product?.barcode}</p>
-        <p className="text-[#5b5a5e] m-0 line-clamp-1">
+        <p className="text-[#ececec] m-0 text-sm font-semibold">
+          {product?.name}
+        </p>
+        <p className="text-[#5b5a5e] m-0 text-sm">
+          Barcode: {product?.barcode}
+        </p>
+        <p className="text-[#5b5a5e] m-0 line-clamp-1 text-sm">
           Description: {product?.description}
         </p>
-        <p className="text-[#5b5a5e] m-0">Quantity: {product?.quantity}</p>
+        <p className="text-[#5b5a5e] m-0 text-sm">
+          Quantity: {product?.quantity}
+        </p>
       </div>
       <div className="inline-block align-middle text-right w-[25%] text-secondary">
         <p className="text-sm md:text-base mb-2">
-          Price: ${product?.price}{" "}
-          <span className="ml-5">Tax: ${product?.tax_rate}</span>
+          <span className="whitespace-nowrap block">Price: ${product?.price.toFixed(2)} </span>
+          <span className="ml-5 whitespace-nowrap block">
+            Tax: ${product?.tax_rate.toFixed(2)}
+          </span>
         </p>
         <div>
           <button

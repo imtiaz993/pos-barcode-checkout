@@ -98,7 +98,7 @@ const POS = () => {
       setOpenCart(true);
       setTimeout(() => {
         setOpenCart(false);
-      }, 1000);
+      }, 2000);
     } catch (error: any) {
       setProductFetching(false);
       toast(error?.message);
@@ -130,7 +130,7 @@ const POS = () => {
         }}
       />
       <div className="bg-[rgba(0,0,0,0.9)]">
-        <div className="p-2 start-0">
+        <div className="fixed top-2 left-2">
           <Image
             src="/images/logout.svg"
             width={0}
@@ -151,11 +151,11 @@ const POS = () => {
                 Detected Barcode: {barcode}
               </p>
             )}
+            <h1 className="text-center font-medium text-white my-5 mb-2">
+              Make sure the barcode is horizontal, <br />
+              See example below
+            </h1>
             <div className="w-3/4 mx-auto">
-              <h1 className="text-center font-medium text-white my-5">
-                Make sure the barcode is horizontal, <br />
-                See example below
-              </h1>
               <div className="h-44 border-2 border-white bg-[rgba(255,255,255,0.2)] p-0.5 mx-auto relative">
                 <div className="p-5 h-full">
                   <Image
