@@ -1,34 +1,22 @@
-import { Button } from '@/components/ui/button';
-import NavBar from '@/components/wrapper/navbar';
-import Link from 'next/link';
-import Stripe from 'stripe';
+import Image from "next/image";
 
-// Initialize Stripe with your secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-export default async function SuccessPage(
-  props: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-  }
-) {
-  const searchParams = await props.searchParams;
-
-  const session = await stripe.checkout.sessions.retrieve(searchParams?.session_id as string);
-
-  const jsonString = JSON.stringify(session, null, 2);
-
+const SuccessPage = () => {
   return (
-    <main className="flex min-w-screen flex-col items-center justify-between">
-      <NavBar />
-      <h1 className="mt-[35vh] mb-3 scroll-m-20  text-5xl font-semibold tracking-tight transition-colors first:mt-0">
-        Welcome to Nextjs Starter Kit 🎉
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="mb-6">
+        <Image src="/images/check.png" alt="Success" width={150} height={150} />
+      </div>
+
+      <h1 className="text-3xl font-bold text-green-600 mb-4">
+        Payment Successful!
       </h1>
-      <p className="leading-7 text-center w-[60%]">
-        Let&apos;s get cooking
+
+      <p className="text-gray-600 text-center max-w-md">
+        Thank you for your payment. Your transaction was completed successfully,
+        and your order is now being processed.
       </p>
-      <Link href="/dashboard" className='mt-4'>
-        <Button>Access Dashboard</Button>
-      </Link>
-    </main>
-  )
-}
+    </div>
+  );
+};
+
+export default SuccessPage;
