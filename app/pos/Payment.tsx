@@ -103,7 +103,7 @@ const Payment = ({ setShowCheckout }: any) => {
     theme: "stripe",
   };
 
-  const options = {
+  const options: any = {
     clientSecret,
     appearance,
   };
@@ -112,10 +112,7 @@ const Payment = ({ setShowCheckout }: any) => {
     <>
       {!paymentElementLoaded && <Loader />}
       {clientSecret ? (
-        <Elements
-          stripe={stripePromise}
-          options={options}
-        >
+        <Elements stripe={stripePromise} options={options}>
           <PaymentForm
             clientSecret={clientSecret}
             setShowCheckout={setShowCheckout}
