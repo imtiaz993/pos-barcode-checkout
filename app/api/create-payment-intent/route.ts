@@ -4,13 +4,18 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 export async function POST(req: NextRequest) {
-
-
     try {
-        const amount = 1000;
+        const body = await req.json();
+        const { price, phone } = body;
+
+        const customer = await stripe.customers.create({
+            phone,
+        });
+
         const paymentIntent = await stripe.paymentIntents.create({
-            amount,
+            amount: price,
             currency: "usd",
+            customer: customer.id,
         });
 
         return NextResponse.json({ clientSecret: paymentIntent.client_secret });

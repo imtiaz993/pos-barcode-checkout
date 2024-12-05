@@ -25,7 +25,7 @@ const Cart = (props: any) => {
 
   return (
     <>
-      {showCheckout ? <Payment setShowCheckout={setShowCheckout} /> : <></>}
+      {showCheckout ? <Payment setShowCheckout={setShowCheckout} price={total.totalPrice} /> : <></>}
       <div
         className={`sm:w-[450px] fixed top-0 w-full h-full bg-[#1b1a20] z-[100] transition-all duration-500 ${
           isOpen ? "right-0" : "-right-full sm:right-[-450px]"

@@ -7,6 +7,7 @@ import {
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "@/components/loader";
+import { auth } from "../firebase";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -83,7 +84,9 @@ const PaymentForm = ({
     </>
   );
 };
-const Payment = ({ setShowCheckout }: any) => {
+const Payment = ({ setShowCheckout, price }: any) => {
+  const user = auth.currentUser;
+
   const [clientSecret, setClientSecret] = useState("");
   const [paymentElementLoaded, setPaymentElementLoaded] = useState(false);
 
@@ -91,6 +94,7 @@ const Payment = ({ setShowCheckout }: any) => {
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ price: price * 100, phone: user?.phoneNumber }),
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret))
