@@ -115,7 +115,6 @@ const Payment = ({ setShowCheckout }: any) => {
         <Elements
           stripe={stripePromise}
           options={options}
-          stripe={stripePromise}
         >
           <PaymentForm
             clientSecret={clientSecret}
