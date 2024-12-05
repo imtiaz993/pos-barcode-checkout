@@ -1,9 +1,17 @@
 import CartProducts from "./CartProducts";
 import { useState } from "react";
 import Payment from "./Payment";
+import { toast } from "sonner";
+import axios from "axios";
+import Loader from "@/components/loader";
 
 const Cart = (props: any) => {
   const [showCheckout, setShowCheckout] = useState(false);
+  const [couponGiftCard, setCouponGiftCard] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [discountedPrice, setDiscountedPrice] = useState<any>(null);
+
   const { products, isOpen, openCart, closeCart, setProducts } = props;
 
   let total = { productQuantity: 0, totalPrice: 0 };
@@ -23,9 +31,44 @@ const Cart = (props: any) => {
   const handleToggleCart = (isOpen: boolean) => () =>
     isOpen ? closeCart() : openCart();
 
+  const handleApplyCoupon = async () => {
+    if (!couponGiftCard) {
+      setErrorMessage("Field cannot be empty");
+      return;
+    }
+    setErrorMessage("");
+    try {
+      setApplyingCoupon(true);
+      const response: any = await axios.get(
+        `https://api.ecoboutiquemarket.com/`,
+        {
+          params: {
+            action: "getProductByBarcode",
+            value: couponGiftCard,
+            access_token: "AIzaSyAAlqEYx2CDm5ck_64dc5b7371872a01b653",
+          },
+        }
+      );
+      setDiscountedPrice(12);
+      setApplyingCoupon(false);
+    } catch (error: any) {
+      setApplyingCoupon(false);
+      toast(error?.message);
+      console.error("Error fetching product:", error);
+    }
+  };
+
   return (
     <>
-      {showCheckout ? <Payment setShowCheckout={setShowCheckout} price={total.totalPrice} /> : <></>}
+      {applyingCoupon && <Loader />}
+      {showCheckout ? (
+        <Payment
+          setShowCheckout={setShowCheckout}
+          price={discountedPrice ? discountedPrice : total.totalPrice}
+        />
+      ) : (
+        <></>
+      )}
       <div
         className={`sm:w-[450px] fixed top-0 w-full h-full bg-[#1b1a20] z-[100] transition-all duration-500 ${
           isOpen ? "right-0" : "-right-full sm:right-[-450px]"
@@ -70,15 +113,55 @@ const Cart = (props: any) => {
 
           <CartProducts products={products} setProducts={setProducts} />
 
-          <div className="absolute bottom-0 w-full h-[200px] p-[5%] bg-[#1b1a20] cartFooterShadow">
+          <div className="absolute bottom-0 w-full h-[225px] p-[5%] bg-[#1b1a20] cartFooterShadow">
             <p className="inline-block w-1/5 text-[#5b5a5e]">SUBTOTAL</p>
             <div className="inline-block w-4/5 text-right text-[#5b5a5e]">
-              <p className="text-2xl text-secondary m-0">
+              <p
+                className={`text-2xl text-secondary m-0 ${
+                  discountedPrice ? "line-through" : ""
+                }`}
+              >
                 ${total?.totalPrice.toFixed(2)}
               </p>
             </div>
+            {discountedPrice ? (
+              <div>
+                <p className="inline-block w-1/5 text-[#5b5a5e]">DISCOUNTED</p>
+                <div className="inline-block w-4/5 text-right text-[#5b5a5e]">
+                  <p className="text-2xl text-secondary m-0">
+                    ${discountedPrice.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex mt-5">
+                  <input
+                    type="number"
+                    value={couponGiftCard}
+                    onChange={(e) => setCouponGiftCard(e.target.value)}
+                    placeholder="Coupon or Gift Card?"
+                    className="w-full p-3 rounded"
+                  />
+
+                  <button
+                    onClick={handleApplyCoupon}
+                    className="w-40 rounded-full bg-blue-600 text-white font-medium py-3 ml-4"
+                  >
+                    Apply
+                  </button>
+                </div>
+                <p
+                  className={`text-red-500 text-sm min-h-5 block ${
+                    errorMessage ? "visible" : "invisible"
+                  }`}
+                >
+                  {errorMessage}
+                </p>
+              </>
+            )}
             <button
-              className="w-full rounded-full bg-blue-600 text-white font-medium py-3  mt-10"
+              className="w-full rounded-full bg-blue-600 text-white font-medium py-3  mt-6"
               onClick={handleCheckout}
               autoFocus
             >
