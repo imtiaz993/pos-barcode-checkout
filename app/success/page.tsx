@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const SuccessPage = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen mx-auto w-11/12">
       <div className="mb-6">
         <Image src="/images/check.png" alt="Success" width={150} height={150} />
       </div>
