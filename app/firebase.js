@@ -3,12 +3,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD2H_8gfdpY-8Jqz8XRFKCdVqYGKgt6QLM",
-  authDomain: "pos-barcode-checkout.firebaseapp.com",
-  projectId: "pos-barcode-checkout",
-  storageBucket: "pos-barcode-checkout.firebasestorage.app",
-  messagingSenderId: "1083321940368",
-  appId: "1:1083321940368:web:f5da6eebf90bbe6eb69b15",
+  apiKey: "AIzaSyB-5qUkrJgIym7bP_Q6wnji7ow5Z_7rLF0",
+  authDomain: "ecoboutique-cd84f.firebaseapp.com",
+  projectId: "ecoboutique-cd84f",
+  storageBucket: "ecoboutique-cd84f.firebasestorage.app",
+  messagingSenderId: "287443279040",
+  appId: "1:287443279040:web:07d881f304aab2e16a6125",
+  measurementId: "G-2PPEGWLX01"
 };
 
 const app = initializeApp(firebaseConfig);

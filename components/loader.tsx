@@ -2,7 +2,7 @@ import FadeLoader from "react-spinners/FadeLoader";
 
 const Loader = () => {
   return (
-    <div className="fixed inset-0 w-full h-dvh flex justify-center items-center bg-[rgba(0,0,0,0.6)]">
+    <div className="fixed z-[9999999999] inset-0 w-full h-dvh flex justify-center items-center bg-[rgba(0,0,0,0.6)]">
       <FadeLoader
         color={"#FFF"}
         loading={true}

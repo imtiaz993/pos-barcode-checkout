@@ -7,12 +7,10 @@ export async function POST(req: NextRequest) {
 
 
     try {
-        // Use the parsed body to create a PaymentIntent
-        const amount = 1000; // Default amount if not provided
+        const amount = 1000;
         const paymentIntent = await stripe.paymentIntents.create({
             amount,
             currency: "usd",
-            // description: "Purchase of goods or services",
         });
 
         return NextResponse.json({ clientSecret: paymentIntent.client_secret });
