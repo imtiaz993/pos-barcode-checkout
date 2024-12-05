@@ -1,6 +1,13 @@
 import CartProducts from "./CartProducts";
+import { useState, useEffect } from "react";
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
 const Cart = (props: any) => {
+  const [showCheckout, setShowCheckout] = useState(false);
   const { products, isOpen, openCart, closeCart, setProducts } = props;
 
   let total = { productQuantity: 0, totalPrice: 0 };
@@ -11,6 +18,7 @@ const Cart = (props: any) => {
 
   const handleCheckout = () => {
     if (total.productQuantity) {
+      setShowCheckout(true);
       alert(`Checkout - Subtotal: ${total.totalPrice.toFixed(2)}`);
     } else {
       alert("Add some product in the cart!");
@@ -20,7 +28,46 @@ const Cart = (props: any) => {
   const handleToggleCart = (isOpen: boolean) => () =>
     isOpen ? closeCart() : openCart();
 
-  return (
+  const stripe = useStripe();
+  const elements = useElements();
+  const [clientSecret, setClientSecret] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    // Fetch the client secret from the backend
+    fetch("/api/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret));
+  }, []);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!stripe || !elements) {
+      setLoading(false);
+      return;
+    }
+
+    const { error }: any = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/success`, // Redirect after successful payment
+      },
+    });
+
+    if (error) {
+      setMessage(error.message);
+    }
+
+    setLoading(false);
+  };
+
+  return !showCheckout ? (
     <div
       className={`sm:w-[450px] fixed top-0 w-full h-full bg-[#1b1a20] z-[100] transition-all duration-500 ${
         isOpen ? "right-0" : "-right-full sm:right-[-450px]"
@@ -80,6 +127,29 @@ const Cart = (props: any) => {
             Checkout
           </button>
         </div>
+      </div>
+    </div>
+  ) : (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-lg">
+        <h1 className="text-2xl font-bold mb-4">Complete Your Payment</h1>
+        {clientSecret ? (
+          <form onSubmit={handleSubmit}>
+            <PaymentElement />
+            <button
+              type="submit"
+              disabled={!stripe || loading}
+              className={`mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold ${
+                loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+              }`}
+            >
+              {loading ? "Processing..." : "Pay Now"}
+            </button>
+          </form>
+        ) : (
+          <p>Loading...</p>
+        )}
+        {message && <p className="text-red-500 mt-2">{message}</p>}
       </div>
     </div>
   );

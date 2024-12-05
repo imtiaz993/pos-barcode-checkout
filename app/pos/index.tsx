@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -9,6 +9,12 @@ import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Cart from "./Cart";
 import { logout } from "../../utils/firebaseAuth";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+);
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
@@ -115,20 +121,58 @@ const POS = () => {
       console.error("Error during logout:", error);
     }
   };
+  const [clientSecret, setClientSecret] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Fetch the client secret from the backend
+    fetch("/api/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // Include any necessary body content here
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret))
+      .catch((error) => {
+        console.error("Error fetching client secret:", error);
+        setMessage("Failed to load payment details.");
+      });
+  }, []);
+
+  const appearance = {
+    theme: "stripe",
+  };
+
+  const options = {
+    clientSecret,
+    appearance,
+  };
 
   return (
     <>
-      <Cart
-        products={products}
-        setProducts={setProducts}
-        isOpen={openCart}
-        openCart={() => {
-          setOpenCart(true);
-        }}
-        closeCart={() => {
-          setOpenCart(false);
-        }}
-      />
+      {clientSecret ? (
+        <Elements
+          stripe={stripePromise}
+          options={options}
+          stripe={stripePromise}
+        >
+          <Cart
+            products={products}
+            setProducts={setProducts}
+            isOpen={openCart}
+            openCart={() => {
+              setOpenCart(true);
+            }}
+            closeCart={() => {
+              setOpenCart(false);
+            }}
+          />
+        </Elements>
+      ) : (
+        <></>
+      )}
+
       <div className="bg-[rgba(0,0,0,0.9)]">
         <div className="fixed top-2 left-2">
           <Image
