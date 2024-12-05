@@ -9,7 +9,10 @@ import PhoneAuthentication from "./PhoneAuthentication";
 const PhoneAuth = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const storeId = searchParams.get("st");
+  const storeId = searchParams.get("storeId");
+  const region = searchParams.get("region");
+  const type = searchParams.get("type");
+
   let recaptchaVerifier = useRef<any>();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
@@ -19,7 +22,7 @@ const PhoneAuth = () => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
       if (isLoggedIn) {
-        router.replace(`/?st=${storeId}`);
+        router.replace(`${type}/${region}/${storeId}`);
         return;
       }
       setCheckingAuth(false);

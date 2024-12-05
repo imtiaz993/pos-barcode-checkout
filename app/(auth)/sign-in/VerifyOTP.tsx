@@ -8,7 +8,10 @@ import * as Yup from "yup";
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const storeId = searchParams.get("st");
+  const storeId = searchParams.get("storeId");
+  const region = searchParams.get("region");
+  const type = searchParams.get("type");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -93,7 +96,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
       try {
         await confirmationResult.confirm(values.otp);
-        router.push(`/?st=${storeId}`);
+        router.replace(`${type}/${region}/${storeId}`);
       } catch (error) {
         setError("Invalid OTP. Please try again.");
         console.error("Error during confirmationResult.confirm", error);
