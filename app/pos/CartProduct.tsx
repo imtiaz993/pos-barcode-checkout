@@ -48,7 +48,7 @@ const CartProduct = ({ product, products, setProducts }: any) => {
         className="inline-block align-middle w-[15%] h-auto mr-[3%]"
       />
       <div className="inline-block align-middle w-[57%]">
-        <p className="text-[#ececec] m-0 text-sm font-semibold">
+        <p className="m-0 text-sm font-semibold">
           {product?.name}
         </p>
         <p className="text-[#5b5a5e] m-0 text-sm">
@@ -61,7 +61,7 @@ const CartProduct = ({ product, products, setProducts }: any) => {
           Quantity: {product?.quantity}
         </p>
       </div>
-      <div className="inline-block align-middle text-right w-[25%] text-secondary">
+      <div className="inline-block align-middle text-right w-[25%]">
         <p className="text-sm md:text-base mb-2">
           <span className="whitespace-nowrap block">Price: ${product?.price.toFixed(2)} </span>
           <span className="ml-5 whitespace-nowrap block">

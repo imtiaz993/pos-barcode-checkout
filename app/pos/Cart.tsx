@@ -70,27 +70,27 @@ const Cart = (props: any) => {
         <></>
       )}
       <div
-        className={`sm:w-[450px] fixed top-0 w-full h-full bg-[#1b1a20] z-[100] transition-all duration-500 ${
+        className={`sm:w-[450px] fixed top-0 w-full h-full z-[100] bg-white border shadow-sm transition-all duration-500 ${
           isOpen ? "right-0" : "-right-full sm:right-[-450px]"
         }`}
       >
         <button
-          className={`absolute top-0  w-12 h-12 bg-[#1b1a20] text-white text-center leading-[50px] z-10 ${
+          className={`absolute top-0 border shadow-sm w-12 h-12 text-center leading-[50px] z-10 ${
             isOpen
-              ? "bg-[#1b1a20]  left-0 sm:left-[-48px]"
+              ? "left-0 sm:left-[-48px]"
               : "left-[-50px] sm:left-[-48px]"
-          } hover:bg-black`}
+          } `}
           onClick={handleToggleCart(isOpen)}
         >
           {isOpen ? (
             <span>X</span>
           ) : (
-            <div className="w-12 h-12 bg-[#1b1a20] p-2">
+            <div className="w-12 h-12 p-2">
               <div
                 className="w-7 h-7 relative bg-cover bg-center "
                 style={{ backgroundImage: "url('/images/cart-icon.png')" }}
               ></div>
-              <div className="absolute bottom-0 right-1 w-4 h-4 bg-white text-xs font-bold text-black rounded-full flex items-center justify-center">
+              <div className="absolute bottom-0 right-1 w-4 h-4 text-xs font-bold rounded-full flex items-center justify-center">
                 {total?.productQuantity}
               </div>
             </div>
@@ -98,13 +98,13 @@ const Cart = (props: any) => {
         </button>
 
         <div className="h-full overflow-y-auto">
-          <div className="text-white text-center py-12 flex justify-center">
+          <div className="text-center py-12 flex justify-center">
             <div className="relative w-14 h-14 mb-2">
               <div
                 className=" w-10 h-10 inline-block  bg-cover bg-center "
                 style={{ backgroundImage: "url('/images/cart-icon.png')" }}
               ></div>
-              <div className="absolute z-20 bottom-0 right-1 w-4 h-4 text-xs bg-white font-bold text-black rounded-full flex items-center justify-center">
+              <div className="absolute z-20 bottom-0 right-1 w-4 h-4 text-xs font-bold rounded-full flex items-center justify-center">
                 {total?.productQuantity}
               </div>
             </div>
@@ -113,11 +113,11 @@ const Cart = (props: any) => {
 
           <CartProducts products={products} setProducts={setProducts} />
 
-          <div className="absolute bottom-0 w-full h-[225px] p-[5%] bg-[#1b1a20] cartFooterShadow">
-            <p className="inline-block w-1/5 text-[#5b5a5e]">SUBTOTAL</p>
-            <div className="inline-block w-4/5 text-right text-[#5b5a5e]">
+          <div className="absolute bottom-0 w-full h-[225px] p-[5%] cartFooterShadow">
+            <p className="inline-block w-1/5 ">SUBTOTAL</p>
+            <div className="inline-block w-4/5 text-right ">
               <p
-                className={`text-2xl text-secondary m-0 ${
+                className={`text-2xl m-0 ${
                   discountedPrice ? "line-through" : ""
                 }`}
               >
@@ -126,9 +126,9 @@ const Cart = (props: any) => {
             </div>
             {discountedPrice ? (
               <div>
-                <p className="inline-block w-1/5 text-[#5b5a5e]">DISCOUNTED</p>
-                <div className="inline-block w-4/5 text-right text-[#5b5a5e]">
-                  <p className="text-2xl text-secondary m-0">
+                <p className="inline-block w-1/5 ">DISCOUNTED</p>
+                <div className="inline-block w-4/5 text-right ">
+                  <p className="text-2xl m-0">
                     ${discountedPrice.toFixed(2)}
                   </p>
                 </div>
@@ -141,7 +141,7 @@ const Cart = (props: any) => {
                     value={couponGiftCard}
                     onChange={(e) => setCouponGiftCard(e.target.value)}
                     placeholder="Coupon or Gift Card?"
-                    className="w-full p-3 rounded"
+                    className="w-full p-3 rounded border"
                   />
 
                   <button

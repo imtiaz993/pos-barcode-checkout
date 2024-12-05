@@ -7,6 +7,7 @@ import {
 import { app } from "../../firebase";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Image from "next/image";
 
 const PhoneAuthentication = ({
   setConfirmationResult,
@@ -61,19 +62,29 @@ const PhoneAuthentication = ({
   });
 
   return (
-    <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-dvh">
-      <div className="bg-[rgba(0,0,0,0.7)] rounded-lg shadow-md p-6 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-white text-center">
+    <div className="flex items-center justify-center min-h-dvh">
+      <div className="rounded-lg shadow-sm border p-6 pt-0 w-full max-w-sm">
+        <div className="flex justify-center">
+          <Image
+            src="/images/logo.png"
+            width={0}
+            height={0}
+            sizes="100vw"
+            alt=""
+            className="w-auto"
+          />
+        </div>
+        <h1 className="text-2xl font-bold  text-center">
           Welcome! Let&apos;s Get Started
         </h1>
-        <p className="text-white text-sm text-center mt-2">
+        <p className="text-[#71717a] text-sm text-center mt-2">
           Enter your phone number to sign in or create an account.
         </p>
 
         <form onSubmit={formik.handleSubmit} className="mt-6">
           <label
             htmlFor="phone"
-            className="block text-sm font-medium text-white"
+            className="block text-sm font-medium "
           >
             Phone Number
           </label>

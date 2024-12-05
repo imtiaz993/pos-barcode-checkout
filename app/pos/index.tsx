@@ -140,7 +140,7 @@ const POS = () => {
         }}
       />
 
-      <div className="bg-[rgba(0,0,0,0.9)]">
+      <div className="">
         <div className="fixed top-2 left-2">
           <Image
             src="/images/logout.svg"
@@ -158,16 +158,16 @@ const POS = () => {
           <div>
             <BarcodeScanner onScan={handleDetected} />
             {barcode && (
-              <p className="text-center text-white mt-5">
+              <p className="text-center text-[#71717a] mt-5">
                 Detected Barcode: {barcode}
               </p>
             )}
-            <h1 className="text-center font-medium text-white my-5 mb-2">
+            <h1 className="text-center font-medium text-[#71717a] my-5 mb-2">
               Make sure the barcode is horizontal, <br />
               See example below
             </h1>
             <div className="w-3/4 mx-auto">
-              <div className="h-44 border-2 border-white bg-[rgba(255,255,255,0.2)] p-0.5 mx-auto relative">
+              <div className="h-44 border-2 p-0.5 mx-auto relative">
                 <div className="p-5 h-full">
                   <Image
                     src="/images/exampleBarCode.png"
@@ -204,14 +204,14 @@ const POS = () => {
           </div>
         </div>
         {isInputTabOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-gray-950 border border-white px-5 pt-5 pb-10 rounded-xl w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all">
+          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)]">
+            <div className="bg-white border px-5 pt-5 pb-10 rounded-xl w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all">
               <div className="flex justify-between">
-                <p className="text-white text-lg font-semibold">
+                <p className="text-lg font-semibold">
                   Enter Barcode Manually
                 </p>
                 <p
-                  className="mb-10 text-2xl text-white cursor-pointer"
+                  className="mb-10 text-2xl cursor-pointer"
                   onClick={() => {
                     setIsInputTabOpen(false);
                     setErrorMessage("");
@@ -225,7 +225,7 @@ const POS = () => {
                 value={inputBarcode}
                 onChange={(e) => setInputBarcode(e.target.value)}
                 placeholder="Enter barcode"
-                className="w-full p-3 rounded mb-2"
+                className="w-full p-3 rounded mb-2 border"
               />
               <p
                 className={`text-red-500 text-sm min-h-5 ${

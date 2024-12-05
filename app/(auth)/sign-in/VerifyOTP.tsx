@@ -4,6 +4,7 @@ import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 import { app } from "../../firebase";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Image from "next/image";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
@@ -107,18 +108,28 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   });
 
   return (
-    <div className="bg-[rgba(0,0,0,0.9)] flex items-center justify-center min-h-dvh">
-      <div className="bg-[rgba(0,0,0,0.7)] rounded-lg shadow-md p-6 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-white text-center">
+    <div className="flex items-center justify-center min-h-dvh">
+      <div className="rounded-lg shadow-sm border p-6 pt-0 w-full max-w-sm">
+        <div className="flex justify-center">
+          <Image
+            src="/images/logo.png"
+            width={0}
+            height={0}
+            sizes="100vw"
+            alt=""
+            className="w-auto"
+          />
+        </div>
+        <h1 className="text-2xl font-bold text-center">
           Verify Your Phone Number
         </h1>
-        <p className="text-white text-center text-sm mt-2">
+        <p className="text-[#71717a] text-center text-sm mt-2">
           We&apos;ve sent a one-time passcode (OTP) to <b>{phone}</b>. Enter it
           below to log in or create your account.
         </p>
 
         <form onSubmit={formik.handleSubmit} className="mt-6">
-          <label htmlFor="otp" className="block text-sm font-medium text-white">
+          <label htmlFor="otp" className="block text-sm font-medium">
             OTP
           </label>
           <input
