@@ -1,18 +1,21 @@
 import CartProducts from "./CartProducts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Payment from "./Payment";
 import { toast } from "sonner";
 import axios from "axios";
 import Loader from "@/components/loader";
+import { auth } from "../firebase";
 
 const Cart = (props: any) => {
+  const user = auth.currentUser;
+  const [discountData, setDiscountData] = useState<any>(null);
   const [showCheckout, setShowCheckout] = useState(false);
   const [couponGiftCard, setCouponGiftCard] = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [discountedPrice, setDiscountedPrice] = useState<any>(null);
+  const [discountedPrice, setDiscountedPrice] = useState<any>(-1);
 
-  const { products, isOpen, openCart, closeCart, setProducts } = props;
+  const { products, isOpen, openCart, closeCart, setProducts, storeId } = props;
 
   let total = { productQuantity: 0, totalPrice: 0 };
   products.map((i: any) => {
@@ -32,31 +35,84 @@ const Cart = (props: any) => {
     isOpen ? closeCart() : openCart();
 
   const handleApplyCoupon = async () => {
-    if (!couponGiftCard) {
-      setErrorMessage("Field cannot be empty");
-      return;
-    }
-    setErrorMessage("");
-    try {
-      setApplyingCoupon(true);
-      const response: any = await axios.get(
-        `https://api.ecoboutiquemarket.com/`,
-        {
-          params: {
-            action: "getProductByBarcode",
-            value: couponGiftCard,
-            access_token: "AIzaSyAAlqEYx2CDm5ck_64dc5b7371872a01b653",
-          },
+    if (discountedPrice >= 0) {
+      setDiscountedPrice(-1);
+      setCouponGiftCard("");
+    } else {
+      if (!couponGiftCard) {
+        setErrorMessage("Field cannot be empty");
+        return;
+      }
+      setErrorMessage("");
+      try {
+        setApplyingCoupon(true);
+        const response: any = await axios.post(
+          `https://api.ecoboutiquemarket.com/retrieveCode`,
+          {
+            code: couponGiftCard,
+          }
+        );
+        setDiscountData(response.data);
+
+        const codetype = response.data.code_type;
+        // try {
+        //   setApplyingCoupon(true);
+        //   const res: any = await axios.post(
+        //     `https://api.ecoboutiquemarket.com/${
+        //       codetype === "coupon" ? "redeemCoupon" : "redeemGiftCard"
+        //     }`,
+        //     {
+        //       code: couponGiftCard,
+        //       amount: 1.1,
+        //       store_id: storeId,
+        //       phone_number: user?.phoneNumber,
+        //     }
+        //   );
+
+        // } catch (error: any) {
+        //   setApplyingCoupon(false);
+        //   toast.error(error?.response?.data?.message);
+        //   console.error("Error fetching product:", error);
+        // }
+
+        if (codetype === "coupon") {
+          setDiscountedPrice(
+            total.totalPrice -
+              (response.data.coupon.discount_value / 100) * total.totalPrice
+          );
+        } else {
+          setDiscountedPrice(
+            Math.max(0, total.totalPrice - response.data.gift_card.balance)
+          );
         }
-      );
-      setDiscountedPrice(12);
-      setApplyingCoupon(false);
-    } catch (error: any) {
-      setApplyingCoupon(false);
-      toast(error?.message);
-      console.error("Error fetching product:", error);
+
+        setApplyingCoupon(false);
+      } catch (error: any) {
+        setApplyingCoupon(false);
+        toast.error(error?.response?.data?.message);
+        console.error("Error fetching product:", error);
+      }
     }
   };
+
+  useEffect(() => {
+    console.log(total);
+    if (total.productQuantity === 0) {
+      setDiscountData(null);
+      setDiscountedPrice(-1);
+      setCouponGiftCard("");
+    }
+    if (discountData?.code_type === "coupon") {
+      setDiscountedPrice(
+        total.totalPrice -
+          (discountData?.coupon?.discount_value / 100) * total.totalPrice
+      );
+    } else {
+      setDiscountedPrice(
+        Math.max(0, total.totalPrice - discountData?.gift_card?.balance)
+      );
+    }
+  }, [total.totalPrice]);
 
   return (
     <>
@@ -64,7 +120,7 @@ const Cart = (props: any) => {
       {showCheckout ? (
         <Payment
           setShowCheckout={setShowCheckout}
-          price={discountedPrice ? discountedPrice : total.totalPrice}
+          price={discountedPrice >= 0 ? discountedPrice : total.totalPrice}
         />
       ) : (
         <></>
@@ -76,9 +132,7 @@ const Cart = (props: any) => {
       >
         <button
           className={`absolute top-0 border shadow-sm w-12 h-12 text-center leading-[50px] z-10 ${
-            isOpen
-              ? "left-0 sm:left-[-48px]"
-              : "left-[-50px] sm:left-[-48px]"
+            isOpen ? "left-0 sm:left-[-48px]" : "left-[-50px] sm:left-[-48px]"
           } `}
           onClick={handleToggleCart(isOpen)}
         >
@@ -113,53 +167,51 @@ const Cart = (props: any) => {
 
           <CartProducts products={products} setProducts={setProducts} />
 
-          <div className="absolute bottom-0 w-full h-[225px] p-[5%] cartFooterShadow">
+          <div className="absolute bottom-0 w-full p-[5%] cartFooterShadow">
             <p className="inline-block w-1/5 ">SUBTOTAL</p>
             <div className="inline-block w-4/5 text-right ">
               <p
                 className={`text-2xl m-0 ${
-                  discountedPrice ? "line-through" : ""
+                  discountedPrice >= 0 ? "line-through" : ""
                 }`}
               >
                 ${total?.totalPrice.toFixed(2)}
               </p>
             </div>
-            {discountedPrice ? (
+            {discountedPrice >= 0 && (
               <div>
                 <p className="inline-block w-1/5 ">DISCOUNTED</p>
                 <div className="inline-block w-4/5 text-right ">
-                  <p className="text-2xl m-0">
-                    ${discountedPrice.toFixed(2)}
-                  </p>
+                  <p className="text-2xl m-0">${discountedPrice?.toFixed(2)}</p>
                 </div>
               </div>
-            ) : (
-              <>
-                <div className="flex mt-5">
-                  <input
-                    type="number"
-                    value={couponGiftCard}
-                    onChange={(e) => setCouponGiftCard(e.target.value)}
-                    placeholder="Coupon or Gift Card?"
-                    className="w-full p-3 rounded border"
-                  />
-
-                  <button
-                    onClick={handleApplyCoupon}
-                    className="w-40 rounded-full bg-blue-600 text-white font-medium py-3 ml-4"
-                  >
-                    Apply
-                  </button>
-                </div>
-                <p
-                  className={`text-red-500 text-sm min-h-5 block ${
-                    errorMessage ? "visible" : "invisible"
-                  }`}
-                >
-                  {errorMessage}
-                </p>
-              </>
             )}
+            <>
+              <div className="flex mt-5">
+                <input
+                  type="text"
+                  value={couponGiftCard}
+                  onChange={(e) => setCouponGiftCard(e.target.value)}
+                  placeholder="Coupon or Gift Card?"
+                  className="w-full p-3 rounded border"
+                  disabled={discountedPrice >= 0}
+                />
+
+                <button
+                  onClick={handleApplyCoupon}
+                  className="w-40 rounded-full bg-blue-600 text-white font-medium py-3 ml-4"
+                >
+                  {discountedPrice >= 0 ? "Remove" : "Apply"}
+                </button>
+              </div>
+              <p
+                className={`text-red-500 text-sm min-h-5 block ${
+                  errorMessage ? "visible" : "invisible"
+                }`}
+              >
+                {errorMessage}
+              </p>
+            </>
             <button
               className="w-full rounded-full bg-blue-600 text-white font-medium py-3  mt-6"
               onClick={handleCheckout}
