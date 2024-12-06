@@ -102,15 +102,17 @@ const Cart = (props: any) => {
       setDiscountedPrice(-1);
       setCouponGiftCard("");
     }
-    if (discountData?.code_type === "coupon") {
-      setDiscountedPrice(
-        total.totalPrice -
-          (discountData?.coupon?.discount_value / 100) * total.totalPrice
-      );
-    } else {
-      setDiscountedPrice(
-        Math.max(0, total.totalPrice - discountData?.gift_card?.balance)
-      );
+    else{
+      if (discountData?.code_type === "coupon") {
+        setDiscountedPrice(
+          total.totalPrice -
+            (discountData?.coupon?.discount_value / 100) * total.totalPrice
+        );
+      } else {
+        setDiscountedPrice(
+          Math.max(0, total.totalPrice - discountData?.gift_card?.balance)
+        );
+      }
     }
   }, [total.totalPrice]);
 
