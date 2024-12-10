@@ -21,14 +21,7 @@ const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
 });
 
 const POS = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const type = pathname.includes("/checkout")
-    ? "/checkout"
-    : pathname.includes("/giftcard")
-    ? "/giftcard"
-    : "";
-  const { region, storeId }: any = useParams();
+  const { storeId }: any = useParams();
   const [barcode, setBarcode] = useState("");
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
   const [inputBarcode, setInputBarcode] = useState("");
