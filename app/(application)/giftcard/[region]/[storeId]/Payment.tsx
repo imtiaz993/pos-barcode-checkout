@@ -7,7 +7,7 @@ import {
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "@/components/loader";
-import { auth } from "../firebase";
+import { auth } from "../../../../firebase";
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -20,10 +20,11 @@ const PaymentForm = ({
   clientSecret,
   setShowCheckout,
   setPaymentElementLoaded,
-  codetype,
-  couponGiftCard,
-  storeId,
+  message: userMsg,
+  fromName,
+  recipientName,
   user,
+  recipientPhone,
   price,
 }: any) => {
   const router = useRouter();
@@ -32,25 +33,28 @@ const PaymentForm = ({
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleRedeem = async () => {
+  const handleBuy = async () => {
     try {
-      const res: any = await axios.post(
-        `https://api.ecoboutiquemarket.com/${
-          codetype === "coupon" ? "redeemCoupon" : "redeemGiftCard"
-        }`,
+      const response = await axios.post(
+        "https://api.ecoboutiquemarket.com/api/purchase-gift-card",
         {
-          code: couponGiftCard,
-          amount: price,
-          store_id: storeId,
-          phone_number: user?.phoneNumber,
+          amount: Number(price),
+          message: userMsg,
+          fromName,
+          recipientName,
+          recipientPhone,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
         }
       );
+      console.log("Successfully added to cart:", response.data);
       setLoading(false);
       router.push("/success");
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
-      console.error("Error fetching product:", error);
+      console.error("Error:", error);
     }
   };
 
@@ -76,60 +80,58 @@ const PaymentForm = ({
     }
 
     if (paymentIntent.status === "succeeded") {
-      if (couponGiftCard) {
-        handleRedeem();
-      } else {
-        setLoading(false);
-        router.push("/success");
-      }
+      handleBuy();
     }
-  };
-  return (
-    <>
-      {loading && <Loader />}
-      <div className="fixed inset-0 z-[9999999] flex items-center justify-center">
-        <div className="bg-white shadow-md md:rounded-lg p-6 w-full max-w-lg h-full md:h-fit overflow-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Complete Your Payment</h1>
-            <button
-              className="text-[#1b1a20] text-center leading-[50px]"
-              onClick={() => {
-                setShowCheckout(false);
-              }}
-            >
-              <span className="text-lg font-medium">X</span>
-            </button>
-          </div>
-          {clientSecret ? (
-            <form onSubmit={handleSubmit}>
-              <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
+  }
+
+    return (
+      <>
+        {loading && <Loader />}
+        <div className="fixed inset-0 z-[9999999] flex items-center justify-center">
+          <div className="bg-white shadow-md md:rounded-lg p-6 w-full max-w-lg h-full md:h-fit overflow-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold">Complete Your Payment</h1>
               <button
-                className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
-                  loading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-blue-700"
-                }`}
-                type="submit"
-                disabled={!stripe || loading}
+                className="text-[#1b1a20] text-center leading-[50px]"
+                onClick={() => {
+                  setShowCheckout(false);
+                }}
               >
-                {loading ? "Processing..." : "Pay Now"}
+                <span className="text-lg font-medium">X</span>
               </button>
-            </form>
-          ) : (
-            <p>Loading...</p>
-          )}
-          {message && <p className="text-red-500 mt-2">{message}</p>}
+            </div>
+            {clientSecret ? (
+              <form onSubmit={handleSubmit}>
+                <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
+                <button
+                  className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
+                  }`}
+                  type="submit"
+                  disabled={!stripe || loading}
+                >
+                  {loading ? "Processing..." : "Pay Now"}
+                </button>
+              </form>
+            ) : (
+              <p>Loading...</p>
+            )}
+            {message && <p className="text-red-500 mt-2">{message}</p>}
+          </div>
         </div>
-      </div>
-    </>
-  );
-};
+      </>
+    );
+  };
+
 const Payment = ({
   setShowCheckout,
   price,
-  codetype,
-  couponGiftCard,
-  storeId,
+  message,
+  fromName,
+  recipientName,
+  recipientPhone,
 }: any) => {
   const user = auth.currentUser;
 
@@ -139,7 +141,7 @@ const Payment = ({
   useEffect(() => {
     axios
       .post("/api/create-payment-intent", {
-        price: price * 100,
+        price: Number(price) * 100,
         phone: user?.phoneNumber,
       })
       .then((response) => {
@@ -168,9 +170,10 @@ const Payment = ({
             clientSecret={clientSecret}
             setShowCheckout={setShowCheckout}
             setPaymentElementLoaded={setPaymentElementLoaded}
-            codetype={codetype}
-            couponGiftCard={couponGiftCard}
-            storeId={storeId}
+            message={message}
+            fromName={fromName}
+            recipientName={recipientName}
+            recipientPhone={recipientPhone}
             user={user}
             price={price}
           />

@@ -12,8 +12,7 @@ const SuccessPage = () => {
       </h1>
 
       <p className="text-gray-600 text-center max-w-md">
-        Thank you for your payment. Your transaction was completed successfully,
-        and your order is now being processed.
+        Thank you for your payment. Your transaction was completed successfully.
       </p>
     </div>
   );
