@@ -8,6 +8,9 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "@/components/loader";
 import { auth } from "../firebase";
+import { toast } from "sonner";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -17,11 +20,39 @@ const PaymentForm = ({
   clientSecret,
   setShowCheckout,
   setPaymentElementLoaded,
+  codetype,
+  couponGiftCard,
+  storeId,
+  user,
+  price,
 }: any) => {
+  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const handleRedeem = async () => {
+    try {
+      const res: any = await axios.post(
+        `https://api.ecoboutiquemarket.com/${
+          codetype === "coupon" ? "redeemCoupon" : "redeemGiftCard"
+        }`,
+        {
+          code: couponGiftCard,
+          amount: price,
+          store_id: storeId,
+          phone_number: user?.phoneNumber,
+        }
+      );
+      setLoading(false);
+      router.push("/success");
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(error?.response?.data?.message);
+      console.error("Error fetching product:", error);
+    }
+  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -32,23 +63,32 @@ const PaymentForm = ({
       return;
     }
 
-    const { error }: any = await stripe.confirmPayment({
+    const { error, paymentIntent }: any = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/success`,
       },
+      redirect: "if_required",
     });
 
     if (error) {
       setMessage(error.message);
     }
 
-    setLoading(false);
+    if (paymentIntent.status === "succeeded") {
+      if (couponGiftCard) {
+        handleRedeem();
+      } else {
+        setLoading(false);
+        router.push("/success");
+      }
+      }
   };
   return (
     <>
+      {loading && <Loader />}
       <div className="fixed inset-0 z-[9999999] flex items-center justify-center">
-        <div className="bg-white shadow-md md:rounded-lg p-6 w-full max-w-lg h-full md:h-fit">
+        <div className="bg-white shadow-md md:rounded-lg p-6 w-full max-w-lg h-full md:h-fit overflow-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Complete Your Payment</h1>
             <button
@@ -64,7 +104,7 @@ const PaymentForm = ({
             <form onSubmit={handleSubmit}>
               <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
               <button
-                className={`w-full rounded-full bg-blue-600 text-white font-medium py-3  mt-4  ${
+                className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
                   loading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-blue-700"
@@ -84,7 +124,13 @@ const PaymentForm = ({
     </>
   );
 };
-const Payment = ({ setShowCheckout, price }: any) => {
+const Payment = ({
+  setShowCheckout,
+  price,
+  codetype,
+  couponGiftCard,
+  storeId,
+}: any) => {
   const user = auth.currentUser;
 
   const [clientSecret, setClientSecret] = useState("");
@@ -121,6 +167,11 @@ const Payment = ({ setShowCheckout, price }: any) => {
             clientSecret={clientSecret}
             setShowCheckout={setShowCheckout}
             setPaymentElementLoaded={setPaymentElementLoaded}
+            codetype={codetype}
+            couponGiftCard={couponGiftCard}
+            storeId={storeId}
+            user={user}
+            price={price}
           />
         </Elements>
       ) : (

@@ -3,14 +3,15 @@ import { useState, useEffect, useRef } from "react";
 import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
 import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
 import { app } from "@/app/firebase";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile");
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen mx-auto p-4 max-w-[540px]">
       {/* Tabs */}
-      <div className="flex justify-between border-b border-gray-300">
+      {/* <div className="flex justify-between border-b border-gray-300">
         <button
           className={`w-1/2 py-2 text-center ${
             activeTab === "profile"
@@ -31,7 +32,7 @@ export default function ProfilePage() {
         >
           Past Orders
         </button>
-      </div>
+      </div> */}
 
       {/* Tab Content */}
       <div className="mt-4">
@@ -42,6 +43,7 @@ export default function ProfilePage() {
 }
 
 function ProfileTab() {
+  const router = useRouter();
   const auth = getAuth(app);
   const user = auth.currentUser;
   const [userData, setUserData] = useState({
@@ -50,13 +52,17 @@ function ProfileTab() {
   });
 
   useEffect(() => {
-    console.log(user);
-    setUserData({
-      name: user?.displayName ?? "",
-      phone: user?.phoneNumber ?? "",
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserData({
+          name: user?.displayName ?? "",
+          phone: user?.phoneNumber ?? "",
+        });
+      }
     });
-  }, [auth, user]);
 
+    return () => unsubscribe(); // Cleanup the listener on unmount
+  }, [auth]);
   let recaptchaVerifier = useRef<any>();
 
   useEffect(() => {
@@ -108,14 +114,24 @@ function ProfileTab() {
   };
 
   return (
-    <form className="bg-white p-4 rounded shadow">
-      <div id="recaptcha-container"></div>
-      <h2 className="text-xl font-bold mb-4">Update Profile</h2>
+      <div className="rounded-lg shadow-sm border p-6 pt-0 w-full max-w-sm mx-auto">
+    <div className="bg-white">
+      <div className="flex justify-between items-center my-4">
+        <h2 className="text-xl font-bold ">Update Profile</h2>
+        <button
+          className="w-12 h-12 text-lg font-medium text-center"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          <span>X</span>
+        </button>
+      </div>
       <div className="mb-4">
-        <label className="block text-gray-700 mb-1">Name</label>
+        <label className="block text-sm font-medium mb-1">Name</label>
         <input
           type="text"
-          className="w-full border border-gray-300 p-2 rounded"
+          className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
           placeholder="Your name"
           value={userData.name}
           onChange={(e) => setUserData({ ...userData, name: e.target.value })}
@@ -123,10 +139,10 @@ function ProfileTab() {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 mb-1">Phone</label>
+        <label className="block text-sm font-medium mb-1">Phone</label>
         <input
           type="tel"
-          className="w-full border border-gray-300 p-2 rounded"
+          className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
           placeholder="Your phone number"
           value={userData.phone}
           onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
@@ -135,12 +151,13 @@ function ProfileTab() {
       <button
         type="button"
         onClick={handleUpdateProfile}
-        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+        className="w-full bg-blue-500 text-white py-2 text-sm rounded-lg hover:bg-blue-600"
       >
         Update Profile
       </button>
       <div id="recaptcha-container"></div>
-    </form>
+    </div>
+    </div>
   );
 }
 

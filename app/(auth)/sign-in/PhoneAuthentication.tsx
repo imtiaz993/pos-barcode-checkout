@@ -96,7 +96,7 @@ const PhoneAuthentication = ({
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             placeholder="+1234567890"
-            className={`mt-2 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
+            className={`mt-2 block w-full px-2 py-2 text-sm border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
               formik.touched.phone && formik.errors.phone
                 ? "border-red-500"
                 : "border-gray-300"
@@ -108,7 +108,7 @@ const PhoneAuthentication = ({
 
           <button
             type="submit"
-            className={`mt-6 w-full bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 transition ${
+            className={`mt-6 w-full bg-blue-600 text-white py-2 text-sm rounded-lg hover:bg-blue-700 transition ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading}

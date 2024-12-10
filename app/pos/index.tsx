@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Cart from "./Cart";
 import { logout } from "../../utils/firebaseAuth";
+import Link from "next/link";
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
   ssr: false,
@@ -116,16 +117,6 @@ const POS = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push(`/sign-in?type=${type}&region=${region}&storeId=${storeId}`);
-    } catch (error) {
-      alert("Failed to log out. Please try again.");
-      console.error("Error during logout:", error);
-    }
-  };
-
   return (
     <>
       <Cart
@@ -143,15 +134,16 @@ const POS = () => {
 
       <div className="">
         <div className="fixed top-2 left-2">
-          <Image
-            src="/images/logout.svg"
-            width={0}
-            height={0}
-            sizes="100vw"
-            alt=""
-            className="w-auto cursor-pointer"
-            onClick={handleLogout}
-          />
+          <Link href="/user-profile">
+            <Image
+              src="/images/profile.png"
+              width={0}
+              height={0}
+              sizes="100vw"
+              alt=""
+              className="w-8 cursor-pointer"
+            />
+          </Link>
         </div>
         {productFetching && <Loader />}
         <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
@@ -194,7 +186,7 @@ const POS = () => {
           </div>
           <div className="pt-10 pb-5">
             <button
-              className="w-full rounded-full bg-blue-600 text-white font-medium py-3"
+              className="w-full py-2 text-sm rounded-lg bg-blue-600 text-white"
               onClick={() => {
                 setIsInputTabOpen(!isInputTabOpen);
                 setErrorMessage("");
@@ -206,19 +198,17 @@ const POS = () => {
         </div>
         {isInputTabOpen && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)]">
-            <div className="bg-white border px-5 pt-5 pb-10 rounded-xl w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all">
+            <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all">
               <div className="flex justify-between">
-                <p className="text-lg font-semibold">
-                  Enter Barcode Manually
-                </p>
+                <p className="text-lg font-semibold">Enter Barcode Manually</p>
                 <p
-                  className="mb-10 text-2xl cursor-pointer"
+                  className="mb-10 cursor-pointer text-lg font-medium text-center"
                   onClick={() => {
                     setIsInputTabOpen(false);
                     setErrorMessage("");
                   }}
                 >
-                  &#10006;
+                  <span>X</span>
                 </p>
               </div>
               <input
@@ -226,10 +216,10 @@ const POS = () => {
                 value={inputBarcode}
                 onChange={(e) => setInputBarcode(e.target.value)}
                 placeholder="Enter barcode"
-                className="w-full p-3 rounded mb-2 border"
+                className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
               />
               <p
-                className={`text-red-500 text-sm min-h-5 ${
+                className={`text-red-500 text-sm ${
                   errorMessage ? "visible" : "invisible"
                 }`}
               >
@@ -237,7 +227,7 @@ const POS = () => {
               </p>
               <button
                 onClick={handleInputSubmit}
-                className="w-full rounded-full bg-blue-600 text-white font-medium py-3 mt-2"
+                className="w-full py-2 text-sm rounded-lg bg-blue-600 text-white mt-2"
               >
                 Submit
               </button>

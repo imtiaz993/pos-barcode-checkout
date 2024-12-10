@@ -55,25 +55,7 @@ const Cart = (props: any) => {
         setDiscountData(response.data);
 
         const codetype = response.data.code_type;
-        // try {
-        //   setApplyingCoupon(true);
-        //   const res: any = await axios.post(
-        //     `https://api.ecoboutiquemarket.com/${
-        //       codetype === "coupon" ? "redeemCoupon" : "redeemGiftCard"
-        //     }`,
-        //     {
-        //       code: couponGiftCard,
-        //       amount: 1.1,
-        //       store_id: storeId,
-        //       phone_number: user?.phoneNumber,
-        //     }
-        //   );
-
-        // } catch (error: any) {
-        //   setApplyingCoupon(false);
-        //   toast.error(error?.response?.data?.message);
-        //   console.error("Error fetching product:", error);
-        // }
+       
 
         if (codetype === "coupon") {
           setDiscountedPrice(
@@ -123,6 +105,9 @@ const Cart = (props: any) => {
         <Payment
           setShowCheckout={setShowCheckout}
           price={discountedPrice >= 0 ? discountedPrice : total.totalPrice}
+          couponGiftCard={couponGiftCard}
+          storeId={storeId}
+          codetype={discountData?.code_type}
         />
       ) : (
         <></>
@@ -143,7 +128,7 @@ const Cart = (props: any) => {
           ) : (
             <div className="w-12 h-12 p-2">
               <div
-                className="w-7 h-7 relative bg-cover bg-center "
+                className="w-7 h-7 relative bg-cover bg-center invert"
                 style={{ backgroundImage: "url('/images/cart-icon.png')" }}
               ></div>
               <div className="absolute bottom-0 right-1 w-4 h-4 text-xs font-bold rounded-full flex items-center justify-center">
@@ -195,13 +180,13 @@ const Cart = (props: any) => {
                   value={couponGiftCard}
                   onChange={(e) => setCouponGiftCard(e.target.value)}
                   placeholder="Coupon or Gift Card?"
-                  className="w-full p-3 rounded border"
+                  className="w-full px-2 py-2 text-sm border rounded-lg"
                   disabled={discountedPrice >= 0}
                 />
 
                 <button
                   onClick={handleApplyCoupon}
-                  className="w-40 rounded-full bg-blue-600 text-white font-medium py-3 ml-4"
+                  className="w-40 bg-blue-600 text-white py-2 text-sm rounded-lg ml-4"
                 >
                   {discountedPrice >= 0 ? "Remove" : "Apply"}
                 </button>
@@ -215,7 +200,7 @@ const Cart = (props: any) => {
               </p>
             </>
             <button
-              className="w-full rounded-full bg-blue-600 text-white font-medium py-3  mt-6"
+              className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-6"
               onClick={handleCheckout}
               autoFocus
             >
