@@ -55,7 +55,6 @@ const Cart = (props: any) => {
         setDiscountData(response.data);
 
         const codetype = response.data.code_type;
-       
 
         if (codetype === "coupon") {
           setDiscountedPrice(
@@ -83,14 +82,13 @@ const Cart = (props: any) => {
       setDiscountData(null);
       setDiscountedPrice(-1);
       setCouponGiftCard("");
-    }
-    else{
+    } else {
       if (discountData?.code_type === "coupon") {
         setDiscountedPrice(
           total.totalPrice -
             (discountData?.coupon?.discount_value / 100) * total.totalPrice
         );
-      } else {
+      } else if (discountData?.code_type === "gift_card") {
         setDiscountedPrice(
           Math.max(0, total.totalPrice - discountData?.gift_card?.balance)
         );
