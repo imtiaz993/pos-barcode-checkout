@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
 
     // Search for a customer by phone
     let searchedCustomer = await fetchCustomerByPhone(phone);
+    
 
     // If no customer exists, create one
     if (!searchedCustomer) {

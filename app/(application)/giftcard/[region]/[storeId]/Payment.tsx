@@ -18,6 +18,7 @@ const stripePromise = loadStripe(
 
 const PaymentForm = ({
   clientSecret,
+  savedPaymentMethods,
   setShowCheckout,
   setPaymentElementLoaded,
   message: userMsg,
@@ -30,6 +31,7 @@ const PaymentForm = ({
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -48,7 +50,6 @@ const PaymentForm = ({
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log("Successfully added to cart:", response.data);
       setLoading(false);
       router.push("/success");
     } catch (error: any) {
@@ -77,6 +78,8 @@ const PaymentForm = ({
 
     if (error) {
       setMessage(error.message);
+      setLoading(false);
+      return;
     }
 
     if (paymentIntent.status === "succeeded") {
@@ -102,6 +105,27 @@ const PaymentForm = ({
             </div>
             {clientSecret ? (
               <form onSubmit={handleSubmit}>
+                {savedPaymentMethods.map((method: any) => (
+                <div
+                  onClick={() => {
+                    setSelectedPaymentMethod(method.id);
+                  }}
+                  className="flex items-center justify-between p-3 border rounded-lg mb-2 cursor-pointer"
+                >
+                  <p>Pay with</p>
+                  <span className="ml-2">
+                    {method.card.brand.toUpperCase()} **** {method.card.last4}{" "}
+                    (Expires {method.card.exp_month}/{method.card.exp_year})
+                  </span>
+                </div>
+              ))}
+              <div className="flex items-center mt-10 mb-5">
+                <div className="h-[1px] w-full bg-black"></div>
+                <h2 className=" whitespace-nowrap mx-5 text-lg">
+                  Add New Card
+                </h2>
+                <div className="h-[1px] w-full bg-black"></div>
+              </div>
                 <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
                 <button
                   className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
@@ -136,6 +160,7 @@ const Payment = ({
   const user = auth.currentUser;
 
   const [clientSecret, setClientSecret] = useState("");
+  const [savedPaymentMethods, setSavedPaymentMethods] = useState("");
   const [paymentElementLoaded, setPaymentElementLoaded] = useState(false);
 
   useEffect(() => {
@@ -146,6 +171,7 @@ const Payment = ({
       })
       .then((response) => {
         setClientSecret(response.data.clientSecret);
+        setSavedPaymentMethods(response.data.paymentMethods);
       })
       .catch((error) => {
         console.error("Error fetching client secret:", error);
@@ -168,6 +194,7 @@ const Payment = ({
         <Elements stripe={stripePromise} options={options}>
           <PaymentForm
             clientSecret={clientSecret}
+            savedPaymentMethods={savedPaymentMethods}
             setShowCheckout={setShowCheckout}
             setPaymentElementLoaded={setPaymentElementLoaded}
             message={message}
