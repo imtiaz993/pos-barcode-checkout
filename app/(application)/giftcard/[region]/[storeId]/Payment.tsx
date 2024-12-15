@@ -31,7 +31,6 @@ const PaymentForm = ({
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -59,6 +58,31 @@ const PaymentForm = ({
     }
   };
 
+  const handlePayWithSavedCard = async (methodId?: any) => {
+    setLoading(true);
+    if (!stripe) {
+      setLoading(false);
+      return;
+    }
+    const { error, paymentIntent }: any = await stripe.confirmPayment({
+      clientSecret: clientSecret,
+      confirmParams: {
+        payment_method: methodId,
+        return_url: `${window.location.origin}/success`,
+      },
+      redirect: "if_required",
+    });
+
+    if (error) {
+      setMessage(error.message);
+      setLoading(false);
+      return;
+    }
+
+    if (paymentIntent.status === "succeeded") {
+      handleBuy();
+    }
+  };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
@@ -108,8 +132,8 @@ const PaymentForm = ({
               {savedPaymentMethods.map((method: any, index: number) => (
                 <div
                   key={index}
-                  onClick={() => {
-                    setSelectedPaymentMethod(method.id);
+                  onClick={(e) => {
+                    handlePayWithSavedCard(method.id);
                   }}
                   className="flex items-center justify-between p-3 border rounded-lg mb-2 cursor-pointer"
                 >
