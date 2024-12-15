@@ -8,12 +8,13 @@ import Payment from "./Payment";
 export default function Page() {
   const [showCheckout, setShowCheckout] = useState(false);
 
-  const [amount, setAmount] = useState<number | "">(25);
-  const [customAmount, setCustomAmount] = useState("");
+  const [amount, setAmount] = useState<any>(25);
+  const [customAmount, setCustomAmount] = useState<any>("");
   const [message, setMessage] = useState("");
   const [fromName, setFromName] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setrecipientPhone] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   // Error states
   const [amountError, setAmountError] = useState("");
@@ -26,7 +27,7 @@ export default function Page() {
   const validateForm = () => {
     let isValid = true;
 
-    // Validate amount: either amount is selected or customAmount is provided
+    // Validate amount
     if ((amount === "" || amount === undefined) && customAmount.trim() === "") {
       setAmountError("Please select or enter an amount.");
       isValid = false;
@@ -50,7 +51,7 @@ export default function Page() {
       setRecipientNameError("");
     }
 
-    // Validate recipientPhone (basic check)
+    // Validate recipientPhone
     if (recipientPhone.trim() === "") {
       setRecipientPhoneError("Please enter the recipient phone number.");
       isValid = false;
@@ -63,8 +64,7 @@ export default function Page() {
 
   const handleAddToCart = async () => {
     if (!validateForm()) return; // Stop if validation fails
-
-    setShowCheckout(true)
+    setShowCheckout(true);
   };
 
   return (
@@ -72,7 +72,7 @@ export default function Page() {
       {showCheckout ? (
         <Payment
           setShowCheckout={setShowCheckout}
-          price={customAmount || amount}
+          price={(customAmount || amount) * quantity} // Updated to reflect quantity
           message={message}
           fromName={fromName}
           recipientName={recipientName}
@@ -141,6 +141,30 @@ export default function Page() {
           {amountError && <p className="text-red-600 text-sm">{amountError}</p>}
         </div>
 
+        {/* 2. Choose quantity */}
+        <div className="mb-6">
+          <h2 className="font-semibold mb-2">
+            2. Choose Quantity: <span className="text-red-600">*</span>
+          </h2>
+          <div className="flex items-center">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="px-4 py-2 border rounded-l-lg border-gray-300"
+            >
+              -
+            </button>
+            <span className="px-4 py-2 border-t border-b text-center w-12">
+              {quantity}
+            </span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="px-4 py-2 border rounded-r-lg border-gray-300"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
         {/* 3. Write a gift message */}
         <div className="mb-6">
           <h2 className="font-semibold mb-2">3. Write a gift message:</h2>
@@ -155,7 +179,7 @@ export default function Page() {
         {/* From field */}
         <div className="mb-6">
           <label htmlFor="fromName" className="font-semibold block mb-2">
-            3. Sender information: <span className="text-red-600">*</span>
+            4. Sender information: <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -172,7 +196,7 @@ export default function Page() {
 
         {/* Recipient information */}
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">4. Recipient information:</h2>
+          <h2 className="font-semibold mb-2">5. Recipient information:</h2>
           <label className="block mb-1 text-sm" htmlFor="recipientName">
             Name <span className="text-red-600">*</span>
           </label>
