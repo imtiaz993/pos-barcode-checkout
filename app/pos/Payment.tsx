@@ -104,8 +104,9 @@ const PaymentForm = ({
           </div>
           {clientSecret ? (
             <form onSubmit={handleSubmit}>
-              {savedPaymentMethods.map((method: any) => (
+              {savedPaymentMethods.map((method: any, index: number) => (
                 <div
+                  key={index}
                   onClick={() => {
                     setSelectedPaymentMethod(method.id);
                   }}
