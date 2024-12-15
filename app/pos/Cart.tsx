@@ -140,7 +140,7 @@ const Cart = (props: any) => {
           <div className="text-center py-12 flex justify-center">
             <div className="relative w-14 h-14 mb-2">
               <div
-                className=" w-10 h-10 inline-block  bg-cover bg-center "
+                className=" w-10 h-10 inline-block  bg-cover bg-center invert"
                 style={{ backgroundImage: "url('/images/cart-icon.png')" }}
               ></div>
               <div className="absolute z-20 bottom-0 right-1 w-4 h-4 text-xs font-bold rounded-full flex items-center justify-center">
@@ -171,32 +171,34 @@ const Cart = (props: any) => {
                 </div>
               </div>
             )}
-            <>
-              <div className="flex mt-5">
-                <input
-                  type="text"
-                  value={couponGiftCard}
-                  onChange={(e) => setCouponGiftCard(e.target.value)}
-                  placeholder="Coupon or Gift Card?"
-                  className="w-full px-2 py-2 text-sm border rounded-lg"
-                  disabled={discountedPrice >= 0}
-                />
+            {products?.length > 0 && (
+              <>
+                <div className="flex mt-5">
+                  <input
+                    type="text"
+                    value={couponGiftCard}
+                    onChange={(e) => setCouponGiftCard(e.target.value)}
+                    placeholder="Coupon or Gift Card?"
+                    className="w-full px-2 py-2 text-sm border rounded-lg"
+                    disabled={discountedPrice >= 0}
+                  />
 
-                <button
-                  onClick={handleApplyCoupon}
-                  className="w-40 bg-blue-600 text-white py-2 text-sm rounded-lg ml-4"
+                  <button
+                    onClick={handleApplyCoupon}
+                    className="w-40 bg-blue-600 text-white py-2 text-sm rounded-lg ml-4"
+                  >
+                    {discountedPrice >= 0 ? "Remove" : "Apply"}
+                  </button>
+                </div>
+                <p
+                  className={`text-red-500 text-sm min-h-5 block ${
+                    errorMessage ? "visible" : "invisible"
+                  }`}
                 >
-                  {discountedPrice >= 0 ? "Remove" : "Apply"}
-                </button>
-              </div>
-              <p
-                className={`text-red-500 text-sm min-h-5 block ${
-                  errorMessage ? "visible" : "invisible"
-                }`}
-              >
-                {errorMessage}
-              </p>
-            </>
+                  {errorMessage}
+                </p>
+              </>
+            )}
             <button
               className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-6"
               onClick={handleCheckout}
