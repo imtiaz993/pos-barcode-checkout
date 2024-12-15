@@ -12,6 +12,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const storeId = searchParams.get("storeId");
   const region = searchParams.get("region");
   const type = searchParams.get("type");
+  const gift_card = searchParams.get("gift_card");
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -97,7 +98,12 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
       try {
         await confirmationResult.confirm(values.otp);
-        router.replace(`${type}/${region}/${storeId}`);
+        if (type == "/activate-gift-card") {
+          router.replace(`${type}?gift_card=${gift_card}`);
+        } else {
+          router.replace(`${type}/${region}/${storeId}`);
+        }
+
       } catch (error) {
         setError("Invalid OTP. Please try again.");
         console.error("Error during confirmationResult.confirm", error);

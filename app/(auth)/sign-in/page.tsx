@@ -12,6 +12,7 @@ const PhoneAuth = () => {
   const storeId = searchParams.get("storeId");
   const region = searchParams.get("region");
   const type = searchParams.get("type");
+  const gift_card = searchParams.get("gift_card");
 
   let recaptchaVerifier = useRef<any>();
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -22,7 +23,11 @@ const PhoneAuth = () => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
       if (isLoggedIn) {
-        router.replace(`${type}/${region}/${storeId}`);
+        if (type == "/activate-gift-card") {
+          router.replace(`${type}?gift_card=${gift_card}`);
+        } else {
+          router.replace(`${type}/${region}/${storeId}`);
+        }
         return;
       }
       setCheckingAuth(false);
