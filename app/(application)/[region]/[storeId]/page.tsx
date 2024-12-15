@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -19,11 +19,13 @@ const Page = () => {
             className="w-auto"
           />
         </div>
+        <div className="mb-4">
         <Link href={`/checkout/${region}/${storeId}`}>
-          <button className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg mb-2">
+          <button className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg">
             Go to Checkout
           </button>
         </Link>
+        </div>
         <Link href={`/giftcard/${region}/${storeId}`}>
           <button className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg">
             Purchase Gift Card

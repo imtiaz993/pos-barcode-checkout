@@ -21,7 +21,7 @@ export default function Page() {
   const [recipientNameError, setRecipientNameError] = useState("");
   const [recipientPhoneError, setRecipientPhoneError] = useState("");
 
-  const presetAmounts = [10, 25, 50, 75, 100, 500];
+  const presetAmounts = [25, 50, 100, 250, 500];
 
   const validateForm = () => {
     let isValid = true;
@@ -83,19 +83,19 @@ export default function Page() {
       )}
       <div className="max-w-lg mx-auto px-4 py-6">
         <h1 className="text-xl font-bold mb-4 text-center">
-          Purchase your{" "}
+          Buy your{" "}
           <span className="text-blue-600">Virtual Gift Card </span>!
         </h1>
 
         {/* Card Preview */}
-        <div className="w-full rounded-lg p-4 mb-8 flex items-center justify-center">
+        <div className="w-full rounded-lg overflow-hidden mb-8 flex items-center justify-center">
           <Image
             src="/images/gift_card.png"
             width={0}
             height={0}
             sizes="100vw"
             alt=""
-            className="w-auto"
+            className="w-full"
           />
         </div>
 
@@ -146,7 +146,7 @@ export default function Page() {
           <h2 className="font-semibold mb-2">3. Write a gift message:</h2>
           <textarea
             className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
-            placeholder="Add a message..."
+            placeholder="Enter a message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
@@ -155,14 +155,14 @@ export default function Page() {
         {/* From field */}
         <div className="mb-6">
           <label htmlFor="fromName" className="font-semibold block mb-2">
-            From <span className="text-red-600">*</span>
+            3. Sender information: <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
             id="fromName"
             value={fromName}
             onChange={(e) => setFromName(e.target.value)}
-            placeholder="Add a sender name..."
+            placeholder="Enter sender name..."
             className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
           />
           {fromNameError && (
@@ -172,7 +172,7 @@ export default function Page() {
 
         {/* Recipient information */}
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">Recipient information:</h2>
+          <h2 className="font-semibold mb-2">4. Recipient information:</h2>
           <label className="block mb-1 text-sm" htmlFor="recipientName">
             Name <span className="text-red-600">*</span>
           </label>
@@ -181,7 +181,7 @@ export default function Page() {
             id="recipientName"
             value={recipientName}
             onChange={(e) => setRecipientName(e.target.value)}
-            placeholder="Enter a recipient name"
+            placeholder="Enter recipient name"
             className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
           />
           {recipientNameError && (
