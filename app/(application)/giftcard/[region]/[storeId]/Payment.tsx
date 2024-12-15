@@ -85,28 +85,29 @@ const PaymentForm = ({
     if (paymentIntent.status === "succeeded") {
       handleBuy();
     }
-  }
+  };
 
-    return (
-      <>
-        {loading && <Loader />}
-        <div className="fixed inset-0 z-[9999999] flex items-center justify-center">
-          <div className="bg-white shadow-md md:rounded-lg p-6 w-full max-w-lg h-full md:h-fit overflow-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Complete Your Payment</h1>
-              <button
-                className="text-[#1b1a20] text-center leading-[50px]"
-                onClick={() => {
-                  setShowCheckout(false);
-                }}
-              >
-                <span className="text-lg font-medium">X</span>
-              </button>
-            </div>
-            {clientSecret ? (
-              <form onSubmit={handleSubmit}>
-                {savedPaymentMethods.map((method: any) => (
+  return (
+    <>
+      {loading && <Loader />}
+      <div className="fixed inset-0 z-[9999999] flex items-center justify-center">
+        <div className="bg-white shadow-md md:rounded-lg p-6 w-full max-w-lg h-full md:h-fit overflow-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Complete Your Payment</h1>
+            <button
+              className="text-[#1b1a20] text-center leading-[50px]"
+              onClick={() => {
+                setShowCheckout(false);
+              }}
+            >
+              <span className="text-lg font-medium">X</span>
+            </button>
+          </div>
+          {clientSecret ? (
+            <form onSubmit={handleSubmit}>
+              {savedPaymentMethods.map((method: any, index: number) => (
                 <div
+                  key={index}
                   onClick={() => {
                     setSelectedPaymentMethod(method.id);
                   }}
@@ -126,28 +127,28 @@ const PaymentForm = ({
                 </h2>
                 <div className="h-[1px] w-full bg-black"></div>
               </div>
-                <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
-                <button
-                  className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
-                    loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-blue-700"
-                  }`}
-                  type="submit"
-                  disabled={!stripe || loading}
-                >
-                  {loading ? "Processing..." : "Pay Now"}
-                </button>
-              </form>
-            ) : (
-              <p>Loading...</p>
-            )}
-            {message && <p className="text-red-500 mt-2">{message}</p>}
-          </div>
+              <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
+              <button
+                className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
+                  loading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-blue-700"
+                }`}
+                type="submit"
+                disabled={!stripe || loading}
+              >
+                {loading ? "Processing..." : "Pay Now"}
+              </button>
+            </form>
+          ) : (
+            <p>Loading...</p>
+          )}
+          {message && <p className="text-red-500 mt-2">{message}</p>}
         </div>
-      </>
-    );
-  };
+      </div>
+    </>
+  );
+};
 
 const Payment = ({
   setShowCheckout,
