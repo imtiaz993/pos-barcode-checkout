@@ -78,7 +78,12 @@ const PaymentForm = ({
     }
 
     if (paymentIntent.status === "succeeded") {
-      handleRedeem();
+      if (couponGiftCard) {
+        handleRedeem();
+      } else {
+        setLoading(false);
+        router.push("/success");
+      }
     }
   };
 

@@ -37,7 +37,7 @@ const PaymentForm = ({
   const handleBuy = async () => {
     try {
       const response = await axios.post(
-        "https://api.ecoboutiquemarket.com/api/purchase-gift-card",
+        "https://api.ecoboutiquemarket.com/api/giftcard/purchase-custom",
         {
           amount: Number(price),
           message: userMsg,
@@ -49,8 +49,24 @@ const PaymentForm = ({
           headers: { "Content-Type": "application/json" },
         }
       );
-      setLoading(false);
-      router.push("/success");
+      try {
+        const res = await axios.post(
+          "https://api.ecoboutiquemarket.com/api/giftcard/send-activation-sms",
+          {
+            gift_card: response.data.gift_card.code,
+            recipientPhone,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setLoading(false);
+        router.push("/success");
+      } catch (error: any) {
+        setLoading(false);
+        toast.error(error?.response?.data?.message);
+        console.error("Error:", error);
+      }
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
