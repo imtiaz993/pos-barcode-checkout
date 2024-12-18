@@ -8,6 +8,8 @@ import { app } from "../../firebase";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const PhoneAuthentication = ({
   setConfirmationResult,
@@ -27,7 +29,7 @@ const PhoneAuthentication = ({
         }
       );
     }
-  }, [auth]);
+  }, [auth, recaptchaVerifier]);
 
   const formik = useFormik({
     initialValues: {
@@ -82,26 +84,31 @@ const PhoneAuthentication = ({
         </p>
 
         <form onSubmit={formik.handleSubmit} className="mt-6">
-          <label
-            htmlFor="phone"
-            className="block text-sm font-medium "
-          >
+          <label htmlFor="phone" className="block text-sm font-medium ">
             Phone Number
           </label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={formik.values.phone}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="+1234567890"
-            className={`mt-2 block w-full px-2 py-2 text-sm border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-              formik.touched.phone && formik.errors.phone
-                ? "border-red-500"
-                : "border-gray-300"
-            } text-gray-700`}
-          />
+          <div className="mt-2">
+            <PhoneInput
+              country={"us"}
+              value={formik.values.phone}
+              onChange={(phone: string) =>
+                formik.setFieldValue("phone", `+${phone}`)
+              }
+              inputStyle={{
+                width: "100%",
+                borderRadius: "0.5rem",
+                borderColor:
+                  formik.touched.phone && formik.errors.phone
+                    ? "red"
+                    : "#d1d5db",
+                padding: "0.5rem 3rem",
+                fontSize: "0.875rem",
+              }}
+              dropdownStyle={{
+                borderRadius: "0.5rem",
+              }}
+            />
+          </div>
           {formik.touched.phone && formik.errors.phone && (
             <p className="text-red-500 text-sm mt-2">{formik.errors.phone}</p>
           )}

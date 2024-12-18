@@ -13,7 +13,6 @@ import {
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Cart from "./Cart";
-import { logout } from "../../utils/firebaseAuth";
 import Link from "next/link";
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
