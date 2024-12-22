@@ -20,7 +20,14 @@ const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), {
 });
 
 const POS = () => {
-  const { storeId }: any = useParams();
+  const { storeId, region }: any = useParams();
+  const pathname = usePathname();
+  const type: any = pathname.includes("/checkout")
+    ? "/checkout"
+    : pathname.includes("/giftcard")
+    ? "/giftcard"
+    : "";
+
   const [barcode, setBarcode] = useState("");
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
   const [inputBarcode, setInputBarcode] = useState("");
@@ -126,7 +133,9 @@ const POS = () => {
 
       <div className="">
         <div className="fixed top-2 left-2">
-          <Link href="/user-profile">
+          <Link
+            href={`/user-profile?type=${type}&region=${region}&storeId=${storeId}`}
+          >
             <Image
               src="/images/profile.png"
               width={0}

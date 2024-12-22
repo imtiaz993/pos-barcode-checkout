@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
 import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
 import { app } from "@/app/firebase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { logout } from "../../../utils/firebaseAuth";
 import Image from "next/image";
@@ -46,6 +46,11 @@ export default function ProfilePage() {
 }
 
 function ProfileTab() {
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("storeId");
+  const region = searchParams.get("region");
+  const type = searchParams.get("type");
+
   const router = useRouter();
   const auth = getAuth(app);
   const user = auth.currentUser;
@@ -118,7 +123,7 @@ function ProfileTab() {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push("/sign-in");
+      router.push(`/sign-in?type=${type}&region=${region}&storeId=${storeId}`);
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);

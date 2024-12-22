@@ -52,6 +52,25 @@ const Cart = (props: any) => {
             code: couponGiftCard,
           }
         );
+        const validation: any = await axios.post(
+          `https://api.ecoboutiquemarket.com/giftcard/validate-recipient`,
+          {
+            code: couponGiftCard,
+          }
+        );
+
+        const verificationCode: any = window.prompt(
+          "Enter the verification code:"
+        );
+
+        const verification: any = await axios.post(
+          `https://api.ecoboutiquemarket.com/giftcard/verify-code`,
+          {
+            code: verificationCode,
+            phone_number: user?.phoneNumber,
+          }
+        );
+
         setDiscountData(response.data);
 
         const codetype = response.data.code_type;

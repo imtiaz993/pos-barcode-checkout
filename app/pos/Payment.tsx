@@ -78,6 +78,13 @@ const PaymentForm = ({
     }
 
     if (paymentIntent.status === "succeeded") {
+      const res: any = await axios.post(
+        `https://api.ecoboutiquemarket.com/addOrder`,
+        {
+          phone_number: user?.phoneNumber,
+        }
+      );
+
       if (couponGiftCard) {
         handleRedeem();
       } else {
@@ -109,6 +116,13 @@ const PaymentForm = ({
     }
 
     if (paymentIntent.status === "succeeded") {
+      const res: any = await axios.post(
+        `https://api.ecoboutiquemarket.com/addOrder`,
+        {
+          phone_number: user?.phoneNumber,
+        }
+      );
+
       if (couponGiftCard) {
         handleRedeem();
       } else {
