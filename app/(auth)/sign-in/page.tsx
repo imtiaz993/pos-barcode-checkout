@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { checkAuthState } from "../../../utils/firebaseAuth";
-import VerifyOTP from "./VerifyOTP";
-import PhoneAuthentication from "./PhoneAuthentication";
+import PhoneAuthentication from "./components/PhoneAuthentication";
+import VerifyOTP from "./components/VerifyOTP";
 
 const PhoneAuth = () => {
   const router = useRouter();

@@ -1,8 +1,3 @@
-type BlogPost = {
-  slug: string;
-  created_at: string;
-};
-
 type SitemapEntry = {
   url: string;
   lastModified: string;

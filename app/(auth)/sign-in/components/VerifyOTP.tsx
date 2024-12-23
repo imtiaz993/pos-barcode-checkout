@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
-import { app } from "../../firebase";
+import { app } from "../../../firebase";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";

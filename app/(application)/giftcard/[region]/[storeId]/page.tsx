@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import axios from "axios";
 import Payment from "./Payment";
 
 export default function Page() {

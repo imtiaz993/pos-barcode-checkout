@@ -33,7 +33,6 @@ const PaymentForm = ({
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 

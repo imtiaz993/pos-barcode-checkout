@@ -1,9 +1,9 @@
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
-import "./globals.css";
 import { Suspense } from "react";
+import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://starter.rasmic.xyz"),

@@ -4,7 +4,7 @@ import {
   signInWithPhoneNumber,
   RecaptchaVerifier,
 } from "firebase/auth";
-import { app } from "../../firebase";
+import { app } from "../../../firebase";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
