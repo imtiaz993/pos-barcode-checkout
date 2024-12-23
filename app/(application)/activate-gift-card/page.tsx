@@ -21,8 +21,8 @@ export default function Page() {
         gift_card: gift_card,
         userPhone: user?.phoneNumber,
       })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
+        setActivating(false);
       })
       .catch((error) => {
         setActivating(false);

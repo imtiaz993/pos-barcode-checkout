@@ -25,8 +25,6 @@ const Layout = ({ children }: any) => {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
 
-  console.log(type);
-  
   useEffect(() => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();

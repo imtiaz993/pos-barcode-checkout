@@ -36,6 +36,21 @@ const Cart = (props: any) => {
   const handleToggleCart = (isOpen: boolean) => () =>
     isOpen ? closeCart() : openCart();
 
+  const applyDiscount = (response: any, codetype: any) => {
+    setDiscountData(response.data);
+
+    if (codetype === "coupon") {
+      setDiscountedPrice(
+        total.totalPrice -
+          (response.data.coupon.discount_value / 100) * total.totalPrice
+      );
+    } else {
+      setDiscountedPrice(
+        Math.max(0, total.totalPrice - response.data.gift_card.balance)
+      );
+    }
+  };
+
   const handleApplyCoupon = () => {
     if (discountedPrice >= 0) {
       setDiscountedPrice(-1);
@@ -53,59 +68,45 @@ const Cart = (props: any) => {
           code: couponGiftCard,
         })
         .then((response) => {
-          console.log(response);
+          const codetype = response.data.code_type;
 
-          axios
-            .post(
-              `https://api.ecoboutiquemarket.com/giftcard/validate-recipient`,
-              {
-                code: couponGiftCard,
-              }
-            )
-            .then(() => {
-              const verificationCode: any = window.prompt(
-                "Enter the verification code:"
-              );
+          if (codetype === "coupon") {
+            applyDiscount(response, codetype);
+          } else {
+            axios
+              .post(
+                `https://api.ecoboutiquemarket.com/giftcard/validate-recipient`,
+                {
+                  code: couponGiftCard,
+                }
+              )
+              .then(() => {
+                const verificationCode: any = window.prompt(
+                  "Enter the verification code:"
+                );
 
-              axios
-                .post(
-                  `https://api.ecoboutiquemarket.com/giftcard/verify-code`,
-                  {
-                    code: verificationCode,
-                    phone_number: user?.phoneNumber,
-                  }
-                )
-                .then(() => {
-                  setDiscountData(response.data);
-
-                  const codetype = response.data.code_type;
-
-                  if (codetype === "coupon") {
-                    setDiscountedPrice(
-                      total.totalPrice -
-                        (response.data.coupon.discount_value / 100) *
-                          total.totalPrice
-                    );
-                  } else {
-                    setDiscountedPrice(
-                      Math.max(
-                        0,
-                        total.totalPrice - response.data.gift_card.balance
-                      )
-                    );
-                  }
-
-                  setApplyingCoupon(false);
-                })
-                .catch((error) => {
-                  setApplyingCoupon(false);
-                  toast.error(error?.response?.data?.message);
-                });
-            })
-            .catch((error) => {
-              setApplyingCoupon(false);
-              toast.error(error?.response?.data?.message);
-            });
+                axios
+                  .post(
+                    `https://api.ecoboutiquemarket.com/giftcard/verify-code`,
+                    {
+                      code: verificationCode,
+                      phone_number: user?.phoneNumber,
+                    }
+                  )
+                  .then(() => {
+                    applyDiscount(response, codetype);
+                    setApplyingCoupon(false);
+                  })
+                  .catch((error) => {
+                    setApplyingCoupon(false);
+                    toast.error(error?.response?.data?.message);
+                  });
+              })
+              .catch((error) => {
+                setApplyingCoupon(false);
+                toast.error(error?.response?.data?.message);
+              });
+          }
         })
         .catch((error) => {
           setApplyingCoupon(false);
@@ -115,7 +116,6 @@ const Cart = (props: any) => {
   };
 
   useEffect(() => {
-    console.log(total);
     if (total.productQuantity === 0) {
       setDiscountData(null);
       setDiscountedPrice(-1);
@@ -144,7 +144,10 @@ const Cart = (props: any) => {
         }`,
         {
           code: couponGiftCard,
-          amount: discountedPrice >= 0 ? discountedPrice : total.totalPrice,
+          amount:
+            discountData[discountData.code_type].amount > total.totalPrice
+              ? total.totalPrice
+              : discountData[discountData.code_type].amount,
           store_id: storeId,
           phone_number: user?.phoneNumber,
         }
