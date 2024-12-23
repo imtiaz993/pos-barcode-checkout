@@ -135,7 +135,7 @@ const Cart = (props: any) => {
     }
   }, [total.totalPrice]);
 
-  const handleRedeem = async (setLoading: any) => {
+  const handleRedeem = async (setLoading: any, orderId: any) => {
     try {
       const res: any = await axios.post(
         `https://api.ecoboutiquemarket.com/${
@@ -151,6 +151,8 @@ const Cart = (props: any) => {
               : discountData[discountData.code_type].amount,
           store_id: storeId,
           phone_number: user?.phoneNumber,
+          order_id: orderId,
+          user_id: user?.phoneNumber,
         }
       );
       setLoading(false);
@@ -199,7 +201,7 @@ const Cart = (props: any) => {
         }
       );
       if (couponGiftCard) {
-        handleRedeem(setLoading);
+        handleRedeem(setLoading, res.data._id);
       } else {
         setLoading(false);
         router.push("/success");
