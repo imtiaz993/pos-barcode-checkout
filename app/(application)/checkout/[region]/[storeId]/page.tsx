@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { useParams, usePathname } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import Loader from "@/components/Loader";
+import Loader from "@/components/loader";
 import Cart from "./components/Cart";
 
 const BarcodeScanner = dynamic(() => import("./components/BarcodeScanner"), {

@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
 import { auth } from "../../firebase";
-import Loader from "@/components/Loader";
+import Loader from "@/components/loader";
 
 export default function Page() {
   const [activating, setActivating] = useState(true);

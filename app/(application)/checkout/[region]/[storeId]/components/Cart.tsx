@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { auth } from "../../../../../firebase";
 import CartProducts from "./CartProducts";
-import Loader from "@/components/Loader";
+import Loader from "@/components/loader";
 import Payment from "@/components/Payment";
 
 const Cart = (props: any) => {
