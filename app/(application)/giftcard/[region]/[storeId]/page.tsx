@@ -6,9 +6,12 @@ import Image from "next/image";
 import axios from "axios";
 import { toast } from "sonner";
 import Payment from "@/components/Payment";
+import { auth } from "../../../../firebase";
 
 export default function Page() {
   const router = useRouter();
+  const user = auth.currentUser;
+
   const [showCheckout, setShowCheckout] = useState(false);
 
   const [amount, setAmount] = useState<any>(25);
@@ -101,10 +104,13 @@ export default function Page() {
   const handleBuyGiftCard = async (setLoading: any) => {
     try {
       const response = await axios.post(
-        "https://api.ecoboutiquemarket.com/giftcard/purchase-custom",
+        `https://api.ecoboutiquemarket.com/giftcard/${
+          quantity === 1 ? "purchase-custom" : "purchase-multiple"
+        }`,
         {
           amount: (customAmount || amount) * quantity,
           message: message,
+          purchaserPhone: user?.phoneNumber,
           fromName,
           recipientName,
           recipientPhone,
