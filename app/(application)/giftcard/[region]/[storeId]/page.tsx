@@ -121,24 +121,8 @@ export default function Page() {
           headers: { "Content-Type": "application/json" },
         }
       );
-      try {
-        const res = await axios.post(
-          "https://api.ecoboutiquemarket.com/giftcard/send-activation-sms",
-          {
-            gift_card: response.data.gift_card.code,
-            recipientPhone,
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        setLoading(false);
-        router.push("/success");
-      } catch (error: any) {
-        setLoading(false);
-        toast.error(error?.response?.data?.message);
-        console.error("Error:", error);
-      }
+      setLoading(false);
+      router.push("/success");
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
