@@ -7,7 +7,7 @@ import {
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "@/components/loader";
-import { auth } from "../firebase";
+import { auth } from "../../../../../firebase";
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,10 @@ const PaymentForm = ({
   storeId,
   user,
   price,
+  products,
 }: any) => {
+  console.log(products);
+
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
@@ -77,19 +80,51 @@ const PaymentForm = ({
       return;
     }
 
-    if (paymentIntent.status === "succeeded") {
-      const res: any = await axios.post(
-        `https://api.ecoboutiquemarket.com/addOrder`,
-        {
-          phone_number: user?.phoneNumber,
-        }
-      );
+    function generateUniqueId() {
+      const randomNumber = Math.floor(10000 + Math.random() * 90000);
+      return `online_${randomNumber}`;
+    }
+    let taxAmount = 0;
+    products.map((product: any) => (taxAmount += product?.tax_rate));
 
-      if (couponGiftCard) {
-        handleRedeem();
-      } else {
+    if (paymentIntent.status === "succeeded") {
+      console.log(paymentIntent);
+      try {
+        const res: any = await axios.post(
+          `https://api.ecoboutiquemarket.com/?action=addOrder`,
+          {
+            orderId: generateUniqueId(),
+            storeId: storeId,
+            orderDate: new Date(),
+            orderItems: [
+              products.map((product: any) => ({
+                productId: product.id,
+                quantity: product.quantity,
+                price: product.price,
+                reward_point: "",
+              })),
+            ],
+            terminalCheckout: paymentIntent,
+            subTotal: price,
+            tax: taxAmount,
+            totalAmount: price + taxAmount,
+            status: "Completed",
+            couponId: codetype === "coupon" ? couponGiftCard : "",
+            giftCardCode: codetype === "coupon" ? "" : couponGiftCard,
+            loyaltyPoints: 0,
+            userPhone: user?.phoneNumber,
+          }
+        );
+        if (couponGiftCard) {
+          handleRedeem();
+        } else {
+          setLoading(false);
+          router.push("/success");
+        }
+      } catch (error: any) {
         setLoading(false);
-        router.push("/success");
+        toast.error(error?.response?.data?.message);
+        console.error("Error fetching product:", error);
       }
     }
   };
@@ -115,19 +150,51 @@ const PaymentForm = ({
       return;
     }
 
-    if (paymentIntent.status === "succeeded") {
-      const res: any = await axios.post(
-        `https://api.ecoboutiquemarket.com/addOrder`,
-        {
-          phone_number: user?.phoneNumber,
-        }
-      );
+    function generateUniqueId() {
+      const randomNumber = Math.floor(10000 + Math.random() * 90000);
+      return `online_${randomNumber}`;
+    }
+    let taxAmount = 0;
+    products.map((product: any) => (taxAmount += product?.tax_rate));
 
-      if (couponGiftCard) {
-        handleRedeem();
-      } else {
+    if (paymentIntent.status === "succeeded") {
+      console.log(paymentIntent);
+      try {
+        const res: any = await axios.post(
+          `https://api.ecoboutiquemarket.com/?action=addOrder`,
+          {
+            orderId: generateUniqueId(),
+            storeId: storeId,
+            orderDate: new Date(),
+            orderItems: [
+              products.map((product: any) => ({
+                productId: product.id,
+                quantity: product.quantity,
+                price: product.price,
+                reward_point: "",
+              })),
+            ],
+            terminalCheckout: paymentIntent,
+            subTotal: price,
+            tax: taxAmount,
+            totalAmount: price + taxAmount,
+            status: "Completed",
+            couponId: codetype === "coupon" ? couponGiftCard : "",
+            giftCardCode: codetype === "coupon" ? "" : couponGiftCard,
+            loyaltyPoints: 0,
+            userPhone: user?.phoneNumber,
+          }
+        );
+        if (couponGiftCard) {
+          handleRedeem();
+        } else {
+          setLoading(false);
+          router.push("/success");
+        }
+      } catch (error: any) {
         setLoading(false);
-        router.push("/success");
+        toast.error(error?.response?.data?.message);
+        console.error("Error fetching product:", error);
       }
     }
   };
@@ -199,6 +266,7 @@ const Payment = ({
   codetype,
   couponGiftCard,
   storeId,
+  products,
 }: any) => {
   const user = auth.currentUser;
 
@@ -245,6 +313,7 @@ const Payment = ({
             storeId={storeId}
             user={user}
             price={price}
+            products={products}
           />
         </Elements>
       ) : (

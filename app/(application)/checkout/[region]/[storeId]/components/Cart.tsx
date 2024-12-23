@@ -4,7 +4,7 @@ import Payment from "./Payment";
 import { toast } from "sonner";
 import axios from "axios";
 import Loader from "@/components/loader";
-import { auth } from "../firebase";
+import { auth } from "../../../../../firebase";
 
 const Cart = (props: any) => {
   const user = auth.currentUser;
@@ -34,7 +34,7 @@ const Cart = (props: any) => {
   const handleToggleCart = (isOpen: boolean) => () =>
     isOpen ? closeCart() : openCart();
 
-  const handleApplyCoupon = async () => {
+  const handleApplyCoupon = () => {
     if (discountedPrice >= 0) {
       setDiscountedPrice(-1);
       setCouponGiftCard("");
@@ -44,54 +44,71 @@ const Cart = (props: any) => {
         return;
       }
       setErrorMessage("");
-      try {
-        setApplyingCoupon(true);
-        const response: any = await axios.post(
-          `https://api.ecoboutiquemarket.com/retrieveCode`,
-          {
-            code: couponGiftCard,
-          }
-        );
-        const validation: any = await axios.post(
-          `https://api.ecoboutiquemarket.com/giftcard/validate-recipient`,
-          {
-            code: couponGiftCard,
-          }
-        );
+      setApplyingCoupon(true);
 
-        const verificationCode: any = window.prompt(
-          "Enter the verification code:"
-        );
+      axios
+        .post(`https://api.ecoboutiquemarket.com/retrieveCode`, {
+          code: couponGiftCard,
+        })
+        .then((response) => {
+          console.log(response);
 
-        const verification: any = await axios.post(
-          `https://api.ecoboutiquemarket.com/giftcard/verify-code`,
-          {
-            code: verificationCode,
-            phone_number: user?.phoneNumber,
-          }
-        );
+          axios
+            .post(
+              `https://api.ecoboutiquemarket.com/giftcard/validate-recipient`,
+              {
+                code: couponGiftCard,
+              }
+            )
+            .then(() => {
+              const verificationCode: any = window.prompt(
+                "Enter the verification code:"
+              );
 
-        setDiscountData(response.data);
+              axios
+                .post(
+                  `https://api.ecoboutiquemarket.com/giftcard/verify-code`,
+                  {
+                    code: verificationCode,
+                    phone_number: user?.phoneNumber,
+                  }
+                )
+                .then(() => {
+                  setDiscountData(response.data);
 
-        const codetype = response.data.code_type;
+                  const codetype = response.data.code_type;
 
-        if (codetype === "coupon") {
-          setDiscountedPrice(
-            total.totalPrice -
-              (response.data.coupon.discount_value / 100) * total.totalPrice
-          );
-        } else {
-          setDiscountedPrice(
-            Math.max(0, total.totalPrice - response.data.gift_card.balance)
-          );
-        }
+                  if (codetype === "coupon") {
+                    setDiscountedPrice(
+                      total.totalPrice -
+                        (response.data.coupon.discount_value / 100) *
+                          total.totalPrice
+                    );
+                  } else {
+                    setDiscountedPrice(
+                      Math.max(
+                        0,
+                        total.totalPrice - response.data.gift_card.balance
+                      )
+                    );
+                  }
 
-        setApplyingCoupon(false);
-      } catch (error: any) {
-        setApplyingCoupon(false);
-        toast.error(error?.response?.data?.message);
-        console.error("Error fetching product:", error);
-      }
+                  setApplyingCoupon(false);
+                })
+                .catch((error) => {
+                  setApplyingCoupon(false);
+                  toast.error(error?.response?.data?.message);
+                });
+            })
+            .catch((error) => {
+              setApplyingCoupon(false);
+              toast.error(error?.response?.data?.message);
+            });
+        })
+        .catch((error) => {
+          setApplyingCoupon(false);
+          toast.error(error?.response?.data?.message);
+        });
     }
   };
 
@@ -125,6 +142,7 @@ const Cart = (props: any) => {
           couponGiftCard={couponGiftCard}
           storeId={storeId}
           codetype={discountData?.code_type}
+          products={products}
         />
       ) : (
         <></>
