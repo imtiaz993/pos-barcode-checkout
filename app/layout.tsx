@@ -1,6 +1,4 @@
 import { Toaster } from "@/components/sonner";
-import { Analytics } from "@vercel/analytics/react";
-import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
@@ -54,10 +52,9 @@ export default function RootLayout({
           as="image"
         />
       </head>
-      <body className={GeistSans.className}>
+      <body>
         <Suspense>{children}</Suspense>
         <Toaster />
-        <Analytics />
       </body>
     </html>
   );
