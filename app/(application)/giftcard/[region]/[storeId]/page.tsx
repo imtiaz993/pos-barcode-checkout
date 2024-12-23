@@ -18,12 +18,32 @@ export default function Page() {
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setrecipientPhone] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [selectedTheme, setSelectedTheme] = useState(""); // New State for theme
 
   // Error states
   const [amountError, setAmountError] = useState("");
   const [fromNameError, setFromNameError] = useState("");
   const [recipientNameError, setRecipientNameError] = useState("");
   const [recipientPhoneError, setRecipientPhoneError] = useState("");
+  const [themeError, setThemeError] = useState(""); // New Error for theme
+
+  const giftCardThemes = [
+    "Birthday",
+    "Thank You",
+    "Christmas",
+    "Anniversary",
+    "Wedding",
+    "New Baby",
+    "Graduation",
+    "Get Well Soon",
+    "Mother's Day",
+    "Father's Day",
+    "Housewarming",
+    "Valentine's Day",
+    "New Year",
+    "Baby Shower",
+    "Back to School",
+  ];
 
   const presetAmounts = [25, 50, 100, 250, 500];
 
@@ -62,6 +82,14 @@ export default function Page() {
       setRecipientPhoneError("");
     }
 
+    // Validate theme
+    if (selectedTheme === "") {
+      setThemeError("Please select a theme.");
+      isValid = false;
+    } else {
+      setThemeError("");
+    }
+
     return isValid;
   };
 
@@ -73,13 +101,15 @@ export default function Page() {
   const handleBuyGiftCard = async (setLoading: any) => {
     try {
       const response = await axios.post(
-        "https://api.ecoboutiquemarket.com/api/giftcard/purchase-custom",
+        "https://api.ecoboutiquemarket.com/giftcard/purchase-custom",
         {
           amount: (customAmount || amount) * quantity,
           message: message,
           fromName,
           recipientName,
           recipientPhone,
+          quantity: quantity,
+          theme: selectedTheme, // Include theme in API payload
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -87,7 +117,7 @@ export default function Page() {
       );
       try {
         const res = await axios.post(
-          "https://api.ecoboutiquemarket.com/api/giftcard/send-activation-sms",
+          "https://api.ecoboutiquemarket.com/giftcard/send-activation-sms",
           {
             gift_card: response.data.gift_card.code,
             recipientPhone,
@@ -206,9 +236,28 @@ export default function Page() {
           </div>
         </div>
 
+        <div className="mb-6">
+          <h2 className="font-semibold mb-2">
+            3. Choose a theme: <span className="text-red-600">*</span>
+          </h2>
+          <select
+            value={selectedTheme}
+            onChange={(e) => setSelectedTheme(e.target.value)}
+            className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
+          >
+            <option value="">Select a theme</option>
+            {giftCardThemes.map((theme, index) => (
+              <option key={index} value={theme}>
+                {theme}
+              </option>
+            ))}
+          </select>
+          {themeError && <p className="text-red-600 text-sm">{themeError}</p>}
+        </div>
+
         {/* 3. Write a gift message */}
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">3. Write a gift message:</h2>
+          <h2 className="font-semibold mb-2">4. Write a gift message:</h2>
           <textarea
             className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
             placeholder="Enter a message..."
@@ -220,7 +269,7 @@ export default function Page() {
         {/* From field */}
         <div className="mb-6">
           <label htmlFor="fromName" className="font-semibold block mb-2">
-            4. Sender information: <span className="text-red-600">*</span>
+            5. Sender information: <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -237,7 +286,7 @@ export default function Page() {
 
         {/* Recipient information */}
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">5. Recipient information:</h2>
+          <h2 className="font-semibold mb-2">6. Recipient information:</h2>
           <label className="block mb-1 text-sm" htmlFor="recipientName">
             Name <span className="text-red-600">*</span>
           </label>

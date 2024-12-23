@@ -173,14 +173,13 @@ const Cart = (props: any) => {
           orderId: generateUniqueId(),
           storeId: storeId,
           orderDate: new Date(),
-          orderItems: [
-            products.map((product: any) => ({
-              productId: product.id,
-              quantity: product.quantity,
-              price: product.price,
-              reward_point: "",
-            })),
-          ],
+          orderItems: products.map((product: any) => ({
+            productId: product.barcode,
+            quantity: product.quantity,
+            price: product.price,
+            reward_point: product?.reward_points,
+          })),
+
           terminalCheckout: paymentIntent,
           subTotal: discountedPrice >= 0 ? discountedPrice : total.totalPrice,
           tax: taxAmount,
@@ -192,7 +191,6 @@ const Cart = (props: any) => {
           couponId: discountData?.code_type === "coupon" ? couponGiftCard : "",
           giftCardCode:
             discountData?.code_type === "coupon" ? "" : couponGiftCard,
-          loyaltyPoints: 0,
           userPhone: user?.phoneNumber,
         }
       );
