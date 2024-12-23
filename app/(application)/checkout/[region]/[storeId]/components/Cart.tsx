@@ -149,7 +149,7 @@ const Cart = (props: any) => {
             discountData[discountData.code_type].amount > total.totalPrice
               ? total.totalPrice
               : discountData[discountData.code_type].amount,
-          store_id: storeId,
+          store_id: storeId.split("s")[1],
           phone_number: user?.phoneNumber,
           order_id: orderId,
           user_id: user?.phoneNumber,
