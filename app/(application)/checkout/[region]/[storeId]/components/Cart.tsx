@@ -72,6 +72,7 @@ const Cart = (props: any) => {
 
           if (codetype === "coupon") {
             applyDiscount(response, codetype);
+            setApplyingCoupon(false);
           } else {
             axios
               .post(
