@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getAuth, signInWithPhoneNumber } from "firebase/auth";
-import { app } from "../../../firebase";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Image from "next/image";
+import { getAuth, signInWithPhoneNumber } from "firebase/auth";
+import { app } from "../../../firebase";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();

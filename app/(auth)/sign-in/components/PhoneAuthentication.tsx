@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useFormik } from "formik";
+import PhoneInput from "react-phone-input-2";
+import * as Yup from "yup";
 import {
   getAuth,
   signInWithPhoneNumber,
   RecaptchaVerifier,
 } from "firebase/auth";
 import { app } from "../../../firebase";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import Image from "next/image";
-import PhoneInput from "react-phone-input-2";
+
 import "react-phone-input-2/lib/style.css";
 
 const PhoneAuthentication = ({

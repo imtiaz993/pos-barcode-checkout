@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Payment from "./Payment";
+import axios from "axios";
+import { toast } from "sonner";
+import Payment from "@/components/Payment";
 
 export default function Page() {
+  const router = useRouter();
   const [showCheckout, setShowCheckout] = useState(false);
 
   const [amount, setAmount] = useState<any>(25);
@@ -66,24 +70,62 @@ export default function Page() {
     setShowCheckout(true);
   };
 
+  const handleBuyGiftCard = async (setLoading: any) => {
+    try {
+      const response = await axios.post(
+        "https://api.ecoboutiquemarket.com/api/giftcard/purchase-custom",
+        {
+          amount: (customAmount || amount) * quantity,
+          message: message,
+          fromName,
+          recipientName,
+          recipientPhone,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      try {
+        const res = await axios.post(
+          "https://api.ecoboutiquemarket.com/api/giftcard/send-activation-sms",
+          {
+            gift_card: response.data.gift_card.code,
+            recipientPhone,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setLoading(false);
+        router.push("/success");
+      } catch (error: any) {
+        setLoading(false);
+        toast.error(error?.response?.data?.message);
+        console.error("Error:", error);
+      }
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(error?.response?.data?.message);
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <>
       {showCheckout ? (
         <Payment
-          setShowCheckout={setShowCheckout}
-          price={(customAmount || amount) * quantity} // Updated to reflect quantity
-          message={message}
-          fromName={fromName}
-          recipientName={recipientName}
-          recipientPhone={recipientPhone}
+          price={(customAmount || amount) * quantity}
+          onSuccess={handleBuyGiftCard}
+          onCancel={() => {
+            setShowCheckout(false);
+          }}
         />
       ) : (
         <></>
       )}
       <div className="max-w-lg mx-auto px-4 py-6">
         <h1 className="text-xl font-bold mb-4 text-center">
-          Buy your{" "}
-          <span className="text-blue-600">Virtual Gift Card </span>!
+          Buy your <span className="text-blue-600">Virtual Gift Card </span>!
         </h1>
 
         {/* Card Preview */}

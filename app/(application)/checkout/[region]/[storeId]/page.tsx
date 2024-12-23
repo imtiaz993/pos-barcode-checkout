@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import axios from "axios";
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import { useParams, usePathname } from "next/navigation";
-import { toast } from "sonner";
-import Loader from "@/components/loader";
-import Cart from "./components/Cart";
+import { useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+import { useParams, usePathname } from "next/navigation";
+import axios from "axios";
+import { toast } from "sonner";
+import Loader from "@/components/Loader";
+import Cart from "./components/Cart";
 
 const BarcodeScanner = dynamic(() => import("./components/BarcodeScanner"), {
   ssr: false,

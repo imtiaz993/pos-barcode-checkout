@@ -1,12 +1,14 @@
-import CartProducts from "./CartProducts";
 import { useState, useEffect } from "react";
-import Payment from "./Payment";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import Loader from "@/components/loader";
+import { toast } from "sonner";
 import { auth } from "../../../../../firebase";
+import CartProducts from "./CartProducts";
+import Loader from "@/components/Loader";
+import Payment from "@/components/Payment";
 
 const Cart = (props: any) => {
+  const router = useRouter();
   const user = auth.currentUser;
   const [discountData, setDiscountData] = useState<any>(null);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -132,17 +134,91 @@ const Cart = (props: any) => {
     }
   }, [total.totalPrice]);
 
+  const handleRedeem = async (setLoading: any) => {
+    try {
+      const res: any = await axios.post(
+        `https://api.ecoboutiquemarket.com/${
+          discountData?.code_type === "coupon"
+            ? "redeemCoupon"
+            : "redeemGiftCard"
+        }`,
+        {
+          code: couponGiftCard,
+          amount: discountedPrice >= 0 ? discountedPrice : total.totalPrice,
+          store_id: storeId,
+          phone_number: user?.phoneNumber,
+        }
+      );
+      setLoading(false);
+      router.push("/success");
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(error?.response?.data?.message);
+      console.error("Error fetching product:", error);
+    }
+  };
+
+  const handleAddOrder = async (setLoading: any, paymentIntent: any) => {
+    function generateUniqueId() {
+      const randomNumber = Math.floor(10000 + Math.random() * 90000);
+      return `online_${randomNumber}`;
+    }
+    let taxAmount = 0;
+    products.map((product: any) => (taxAmount += product?.tax_rate));
+
+    try {
+      const res: any = await axios.post(
+        `https://api.ecoboutiquemarket.com/?action=addOrder`,
+        {
+          orderId: generateUniqueId(),
+          storeId: storeId,
+          orderDate: new Date(),
+          orderItems: [
+            products.map((product: any) => ({
+              productId: product.id,
+              quantity: product.quantity,
+              price: product.price,
+              reward_point: "",
+            })),
+          ],
+          terminalCheckout: paymentIntent,
+          subTotal: discountedPrice >= 0 ? discountedPrice : total.totalPrice,
+          tax: taxAmount,
+          totalAmount:
+            discountedPrice >= 0
+              ? discountedPrice
+              : total.totalPrice + taxAmount,
+          status: "Completed",
+          couponId: discountData?.code_type === "coupon" ? couponGiftCard : "",
+          giftCardCode:
+            discountData?.code_type === "coupon" ? "" : couponGiftCard,
+          loyaltyPoints: 0,
+          userPhone: user?.phoneNumber,
+        }
+      );
+      if (couponGiftCard) {
+        handleRedeem(setLoading);
+      } else {
+        setLoading(false);
+        router.push("/success");
+      }
+    } catch (error: any) {
+      setLoading(false);
+      toast.error(error?.response?.data?.message);
+      console.error("Error fetching product:", error);
+    }
+  };
+
   return (
     <>
       {applyingCoupon && <Loader />}
       {showCheckout ? (
         <Payment
-          setShowCheckout={setShowCheckout}
           price={discountedPrice >= 0 ? discountedPrice : total.totalPrice}
-          couponGiftCard={couponGiftCard}
-          storeId={storeId}
-          codetype={discountData?.code_type}
-          products={products}
+          onSuccess={handleAddOrder}
+          onCancel={() => {
+            setShowCheckout(false);
+          }}
         />
       ) : (
         <></>

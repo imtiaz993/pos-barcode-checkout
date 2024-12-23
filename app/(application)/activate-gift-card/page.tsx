@@ -1,12 +1,12 @@
 "use client";
 
-import Loader from "@/components/loader";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { auth } from "../../firebase";
+import axios from "axios";
 import { toast } from "sonner";
+import { auth } from "../../firebase";
+import Loader from "@/components/Loader";
 
 export default function Page() {
   const [activating, setActivating] = useState(true);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   useStripe,
   useElements,
@@ -6,11 +7,8 @@ import {
 } from "@stripe/react-stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import Loader from "@/components/loader";
-import { auth } from "../../../../firebase";
-import { toast } from "sonner";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
+import { auth } from "../app/firebase";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -19,60 +17,14 @@ const stripePromise = loadStripe(
 const PaymentForm = ({
   clientSecret,
   savedPaymentMethods,
-  setShowCheckout,
   setPaymentElementLoaded,
-  message: userMsg,
-  fromName,
-  recipientName,
-  user,
-  recipientPhone,
-  price,
+  handleSuccess = () => {},
+  handleCancel = () => {},
 }: any) => {
-  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
-  const handleBuy = async () => {
-    try {
-      const response = await axios.post(
-        "https://api.ecoboutiquemarket.com/api/giftcard/purchase-custom",
-        {
-          amount: Number(price),
-          message: userMsg,
-          fromName,
-          recipientName,
-          recipientPhone,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      try {
-        const res = await axios.post(
-          "https://api.ecoboutiquemarket.com/api/giftcard/send-activation-sms",
-          {
-            gift_card: response.data.gift_card.code,
-            recipientPhone,
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        setLoading(false);
-        router.push("/success");
-      } catch (error: any) {
-        setLoading(false);
-        toast.error(error?.response?.data?.message);
-        console.error("Error:", error);
-      }
-    } catch (error: any) {
-      setLoading(false);
-      toast.error(error?.response?.data?.message);
-      console.error("Error:", error);
-    }
-  };
 
   const handlePayWithSavedCard = async (methodId?: any) => {
     setLoading(true);
@@ -96,7 +48,7 @@ const PaymentForm = ({
     }
 
     if (paymentIntent.status === "succeeded") {
-      handleBuy();
+      handleSuccess(setLoading, paymentIntent);
     }
   };
   const handleSubmit = async (e: any) => {
@@ -123,7 +75,7 @@ const PaymentForm = ({
     }
 
     if (paymentIntent.status === "succeeded") {
-      handleBuy();
+      handleSuccess(setLoading, paymentIntent);
     }
   };
 
@@ -136,9 +88,7 @@ const PaymentForm = ({
             <h1 className="text-2xl font-bold">Complete Your Payment</h1>
             <button
               className="text-[#1b1a20] text-center leading-[50px]"
-              onClick={() => {
-                setShowCheckout(false);
-              }}
+              onClick={handleCancel}
             >
               <span className="text-lg font-medium">X</span>
             </button>
@@ -190,14 +140,7 @@ const PaymentForm = ({
   );
 };
 
-const Payment = ({
-  setShowCheckout,
-  price,
-  message,
-  fromName,
-  recipientName,
-  recipientPhone,
-}: any) => {
+const Payment = ({ price, onSuccess, onCancel }: any) => {
   const user = auth.currentUser;
 
   const [clientSecret, setClientSecret] = useState("");
@@ -236,14 +179,9 @@ const Payment = ({
           <PaymentForm
             clientSecret={clientSecret}
             savedPaymentMethods={savedPaymentMethods}
-            setShowCheckout={setShowCheckout}
             setPaymentElementLoaded={setPaymentElementLoaded}
-            message={message}
-            fromName={fromName}
-            recipientName={recipientName}
-            recipientPhone={recipientPhone}
-            user={user}
-            price={price}
+            handleSuccess={onSuccess}
+            handleCancel={onCancel}
           />
         </Elements>
       ) : (
