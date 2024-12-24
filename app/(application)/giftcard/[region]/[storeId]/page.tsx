@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
 import { toast } from "sonner";
+import PhoneInput from "react-phone-input-2";
 import Payment from "@/components/Payment";
 import { auth } from "../../../../firebase";
+
+import "react-phone-input-2/lib/style.css";
 
 export default function Page() {
   const router = useRouter();
@@ -21,12 +24,13 @@ export default function Page() {
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setrecipientPhone] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [selectedTheme, setSelectedTheme] = useState(""); // New State for theme
+  // const [selectedTheme, setSelectedTheme] = useState(""); // New State for theme
 
   // Error states
   const [amountError, setAmountError] = useState("");
   const [fromNameError, setFromNameError] = useState("");
   const [recipientNameError, setRecipientNameError] = useState("");
+  const [messageError, setMessageError] = useState("");
   const [recipientPhoneError, setRecipientPhoneError] = useState("");
   const [themeError, setThemeError] = useState(""); // New Error for theme
 
@@ -76,6 +80,13 @@ export default function Page() {
     } else {
       setRecipientNameError("");
     }
+    // Validate message
+    if (message.trim() === "") {
+      setMessageError("Please enter the gift card message.");
+      isValid = false;
+    } else {
+      setMessageError("");
+    }
 
     // Validate recipientPhone
     if (recipientPhone.trim() === "") {
@@ -85,13 +96,13 @@ export default function Page() {
       setRecipientPhoneError("");
     }
 
-    // Validate theme
-    if (selectedTheme === "") {
-      setThemeError("Please select a theme.");
-      isValid = false;
-    } else {
-      setThemeError("");
-    }
+    // // Validate theme
+    // if (selectedTheme === "") {
+    //   setThemeError("Please select a theme.");
+    //   isValid = false;
+    // } else {
+    //   setThemeError("");
+    // }
 
     return isValid;
   };
@@ -115,7 +126,7 @@ export default function Page() {
           recipientName,
           recipientPhone,
           quantity: quantity,
-          theme: selectedTheme, // Include theme in API payload
+          // theme: selectedTheme, // Include theme in API payload
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -203,7 +214,7 @@ export default function Page() {
         </div>
 
         {/* 2. Choose quantity */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <h2 className="font-semibold mb-2">
             2. Choose Quantity: <span className="text-red-600">*</span>
           </h2>
@@ -243,17 +254,22 @@ export default function Page() {
             ))}
           </select>
           {themeError && <p className="text-red-600 text-sm">{themeError}</p>}
-        </div>
+        </div> */}
 
         {/* 3. Write a gift message */}
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">4. Write a gift message:</h2>
+          <h2 className="font-semibold mb-2">
+            4. Write a gift message: <span className="text-red-600">*</span>
+          </h2>
           <textarea
             className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
             placeholder="Enter a message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
+          {messageError && (
+            <p className="text-red-600 text-sm">{messageError}</p>
+          )}
         </div>
 
         {/* From field */}
@@ -295,14 +311,24 @@ export default function Page() {
           <label className="block mb-1 text-sm" htmlFor="recipientPhone">
             Phone Number <span className="text-red-600">*</span>
           </label>
-          <input
-            type="phone"
-            id="recipientPhone"
-            value={recipientPhone}
-            onChange={(e) => setrecipientPhone(e.target.value)}
-            placeholder="+123456789"
-            className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
-          />
+          <div className="mb-2">
+            <PhoneInput
+              country={"us"}
+              value={recipientPhone}
+              onChange={(phone: string) => setrecipientPhone(`+${phone}`)}
+              inputStyle={{
+                width: "100%",
+                borderRadius: "0.5rem",
+                borderColor: recipientPhoneError ? "red" : "#d1d5db",
+                padding: "0.5rem 3rem",
+                fontSize: "0.875rem",
+              }}
+              dropdownStyle={{
+                borderRadius: "0.5rem",
+              }}
+            />
+          </div>
+          
           {recipientPhoneError && (
             <p className="text-red-600 text-sm">{recipientPhoneError}</p>
           )}
