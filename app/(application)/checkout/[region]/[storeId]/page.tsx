@@ -97,7 +97,7 @@ const POS = () => {
               : item
           );
         } else {
-          return [...prev, { ...response.data?.result, quantity: 1 }];
+          return [{ ...response.data?.result, quantity: 1 }, ...prev];
         }
       });
       setOpenCart(true);
@@ -145,7 +145,7 @@ const POS = () => {
         <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
           <div></div>
           <div>
-            <BarcodeScanner onScan={handleDetected} />
+            <BarcodeScanner onScan={handleDetected} openCart={openCart} />
             {barcode && (
               <p className="text-center text-[#71717a] mt-5">
                 Detected Barcode: {barcode}

@@ -174,7 +174,7 @@ export default function Page() {
         {/* 1. Choose amount */}
         <div className="mb-6">
           <h2 className="font-semibold mb-2">
-            1. Choose amount: <span className="text-red-600">*</span>
+            1. Choose Amount: <span className="text-red-600">*</span>
           </h2>
           <div className="flex flex-wrap gap-2">
             {presetAmounts.map((amt) => (
@@ -259,7 +259,7 @@ export default function Page() {
         {/* 3. Write a gift message */}
         <div className="mb-6">
           <h2 className="font-semibold mb-2">
-            4. Write a gift message: <span className="text-red-600">*</span>
+            4. Write a Gift Message: <span className="text-red-600">*</span>
           </h2>
           <textarea
             className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
@@ -275,7 +275,7 @@ export default function Page() {
         {/* From field */}
         <div className="mb-6">
           <label htmlFor="fromName" className="font-semibold block mb-2">
-            5. Sender information: <span className="text-red-600">*</span>
+            5. Sender Details: <span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -292,7 +292,7 @@ export default function Page() {
 
         {/* Recipient information */}
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">6. Recipient information:</h2>
+          <h2 className="font-semibold mb-2">6. Recipient Details:</h2>
           <label className="block mb-1 text-sm" htmlFor="recipientName">
             Name <span className="text-red-600">*</span>
           </label>

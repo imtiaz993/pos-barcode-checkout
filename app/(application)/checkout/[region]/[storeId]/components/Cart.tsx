@@ -233,7 +233,7 @@ const Cart = (props: any) => {
         }`}
       >
         <button
-          className={`absolute top-0 border shadow-sm w-12 h-12 text-center leading-[50px] z-10 ${
+          className={`absolute top-0 border shadow-sm w-12 h-12 text-center leading-[50px] bg-white z-10 ${
             isOpen ? "left-0 sm:left-[-48px]" : "left-[-50px] sm:left-[-48px]"
           } `}
           onClick={handleToggleCart(isOpen)}
@@ -269,12 +269,12 @@ const Cart = (props: any) => {
 
           <CartProducts products={products} setProducts={setProducts} />
 
-          <div className="absolute bottom-0 w-full p-[5%] cartFooterShadow">
+          <div className="absolute bottom-0 w-full p-[5%] cartFooterShadow bg-white">
             <p className="inline-block w-1/5 ">SUBTOTAL</p>
             <div className="inline-block w-4/5 text-right ">
               <p
                 className={`text-2xl m-0 ${
-                  discountedPrice >= 0 ? "line-through" : ""
+                  discountedPrice >= 0 ? "line-through text-red-600" : ""
                 }`}
               >
                 ${total?.totalPrice.toFixed(2)}
@@ -282,7 +282,7 @@ const Cart = (props: any) => {
             </div>
             {discountedPrice >= 0 && (
               <div>
-                <p className="inline-block w-1/5 ">DISCOUNTED</p>
+                <p className="inline-block w-1/5 whitespace-nowrap">AFTER DISCOUNT</p>
                 <div className="inline-block w-4/5 text-right ">
                   <p className="text-2xl m-0">${discountedPrice?.toFixed(2)}</p>
                 </div>
@@ -295,7 +295,7 @@ const Cart = (props: any) => {
                     type="text"
                     value={couponGiftCard}
                     onChange={(e) => setCouponGiftCard(e.target.value)}
-                    placeholder="Coupon or Gift Card?"
+                    placeholder="Enter Coupon Code?"
                     className="w-full px-2 py-2 text-sm border rounded-lg"
                     disabled={discountedPrice >= 0}
                   />
