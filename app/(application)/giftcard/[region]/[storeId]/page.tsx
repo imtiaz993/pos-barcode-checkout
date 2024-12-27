@@ -154,7 +154,15 @@ export default function Page() {
       ) : (
         <></>
       )}
-      <div className="max-w-lg mx-auto px-4 py-6">
+      <div className="max-w-lg mx-auto px-4 py-2">
+      <p
+          className="cursor-pointer mb-2"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          &larr; Back
+        </p>
         <h1 className="text-xl font-bold mb-4 text-center">
           Buy your <span className="text-blue-600">Virtual Gift Card </span>!
         </h1>

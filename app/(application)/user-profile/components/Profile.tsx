@@ -94,8 +94,17 @@ const Profile = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-end mb-2">
+    <div className="max-w-sm">
+      <div className="flex justify-between mb-2">
+        <p
+          className="cursor-pointer"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          &larr; Back
+        </p>
+
         <button
           type="button"
           onClick={handleLogout}
@@ -112,18 +121,10 @@ const Profile = () => {
           Logout
         </button>
       </div>
-      <div className="rounded-lg shadow-sm border p-6 pt-0 w-full max-w-sm mx-auto">
+      <div className="w-full max-w-sm mx-auto">
         <div className="bg-white">
           <div className="flex justify-between items-center my-4">
             <h2 className="text-xl font-bold ">Update Profile</h2>
-            <button
-              className="w-12 h-12 text-lg font-medium text-center"
-              onClick={() => {
-                router.back();
-              }}
-            >
-              <span>X</span>
-            </button>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Name</label>

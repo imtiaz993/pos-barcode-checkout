@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
@@ -15,6 +14,7 @@ const BarcodeScanner = dynamic(() => import("./components/BarcodeScanner"), {
 });
 
 const POS = () => {
+  const router = useRouter();
   const { storeId, region }: any = useParams();
   const pathname = usePathname();
   const type: any = pathname.includes("/checkout")
@@ -126,21 +126,16 @@ const POS = () => {
         }}
       />
 
-      <div className="">
-        <div className="fixed top-2 left-2">
-          <Link
-            href={`/user-profile?type=${type}&region=${region}&storeId=${storeId}`}
-          >
-            <Image
-              src="/images/profile.png"
-              width={0}
-              height={0}
-              sizes="100vw"
-              alt=""
-              className="w-8 cursor-pointer"
-            />
-          </Link>
-        </div>
+      <div className="px-4 py-2">
+        <p
+          className="cursor-pointer"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          &larr; Back
+        </p>
+
         {productFetching && <Loader />}
         <div className="min-h-dvh flex flex-col justify-between w-11/12 mx-auto max-w-[540px]">
           <div></div>

@@ -35,7 +35,7 @@ export default function Page() {
   return (
     <>
       {activating && <Loader />}
-      <div className="max-w-lg mx-auto px-4 py-6">
+      <div className="max-w-lg mx-auto px-4 py-4">
         {activating ? (
           <h1 className="text-xl font-bold mb-4 text-center">
             Activating your{" "}

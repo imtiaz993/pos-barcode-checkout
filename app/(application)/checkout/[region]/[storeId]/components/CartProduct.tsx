@@ -45,7 +45,7 @@ const CartProduct = ({ product, products, setProducts }: any) => {
             product?.images[0].alt) ||
           ""
         }
-        className="inline-block align-middle w-[15%] h-auto mr-[3%]"
+        className="inline-block align-middle w-[15%] max-h-20 object-contain h-auto mr-[3%]"
       />
       <div className="inline-block align-middle w-[57%]">
         <p className="m-0 text-sm font-semibold">

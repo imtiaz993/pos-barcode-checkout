@@ -8,6 +8,8 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { checkAuthState } from "@/utils/firebaseAuth";
+import Link from "next/link";
+import Image from "next/image";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();
@@ -23,7 +25,6 @@ const Layout = ({ children }: any) => {
   const { region, storeId }: any = useParams();
   const gift_card = searchParams.get("gift_card");
   const [checkingAuth, setCheckingAuth] = useState(true);
-
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -48,7 +49,28 @@ const Layout = ({ children }: any) => {
     return null;
   }
 
-  return children;
+  return (
+    <>
+      <div className="w-full border-b flex justify-between items-center px-4 py-1">
+        <div>
+          <h1>Eco Boutique</h1>
+        </div>
+        <Link
+          href={`/user-profile?type=${type}&region=${region}&storeId=${storeId}`}
+        >
+          <Image
+            src="/images/profile.png"
+            width={0}
+            height={0}
+            sizes="100vw"
+            alt=""
+            className="w-8 cursor-pointer"
+          />
+        </Link>
+      </div>
+      {children}
+    </>
+  );
 };
 
 export default Layout;

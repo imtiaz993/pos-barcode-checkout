@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
-import { app } from "../../../firebase";
+import { app } from "../../firebase";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();

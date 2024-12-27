@@ -12,7 +12,7 @@ const Cart = (props: any) => {
   const user = auth.currentUser;
   const [discountData, setDiscountData] = useState<any>(null);
   const [showCheckout, setShowCheckout] = useState(false);
-  const [couponGiftCard, setCouponGiftCard] = useState("");
+  const [couponCode, setCouponCode] = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [discountedPrice, setDiscountedPrice] = useState<any>(-1);
@@ -22,7 +22,7 @@ const Cart = (props: any) => {
   let total = { productQuantity: 0, totalPrice: 0 };
   products.map((i: any) => {
     total.productQuantity = total.productQuantity + i.quantity;
-    total.totalPrice = total.totalPrice + i.price * i.quantity;
+    total.totalPrice = total.totalPrice + (i.price + i.tax_rate) * i.quantity;
   });
 
   const handleCheckout = () => {
@@ -44,19 +44,15 @@ const Cart = (props: any) => {
         total.totalPrice -
           (response.data.coupon.discount_value / 100) * total.totalPrice
       );
-    } else {
-      setDiscountedPrice(
-        Math.max(0, total.totalPrice - response.data.gift_card.balance)
-      );
     }
   };
 
   const handleApplyCoupon = () => {
     if (discountedPrice >= 0) {
       setDiscountedPrice(-1);
-      setCouponGiftCard("");
+      setCouponCode("");
     } else {
-      if (!couponGiftCard) {
+      if (!couponCode) {
         setErrorMessage("Field cannot be empty");
         return;
       }
@@ -65,7 +61,7 @@ const Cart = (props: any) => {
 
       axios
         .post(`https://api.ecoboutiquemarket.com/retrieveCode`, {
-          code: couponGiftCard,
+          code: couponCode,
         })
         .then((response) => {
           const codetype = response.data.code_type;
@@ -73,40 +69,6 @@ const Cart = (props: any) => {
           if (codetype === "coupon") {
             applyDiscount(response, codetype);
             setApplyingCoupon(false);
-          } else {
-            axios
-              .post(
-                `https://api.ecoboutiquemarket.com/giftcard/validate-recipient`,
-                {
-                  code: couponGiftCard,
-                }
-              )
-              .then(() => {
-                const verificationCode: any = window.prompt(
-                  "Enter the verification code:"
-                );
-
-                axios
-                  .post(
-                    `https://api.ecoboutiquemarket.com/giftcard/verify-code`,
-                    {
-                      code: verificationCode,
-                      phone_number: user?.phoneNumber,
-                    }
-                  )
-                  .then(() => {
-                    applyDiscount(response, codetype);
-                    setApplyingCoupon(false);
-                  })
-                  .catch((error) => {
-                    setApplyingCoupon(false);
-                    toast.error(error?.response?.data?.message);
-                  });
-              })
-              .catch((error) => {
-                setApplyingCoupon(false);
-                toast.error(error?.response?.data?.message);
-              });
           }
         })
         .catch((error) => {
@@ -120,16 +82,12 @@ const Cart = (props: any) => {
     if (total.productQuantity === 0) {
       setDiscountData(null);
       setDiscountedPrice(-1);
-      setCouponGiftCard("");
+      setCouponCode("");
     } else {
       if (discountData?.code_type === "coupon") {
         setDiscountedPrice(
           total.totalPrice -
             (discountData?.coupon?.discount_value / 100) * total.totalPrice
-        );
-      } else if (discountData?.code_type === "gift_card") {
-        setDiscountedPrice(
-          Math.max(0, total.totalPrice - discountData?.gift_card?.balance)
         );
       }
     }
@@ -138,13 +96,9 @@ const Cart = (props: any) => {
   const handleRedeem = async (setLoading: any, orderId: any) => {
     try {
       const res: any = await axios.post(
-        `https://api.ecoboutiquemarket.com/${
-          discountData?.code_type === "coupon"
-            ? "redeemCoupon"
-            : "redeemGiftCard"
-        }`,
+        "https://api.ecoboutiquemarket.com/redeemCoupon",
         {
-          code: couponGiftCard,
+          code: couponCode,
           amount:
             discountData[discountData.code_type].amount > total.totalPrice
               ? total.totalPrice
@@ -187,20 +141,21 @@ const Cart = (props: any) => {
           })),
 
           terminalCheckout: paymentIntent,
-          subTotal: discountedPrice >= 0 ? discountedPrice : total.totalPrice,
+          subTotal:
+            discountedPrice >= 0
+              ? discountedPrice - taxAmount
+              : total.totalPrice - taxAmount,
           tax: taxAmount,
           totalAmount:
             discountedPrice >= 0
-              ? discountedPrice
+              ? discountedPrice + taxAmount
               : total.totalPrice + taxAmount,
           status: "Completed",
-          couponId: discountData?.code_type === "coupon" ? couponGiftCard : "",
-          giftCardCode:
-            discountData?.code_type === "coupon" ? "" : couponGiftCard,
+          couponId: discountData?.code_type === "coupon" ? couponCode : "",
           userPhone: user?.phoneNumber,
         }
       );
-      if (couponGiftCard) {
+      if (couponCode) {
         handleRedeem(setLoading, res.data._id);
       } else {
         setLoading(false);
@@ -233,7 +188,7 @@ const Cart = (props: any) => {
         }`}
       >
         <button
-          className={`absolute top-0 border shadow-sm w-12 h-12 text-center leading-[50px] bg-white z-10 ${
+          className={`absolute top-10 border shadow-sm w-12 h-12 text-center leading-[50px] bg-white z-10 ${
             isOpen ? "left-0 sm:left-[-48px]" : "left-[-50px] sm:left-[-48px]"
           } `}
           onClick={handleToggleCart(isOpen)}
@@ -282,7 +237,9 @@ const Cart = (props: any) => {
             </div>
             {discountedPrice >= 0 && (
               <div>
-                <p className="inline-block w-1/5 whitespace-nowrap">AFTER DISCOUNT</p>
+                <p className="inline-block w-1/5 whitespace-nowrap">
+                  AFTER DISCOUNT
+                </p>
                 <div className="inline-block w-4/5 text-right ">
                   <p className="text-2xl m-0">${discountedPrice?.toFixed(2)}</p>
                 </div>
@@ -293,8 +250,8 @@ const Cart = (props: any) => {
                 <div className="flex mt-5">
                   <input
                     type="text"
-                    value={couponGiftCard}
-                    onChange={(e) => setCouponGiftCard(e.target.value)}
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="Enter Coupon Code?"
                     className="w-full px-2 py-2 text-sm border rounded-lg"
                     disabled={discountedPrice >= 0}
