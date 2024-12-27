@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { checkAuthState } from "../../../utils/firebaseAuth";
+import { checkAuthState } from "../../utils/firebaseAuth";
 import PhoneAuthentication from "./components/PhoneAuthentication";
 import VerifyOTP from "./components/VerifyOTP";
 

@@ -7,6 +7,7 @@ import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
 import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
 import { app } from "@/app/firebase";
 import { logout } from "../../../../utils/firebaseAuth";
+import axios from "axios";
 
 const Profile = () => {
   const searchParams = useSearchParams();
@@ -21,6 +22,23 @@ const Profile = () => {
     name: "",
     phone: "",
   });
+
+  const [giftCardBalance, setGiftCardBalance] = useState<any>("Loading...");
+
+  useEffect(() => {
+    axios
+      .post("https://api.ecoboutiquemarket.com/giftcard/balance", {
+        phone_number: user?.phoneNumber,
+      })
+      .then((res) => {
+        setGiftCardBalance(res.data.balance);
+      })
+      .catch((error) => {
+        setGiftCardBalance(0);
+        toast.error(error?.response?.data?.message);
+        console.error("Error fetching client secret:", error);
+      });
+  }, []);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -123,6 +141,9 @@ const Profile = () => {
       </div>
       <div className="w-full max-w-sm mx-auto">
         <div className="bg-white">
+          <h1 className="font-semibold mt-4">
+            Gift Card Balance: {giftCardBalance}
+          </h1>
           <div className="flex justify-between items-center my-4">
             <h2 className="text-xl font-bold ">Update Profile</h2>
           </div>

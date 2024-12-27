@@ -16,6 +16,8 @@ const Cart = (props: any) => {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [discountedPrice, setDiscountedPrice] = useState<any>(-1);
+  const [giftCardBalanceUsed, setGiftCardBalanceUsed] = useState(0);
+  const [giftCardBalance, setGiftCardBalance] = useState(0);
 
   const { products, isOpen, openCart, closeCart, setProducts, storeId } = props;
 
@@ -25,9 +27,24 @@ const Cart = (props: any) => {
     total.totalPrice = total.totalPrice + (i.price + i.tax_rate) * i.quantity;
   });
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (total.productQuantity) {
-      setShowCheckout(true);
+      try {
+        const res: any = await axios.post(
+          "https://api.ecoboutiquemarket.com/giftcard/balance",
+          {
+            phone_number: user?.phoneNumber,
+          }
+        );
+        if (res.data.balance >= giftCardBalanceUsed) {
+          setShowCheckout(true);
+        } else {
+          toast.error("Your gift card balance got changed. Try again!");
+        }
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+        console.error("Error fetching product:", error);
+      }
     } else {
       alert("Add some product in the cart!");
     }
@@ -39,11 +56,20 @@ const Cart = (props: any) => {
   const applyDiscount = (response: any, codetype: any) => {
     setDiscountData(response.data);
 
-    if (codetype === "coupon") {
-      setDiscountedPrice(
-        total.totalPrice -
-          (response.data.coupon.discount_value / 100) * total.totalPrice
-      );
+    if (codetype === "coupon" || giftCardBalanceUsed) {
+      let discounted = total.totalPrice;
+      if (codetype === "coupon") {
+        discounted =
+          discounted -
+          (response.data.coupon.discount_value / 100) * total.totalPrice;
+      }
+      if (giftCardBalanceUsed) {
+        discounted =
+          discounted - giftCardBalanceUsed >= 0
+            ? discounted - giftCardBalanceUsed
+            : 0;
+      }
+      setDiscountedPrice(discounted);
     }
   };
 
@@ -109,8 +135,22 @@ const Cart = (props: any) => {
           user_id: user?.phoneNumber,
         }
       );
+    } catch (error: any) {
       setLoading(false);
-      router.push("/success");
+      toast.error(error?.response?.data?.message);
+      console.error("Error fetching product:", error);
+    }
+  };
+
+  const handleRedeemGiftCardBalance = async (setLoading: any) => {
+    try {
+      const res: any = await axios.post(
+        "https://api.ecoboutiquemarket.com/redeemGiftCard",
+        {
+          amount: giftCardBalanceUsed,
+          phone_number: user?.phoneNumber,
+        }
+      );
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
@@ -155,18 +195,38 @@ const Cart = (props: any) => {
           userPhone: user?.phoneNumber,
         }
       );
+      if (giftCardBalanceUsed) {
+        handleRedeemGiftCardBalance(setLoading);
+      }
       if (couponCode) {
         handleRedeem(setLoading, res.data._id);
-      } else {
-        setLoading(false);
-        router.push("/success");
       }
+      setLoading(false);
+      router.push("/success");
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
       console.error("Error fetching product:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchGiftCard = async () => {
+      try {
+        const res: any = await axios.post(
+          "https://api.ecoboutiquemarket.com/giftcard/balance",
+          {
+            phone_number: user?.phoneNumber,
+          }
+        );
+        setGiftCardBalance(res.data.balance);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+        console.error("Error fetching product:", error);
+      }
+    };
+    fetchGiftCard();
+  }, []);
 
   return (
     <>
@@ -271,6 +331,15 @@ const Cart = (props: any) => {
                 >
                   {errorMessage}
                 </p>
+                {giftCardBalance && (
+                  <div
+                    onClick={() => {
+                      setGiftCardBalanceUsed(giftCardBalance);
+                    }}
+                  >
+                    Apply gift card balance
+                  </div>
+                )}
               </>
             )}
             <button
