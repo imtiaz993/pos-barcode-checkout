@@ -153,7 +153,7 @@ const Profile = () => {
             </h1>
             {!giftCardBalanceLoading && (
               <p className="ml-3 text-blue-600 border-b border-b-blue-600 cursor-pointer text-sm">
-                <Link href={`giftcard-history?type=${type}&region=${region}&storeId=${storeId}`}>View History</Link>
+                <Link href={`giftcard-history?type=${type}&region=${region}&storeId=${storeId}`}>View Transactions</Link>
               </p>
             )}
           </div>

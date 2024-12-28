@@ -150,7 +150,7 @@ const Payment = ({ price, onSuccess, onCancel }: any) => {
   useEffect(() => {
     axios
       .post("/api/create-payment-intent", {
-        price: Number(price) * 100,
+        price: Math.round(Number(price) * 100),
         phone: user?.phoneNumber,
       })
       .then((response) => {

@@ -10,14 +10,16 @@ import Payment from "@/components/Payment";
 const Cart = (props: any) => {
   const router = useRouter();
   const user = auth.currentUser;
+  const [giftCardBalance, setGiftCardBalance] = useState(0);
   const [discountData, setDiscountData] = useState<any>(null);
   const [showCheckout, setShowCheckout] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [discountedPrice, setDiscountedPrice] = useState<any>(-1);
+  const [couponDiscountedPrice, setCouponDiscountedPrice] = useState<any>(0);
+
+  const [applyGiftCardBalance, setApplyGiftCardBalance] = useState(false);
   const [giftCardBalanceUsed, setGiftCardBalanceUsed] = useState(0);
-  const [giftCardBalance, setGiftCardBalance] = useState(0);
 
   const { products, isOpen, openCart, closeCart, setProducts, storeId } = props;
 
@@ -57,25 +59,17 @@ const Cart = (props: any) => {
     setDiscountData(response.data);
 
     if (codetype === "coupon" || giftCardBalanceUsed) {
-      let discounted = total.totalPrice;
       if (codetype === "coupon") {
-        discounted =
-          discounted -
-          (response.data.coupon.discount_value / 100) * total.totalPrice;
+        setCouponDiscountedPrice(
+          (response.data.coupon.discount_value / 100) * total.totalPrice
+        );
       }
-      if (giftCardBalanceUsed) {
-        discounted =
-          discounted - giftCardBalanceUsed >= 0
-            ? discounted - giftCardBalanceUsed
-            : 0;
-      }
-      setDiscountedPrice(discounted);
     }
   };
 
   const handleApplyCoupon = () => {
-    if (discountedPrice >= 0) {
-      setDiscountedPrice(-1);
+    if (couponDiscountedPrice) {
+      setCouponDiscountedPrice(0);
       setCouponCode("");
     } else {
       if (!couponCode) {
@@ -91,8 +85,9 @@ const Cart = (props: any) => {
         })
         .then((response) => {
           const codetype = response.data.code_type;
-
           if (codetype === "coupon") {
+            setApplyGiftCardBalance(false);
+            setGiftCardBalanceUsed(0);
             applyDiscount(response, codetype);
             setApplyingCoupon(false);
           }
@@ -107,19 +102,33 @@ const Cart = (props: any) => {
   useEffect(() => {
     if (total.productQuantity === 0) {
       setDiscountData(null);
-      setDiscountedPrice(-1);
+      setCouponDiscountedPrice(0);
       setCouponCode("");
     } else {
       if (discountData?.code_type === "coupon") {
-        setDiscountedPrice(
-          total.totalPrice -
-            (discountData?.coupon?.discount_value / 100) * total.totalPrice
-        );
+        const discounted =
+          (discountData?.coupon?.discount_value / 100) * total.totalPrice;
+        setCouponDiscountedPrice(discounted);
+        if (applyGiftCardBalance) {
+          setGiftCardBalanceUsed(
+            total.totalPrice - discounted - giftCardBalance >= 0
+              ? giftCardBalance
+              : total.totalPrice - discounted
+          );
+        }
+      } else {
+        if (applyGiftCardBalance) {
+          setGiftCardBalanceUsed(
+            total.totalPrice - giftCardBalance >= 0
+              ? giftCardBalance
+              : total.totalPrice
+          );
+        }
       }
     }
   }, [total.totalPrice]);
 
-  const handleRedeem = async (setLoading: any, orderId: any) => {
+  const handleRedeem = async (orderId: any) => {
     try {
       const res: any = await axios.post(
         "https://api.ecoboutiquemarket.com/redeemCoupon",
@@ -136,13 +145,12 @@ const Cart = (props: any) => {
         }
       );
     } catch (error: any) {
-      setLoading(false);
       toast.error(error?.response?.data?.message);
       console.error("Error fetching product:", error);
     }
   };
 
-  const handleRedeemGiftCardBalance = async (setLoading: any) => {
+  const handleRedeemGiftCardBalance = async () => {
     try {
       const res: any = await axios.post(
         "https://api.ecoboutiquemarket.com/redeemGiftCard",
@@ -152,61 +160,86 @@ const Cart = (props: any) => {
         }
       );
     } catch (error: any) {
-      setLoading(false);
       toast.error(error?.response?.data?.message);
       console.error("Error fetching product:", error);
     }
   };
 
-  const handleAddOrder = async (setLoading: any, paymentIntent: any) => {
+  const handleAddOrder = async (paymentIntent: any) => {
     function generateUniqueId() {
       const randomNumber = Math.floor(10000 + Math.random() * 90000);
       return `online_${randomNumber}`;
     }
     let taxAmount = 0;
     products.map((product: any) => (taxAmount += product?.tax_rate));
+    const res: any = await axios.post(
+      `https://api.ecoboutiquemarket.com/?action=addOrder`,
+      {
+        orderId: generateUniqueId(),
+        storeId: storeId,
+        orderDate: new Date(),
+        orderItems: products.map((product: any) => ({
+          productId: product.barcode,
+          quantity: product.quantity,
+          price: product.price,
+          reward_point: product?.reward_points,
+        })),
 
+        terminalCheckout: paymentIntent,
+        subTotal:
+          total.totalPrice -
+            couponDiscountedPrice -
+            giftCardBalanceUsed -
+            taxAmount >
+          0
+            ? total.totalPrice -
+              couponDiscountedPrice -
+              giftCardBalanceUsed -
+              taxAmount
+            : 0,
+
+        tax: taxAmount,
+        totalAmount:
+          total.totalPrice - couponDiscountedPrice - giftCardBalanceUsed > 0
+            ? total.totalPrice -
+              couponDiscountedPrice -
+              giftCardBalanceUsed +
+              taxAmount
+            : taxAmount,
+
+        status: "Completed",
+        couponId: discountData?.code_type === "coupon" ? couponCode : "",
+        userPhone: user?.phoneNumber,
+      }
+    );
+    return res;
+  };
+
+  const hanldeSubmit = async (setLoading: any, paymentIntent: any) => {
     try {
-      const res: any = await axios.post(
-        `https://api.ecoboutiquemarket.com/?action=addOrder`,
-        {
-          orderId: generateUniqueId(),
-          storeId: storeId,
-          orderDate: new Date(),
-          orderItems: products.map((product: any) => ({
-            productId: product.barcode,
-            quantity: product.quantity,
-            price: product.price,
-            reward_point: product?.reward_points,
-          })),
+      setLoading(true);
 
-          terminalCheckout: paymentIntent,
-          subTotal:
-            discountedPrice >= 0
-              ? discountedPrice - taxAmount
-              : total.totalPrice - taxAmount,
-          tax: taxAmount,
-          totalAmount:
-            discountedPrice >= 0
-              ? discountedPrice + taxAmount
-              : total.totalPrice + taxAmount,
-          status: "Completed",
-          couponId: discountData?.code_type === "coupon" ? couponCode : "",
-          userPhone: user?.phoneNumber,
-        }
-      );
+      const orderRes = await handleAddOrder(paymentIntent);
+      const promises: Promise<any>[] = [];
+
       if (giftCardBalanceUsed) {
-        handleRedeemGiftCardBalance(setLoading);
+        promises.push(handleRedeemGiftCardBalance());
       }
+
       if (couponCode) {
-        handleRedeem(setLoading, res.data._id);
+        promises.push(handleRedeem(orderRes?.data?._id));
       }
+
+      if (promises.length) {
+        await Promise.all(promises);
+      }
+
       setLoading(false);
       router.push("/success");
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
-      console.error("Error fetching product:", error);
+      console.error("Error submitting:", error);
     }
   };
 
@@ -233,8 +266,12 @@ const Cart = (props: any) => {
       {applyingCoupon && <Loader />}
       {showCheckout ? (
         <Payment
-          price={discountedPrice >= 0 ? discountedPrice : total.totalPrice}
-          onSuccess={handleAddOrder}
+          price={
+            total.totalPrice - couponDiscountedPrice - giftCardBalanceUsed > 0
+              ? total.totalPrice - couponDiscountedPrice - giftCardBalanceUsed
+              : 0
+          }
+          onSuccess={hanldeSubmit}
           onCancel={() => {
             setShowCheckout(false);
           }}
@@ -289,21 +326,32 @@ const Cart = (props: any) => {
             <div className="inline-block w-4/5 text-right ">
               <p
                 className={`text-2xl m-0 ${
-                  discountedPrice >= 0 ? "line-through text-red-600" : ""
+                  couponDiscountedPrice || giftCardBalanceUsed
+                    ? "line-through text-red-600"
+                    : ""
                 }`}
               >
                 ${total?.totalPrice.toFixed(2)}
               </p>
             </div>
-            {discountedPrice >= 0 && (
+            {couponDiscountedPrice || giftCardBalanceUsed ? (
               <div>
                 <p className="inline-block w-1/5 whitespace-nowrap">
                   AFTER DISCOUNT
                 </p>
                 <div className="inline-block w-4/5 text-right ">
-                  <p className="text-2xl m-0">${discountedPrice?.toFixed(2)}</p>
+                  <p className="text-2xl m-0">
+                    $
+                    {(
+                      total.totalPrice -
+                      couponDiscountedPrice -
+                      giftCardBalanceUsed
+                    )?.toFixed(2)}
+                  </p>
                 </div>
               </div>
+            ) : (
+              ""
             )}
             {products?.length > 0 && (
               <>
@@ -314,14 +362,14 @@ const Cart = (props: any) => {
                     onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="Enter Coupon Code?"
                     className="w-full px-2 py-2 text-sm border rounded-lg"
-                    disabled={discountedPrice >= 0}
+                    disabled={discountData}
                   />
 
                   <button
                     onClick={handleApplyCoupon}
                     className="w-40 bg-blue-600 text-white py-2 text-sm rounded-lg ml-4"
                   >
-                    {discountedPrice >= 0 ? "Remove" : "Apply"}
+                    {discountData ? "Remove" : "Apply"}
                   </button>
                 </div>
                 <p
@@ -332,13 +380,37 @@ const Cart = (props: any) => {
                   {errorMessage}
                 </p>
                 {giftCardBalance ? (
-                  <div
-                    onClick={() => {
-                      setGiftCardBalanceUsed(giftCardBalance);
-                    }}
-                  >
-                    Apply gift card balance
-                  </div>
+                  <label className="flex items-center text-sm font-medium select-none">
+                    <input
+                      checked={applyGiftCardBalance}
+                      onChange={(e) => {
+                        setApplyGiftCardBalance(e.target.checked);
+                        if (e.target.checked) {
+                          if (couponDiscountedPrice) {
+                            setGiftCardBalanceUsed(
+                              total.totalPrice -
+                                couponDiscountedPrice -
+                                giftCardBalance >=
+                                0
+                                ? giftCardBalance
+                                : total.totalPrice - couponDiscountedPrice
+                            );
+                          } else {
+                            setGiftCardBalanceUsed(
+                              total.totalPrice - giftCardBalance >= 0
+                                ? giftCardBalance
+                                : total.totalPrice
+                            );
+                          }
+                        } else {
+                          setGiftCardBalanceUsed(0);
+                        }
+                      }}
+                      className="mr-1 w-4 h-4"
+                      type="checkbox"
+                    />
+                    Apply Gift Card Balance (${giftCardBalance})
+                  </label>
                 ) : (
                   ""
                 )}
