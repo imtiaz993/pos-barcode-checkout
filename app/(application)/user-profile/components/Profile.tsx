@@ -27,7 +27,7 @@ const Profile = () => {
 
   useEffect(() => {
     axios
-      .post("https://api.ecoboutiquemarket.com/giftcard/balance", {
+      .post("https://api.ecoboutiquemarket.com/giftcard/check-balance", {
         phone_number: user?.phoneNumber,
       })
       .then((res) => {
@@ -112,7 +112,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-sm">
+    <div className="max-w-md">
       <div className="flex justify-between mb-2">
         <p
           className="cursor-pointer"
@@ -139,14 +139,14 @@ const Profile = () => {
           Logout
         </button>
       </div>
-      <div className="w-full max-w-sm mx-auto">
+      <div className="w-full max-w-md mx-auto">
         <div className="bg-white">
-          <h1 className="font-semibold mt-4">
+          <h1 className="font-semibold my-4">
             Gift Card Balance: {giftCardBalance}
           </h1>
-          <div className="flex justify-between items-center my-4">
+          {/* <div className="flex justify-between items-center my-4">
             <h2 className="text-xl font-bold ">Update Profile</h2>
-          </div>
+          </div> */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Name</label>
             <input

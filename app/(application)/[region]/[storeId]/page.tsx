@@ -8,7 +8,7 @@ const Page = () => {
   const { region, storeId }: any = useParams();
   return (
     <div className="flex items-center justify-center min-h-[calc(100dvh-41px)]">
-      <div className="rounded-lg p-6 pt-0 w-full max-w-lg">
+      <div className="rounded-lg p-6 pt-0 w-full max-w-md">
         <div className="flex justify-center">
           <Image
             src="/images/logo.png"

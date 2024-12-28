@@ -154,7 +154,7 @@ export default function Page() {
       ) : (
         <></>
       )}
-      <div className="max-w-lg mx-auto px-4 py-2">
+      <div className="max-w-md mx-auto px-4 py-2">
       <p
           className="cursor-pointer mb-2"
           onClick={() => {

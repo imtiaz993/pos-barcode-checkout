@@ -31,7 +31,7 @@ const Cart = (props: any) => {
     if (total.productQuantity) {
       try {
         const res: any = await axios.post(
-          "https://api.ecoboutiquemarket.com/giftcard/balance",
+          "https://api.ecoboutiquemarket.com/giftcard/check-balance",
           {
             phone_number: user?.phoneNumber,
           }
@@ -214,7 +214,7 @@ const Cart = (props: any) => {
     const fetchGiftCard = async () => {
       try {
         const res: any = await axios.post(
-          "https://api.ecoboutiquemarket.com/giftcard/balance",
+          "https://api.ecoboutiquemarket.com/giftcard/check-balance",
           {
             phone_number: user?.phoneNumber,
           }
