@@ -8,6 +8,7 @@ import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
 import { app } from "@/app/firebase";
 import { logout } from "../../../../utils/firebaseAuth";
 import axios from "axios";
+import Link from "next/link";
 
 const Profile = () => {
   const searchParams = useSearchParams();
@@ -23,7 +24,9 @@ const Profile = () => {
     phone: "",
   });
 
-  const [giftCardBalance, setGiftCardBalance] = useState<any>("Loading...");
+  const [giftCardBalance, setGiftCardBalance] = useState<any>();
+  const [giftCardBalanceLoading, setGiftCardBalanceLoading] =
+    useState<any>(true);
 
   useEffect(() => {
     axios
@@ -32,9 +35,11 @@ const Profile = () => {
       })
       .then((res) => {
         setGiftCardBalance(res.data.balance);
+        setGiftCardBalanceLoading(false);
       })
       .catch((error) => {
         setGiftCardBalance(0);
+        setGiftCardBalanceLoading(false);
         toast.error(error?.response?.data?.message);
         console.error("Error fetching client secret:", error);
       });
@@ -141,9 +146,17 @@ const Profile = () => {
       </div>
       <div className="w-full max-w-md mx-auto">
         <div className="bg-white">
-          <h1 className="font-semibold my-4">
-            Gift Card Balance: {giftCardBalance}
-          </h1>
+          <div className="flex items-center">
+            <h1 className="font-semibold my-4">
+              Gift Card Balance:{" "}
+              {giftCardBalanceLoading ? "Loading..." : "$" + giftCardBalance}
+            </h1>
+            {!giftCardBalanceLoading && (
+              <p className="ml-3 text-blue-600 border-b border-b-blue-600 cursor-pointer text-sm">
+                <Link href={`giftcard-history?type=${type}&region=${region}&storeId=${storeId}`}>View History</Link>
+              </p>
+            )}
+          </div>
           {/* <div className="flex justify-between items-center my-4">
             <h2 className="text-xl font-bold ">Update Profile</h2>
           </div> */}
