@@ -51,6 +51,10 @@ export default function RootLayout({
           href="https://utfs.io/f/69a12ab1-4d57-4913-90f9-38c6aca6c373-1txg2.png"
           as="image"
         />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no"
+        ></meta>
       </head>
       <body>
         <Suspense>{children}</Suspense>

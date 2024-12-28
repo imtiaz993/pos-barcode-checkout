@@ -331,7 +331,7 @@ const Cart = (props: any) => {
                 >
                   {errorMessage}
                 </p>
-                {giftCardBalance && (
+                {giftCardBalance ? (
                   <div
                     onClick={() => {
                       setGiftCardBalanceUsed(giftCardBalance);
@@ -339,6 +339,8 @@ const Cart = (props: any) => {
                   >
                     Apply gift card balance
                   </div>
+                ) : (
+                  ""
                 )}
               </>
             )}
