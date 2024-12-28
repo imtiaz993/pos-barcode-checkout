@@ -2,10 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 select,
 textarea,
 input {
-  font-size: 16px;
+  font-size: 16px !important;
 }
 
 .cartFooterShadow::before {
