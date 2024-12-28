@@ -7,7 +7,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile");
 
   return (
-    <div className="min-h-[calc(100dvh-41px)] mx-auto px-4 py-2 max-w-md">
+    <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
       {/* Tabs */}
       {/* <div className="flex justify-between border-b border-gray-300">
         <button
