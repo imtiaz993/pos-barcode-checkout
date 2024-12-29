@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/sonner";
+import Script from "next/script";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
@@ -55,6 +56,12 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1.0, user-scalable=no"
         ></meta>
+        <Script
+          src="https://tools.luckyorange.com/core/lo.js?site-id=4e0fd289"
+          strategy="lazyOnload"
+          async
+          defer
+        />
       </head>
       <body className="max-w-md mx-auto pb-4">
         <Suspense>{children}</Suspense>

@@ -18,6 +18,8 @@ const Cart = (props: any) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [couponDiscountedPrice, setCouponDiscountedPrice] = useState<any>(0);
 
+  const [loading, setLoading] = useState(false);
+
   const [applyGiftCardBalance, setApplyGiftCardBalance] = useState(false);
   const [giftCardBalanceUsed, setGiftCardBalanceUsed] = useState(0);
 
@@ -39,7 +41,14 @@ const Cart = (props: any) => {
           }
         );
         if (res.data.balance >= giftCardBalanceUsed) {
-          setShowCheckout(true);
+          if (
+            total.totalPrice - couponDiscountedPrice - giftCardBalanceUsed <=
+            0
+          ) {
+            hanldeSubmit(setLoading, {});
+          } else {
+            setShowCheckout(true);
+          }
         } else {
           toast.error("Your gift card balance got changed. Try again!");
         }
@@ -263,7 +272,7 @@ const Cart = (props: any) => {
 
   return (
     <>
-      {applyingCoupon && <Loader />}
+      {(applyingCoupon || loading) && <Loader />}
       {showCheckout ? (
         <Payment
           price={
