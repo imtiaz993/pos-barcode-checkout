@@ -17,7 +17,6 @@ const stripePromise = loadStripe(
 const PaymentForm = ({
   clientSecret,
   savedPaymentMethods,
-  setPaymentElementLoaded,
   handleSuccess = () => {},
   handleCancel = () => {},
 }: any) => {
@@ -25,6 +24,7 @@ const PaymentForm = ({
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<any>("");
 
   const handlePayWithSavedCard = async (methodId?: any) => {
     setLoading(true);
@@ -95,40 +95,75 @@ const PaymentForm = ({
           </div>
           {clientSecret ? (
             <form onSubmit={handleSubmit}>
+              <h1 className="mb-3 font-semibold pb-1">Saved Cards</h1>
               {savedPaymentMethods.map((method: any, index: number) => (
-                <div
-                  key={index}
-                  onClick={(e) => {
-                    handlePayWithSavedCard(method.id);
+                <label
+                  onClick={() => {
+                    setPaymentMethod(method.id);
                   }}
-                  className="flex items-center justify-between p-3 border rounded-lg mb-2 cursor-pointer"
+                  key={index}
+                  // onClick={(e) => {
+                  //
+                  // }}
+                  className="flex items-center p-3 border rounded-lg mb-2 cursor-pointer text-sm"
                 >
-                  <p>Pay with</p>
-                  <span className="ml-2">
-                    {method.card.brand.toUpperCase()} **** {method.card.last4}{" "}
-                    (Expires {method.card.exp_month}/{method.card.exp_year})
-                  </span>
-                </div>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value={method.id === paymentMethod ? "yes" : ""}
+                  />
+                  <div className=" ml-2 w-full flex items-center justify-between whitespace-nowrap">
+                    <p>Pay with</p>
+                    <span className="ml-2">
+                      {method.card.brand.toUpperCase()} **** {method.card.last4}{" "}
+                      (Expires {method.card.exp_month}/{method.card.exp_year})
+                    </span>
+                  </div>
+                </label>
               ))}
-              <div className="flex items-center mt-10 mb-5">
-                <div className="h-[1px] w-full bg-black"></div>
-                <h2 className=" whitespace-nowrap mx-5 text-lg">
-                  Add New Card
-                </h2>
-                <div className="h-[1px] w-full bg-black"></div>
+              <div className="my-5 font-semibold pb-1">
+                <label
+                  onClick={() => {
+                    setPaymentMethod("new");
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value={paymentMethod === "new" ? "yes" : ""}
+                  />
+                  <span className="ml-2">Add New Card</span>
+                </label>
               </div>
-              <PaymentElement onReady={() => setPaymentElementLoaded(true)} />
-              <button
-                className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
-                  loading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-blue-700"
-                }`}
-                type="submit"
-                disabled={!stripe || loading}
-              >
-                {loading ? "Processing..." : "Pay Now"}
-              </button>
+              {paymentMethod === "new" && <PaymentElement />}
+              {paymentMethod == "new" ? (
+                <button
+                  className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
+                  }`}
+                  type="submit"
+                  disabled={!stripe || loading}
+                >
+                  {loading ? "Processing..." : "Pay Now"}
+                </button>
+              ) : (
+                <button
+                  className={`w-full bg-blue-600 text-white py-2 text-sm rounded-lg  mt-4  ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-blue-700"
+                  }`}
+                  type="button"
+                  onClick={() => {
+                    handlePayWithSavedCard(paymentMethod);
+                  }}
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Pay Now"}
+                </button>
+              )}
             </form>
           ) : (
             <p>Loading...</p>
@@ -140,12 +175,16 @@ const PaymentForm = ({
   );
 };
 
-const Payment = ({ price, onSuccess, onCancel }: any) => {
+const Payment = ({
+  price,
+  onSuccess,
+  onCancel,
+  onPaymentCreatedIntent,
+}: any) => {
   const user = auth.currentUser;
 
   const [clientSecret, setClientSecret] = useState("");
   const [savedPaymentMethods, setSavedPaymentMethods] = useState("");
-  const [paymentElementLoaded, setPaymentElementLoaded] = useState(false);
 
   useEffect(() => {
     axios
@@ -156,8 +195,10 @@ const Payment = ({ price, onSuccess, onCancel }: any) => {
       .then((response) => {
         setClientSecret(response.data.clientSecret);
         setSavedPaymentMethods(response.data.paymentMethods);
+        onPaymentCreatedIntent();
       })
       .catch((error) => {
+        onPaymentCreatedIntent();
         console.error("Error fetching client secret:", error);
       });
   }, []);
@@ -173,13 +214,11 @@ const Payment = ({ price, onSuccess, onCancel }: any) => {
 
   return (
     <>
-      {!paymentElementLoaded && <Loader />}
       {clientSecret ? (
         <Elements stripe={stripePromise} options={options}>
           <PaymentForm
             clientSecret={clientSecret}
             savedPaymentMethods={savedPaymentMethods}
-            setPaymentElementLoaded={setPaymentElementLoaded}
             handleSuccess={onSuccess}
             handleCancel={onCancel}
           />

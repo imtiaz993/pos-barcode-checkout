@@ -32,29 +32,41 @@ const Cart = (props: any) => {
   });
 
   const handleCheckout = async () => {
+    setLoading(true);
     if (total.productQuantity) {
-      try {
-        const res: any = await axios.post(
-          "https://api.ecoboutiquemarket.com/giftcard/check-balance",
-          {
-            phone_number: user?.phoneNumber,
-          }
-        );
-        if (res.data.balance >= giftCardBalanceUsed) {
-          if (
-            total.totalPrice - couponDiscountedPrice - giftCardBalanceUsed <=
-            0
-          ) {
-            hanldeSubmit(setLoading, {});
+      if (giftCardBalanceUsed) {
+        try {
+          const res: any = await axios.post(
+            "https://api.ecoboutiquemarket.com/giftcard/check-balance",
+            {
+              phone_number: user?.phoneNumber,
+            }
+          );
+          if (res.data.balance >= giftCardBalanceUsed) {
+            if (
+              total.totalPrice - couponDiscountedPrice - giftCardBalanceUsed <=
+              0
+            ) {
+              hanldeSubmit(setLoading, {});
+            } else {
+              setShowCheckout(true);
+            }
           } else {
-            setShowCheckout(true);
+            toast.error("Your gift card balance got changed. Try again!");
           }
-        } else {
-          toast.error("Your gift card balance got changed. Try again!");
+        } catch (error: any) {
+          toast.error(error?.response?.data?.message);
+          console.error("Error fetching product:", error);
         }
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message);
-        console.error("Error fetching product:", error);
+      } else {
+        if (
+          total.totalPrice - couponDiscountedPrice - giftCardBalanceUsed <=
+          0
+        ) {
+          hanldeSubmit(setLoading, {});
+        } else {
+          setShowCheckout(true);
+        }
       }
     } else {
       alert("Add some product in the cart!");
@@ -284,6 +296,9 @@ const Cart = (props: any) => {
           onCancel={() => {
             setShowCheckout(false);
           }}
+          onPaymentCreatedIntent={() => {
+            setLoading(false);
+          }}
         />
       ) : (
         <></>
@@ -389,7 +404,7 @@ const Cart = (props: any) => {
                   {errorMessage}
                 </p>
                 {giftCardBalance ? (
-                  <label className="flex items-center text-sm font-medium select-none">
+                  <label className="flex items-center text-sm font-medium select-none text-blue-600">
                     <input
                       checked={applyGiftCardBalance}
                       onChange={(e) => {
