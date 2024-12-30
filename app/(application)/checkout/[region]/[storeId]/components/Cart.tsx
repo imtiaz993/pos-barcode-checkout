@@ -23,7 +23,15 @@ const Cart = (props: any) => {
   const [applyGiftCardBalance, setApplyGiftCardBalance] = useState(false);
   const [giftCardBalanceUsed, setGiftCardBalanceUsed] = useState(0);
 
-  const { products, isOpen, openCart, closeCart, setProducts, storeId } = props;
+  const {
+    products,
+    isOpen,
+    openCart,
+    closeCart,
+    setProducts,
+    region,
+    storeId,
+  } = props;
 
   let total = { productQuantity: 0, totalPrice: 0 };
   products.map((i: any) => {
@@ -256,7 +264,7 @@ const Cart = (props: any) => {
       }
 
       setLoading(false);
-      router.push("/success");
+      router.push(`/success?region=${region}&storeId=${storeId}`);
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
@@ -404,7 +412,7 @@ const Cart = (props: any) => {
                   {errorMessage}
                 </p>
                 {giftCardBalance ? (
-                  <label className="flex items-center text-sm font-medium select-none text-blue-600">
+                  <label className="flex items-center text-sm font-medium select-none text-green-700">
                     <input
                       checked={applyGiftCardBalance}
                       onChange={(e) => {
@@ -433,7 +441,7 @@ const Cart = (props: any) => {
                       className="mr-1 w-4 h-4"
                       type="checkbox"
                     />
-                    Apply Gift Card Balance (${giftCardBalance})
+                    Apply Gift Card Balance (${giftCardBalance.toFixed(2)})
                   </label>
                 ) : (
                   ""

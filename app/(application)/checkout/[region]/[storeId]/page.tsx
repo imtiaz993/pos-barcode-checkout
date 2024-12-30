@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
@@ -16,12 +16,6 @@ const BarcodeScanner = dynamic(() => import("./components/BarcodeScanner"), {
 const POS = () => {
   const router = useRouter();
   const { storeId, region }: any = useParams();
-  const pathname = usePathname();
-  const type: any = pathname.includes("/checkout")
-    ? "/checkout"
-    : pathname.includes("/giftcard")
-    ? "/giftcard"
-    : "";
 
   const [barcode, setBarcode] = useState("");
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
@@ -116,6 +110,7 @@ const POS = () => {
       <Cart
         products={products}
         storeId={storeId}
+        region={region}
         setProducts={setProducts}
         isOpen={openCart}
         openCart={() => {
@@ -127,15 +122,6 @@ const POS = () => {
       />
 
       <div className="px-4 py-2">
-        <p
-          className="cursor-pointer"
-          onClick={() => {
-            router.back();
-          }}
-        >
-          &larr; Back
-        </p>
-
         {productFetching && <Loader />}
         <div className="min-h-[calc(100dvh-82px-16px)] flex flex-col justify-between w-11/12 mx-auto max-w-md">
           <div></div>

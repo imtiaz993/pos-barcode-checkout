@@ -24,7 +24,9 @@ const PaymentForm = ({
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<any>("");
+  const [paymentMethod, setPaymentMethod] = useState<any>(
+    savedPaymentMethods.length > 0 ? "" : "new"
+  );
 
   const handlePayWithSavedCard = async (methodId?: any) => {
     setLoading(true);
@@ -95,46 +97,51 @@ const PaymentForm = ({
           </div>
           {clientSecret ? (
             <form onSubmit={handleSubmit}>
-              <h1 className="mb-3 font-semibold pb-1">Saved Cards</h1>
-              {savedPaymentMethods.map((method: any, index: number) => (
-                <label
-                  onClick={() => {
-                    setPaymentMethod(method.id);
-                  }}
-                  key={index}
-                  // onClick={(e) => {
-                  //
-                  // }}
-                  className="flex items-center p-3 border rounded-lg mb-2 cursor-pointer text-sm"
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value={method.id === paymentMethod ? "yes" : ""}
-                  />
-                  <div className=" ml-2 w-full flex items-center justify-between whitespace-nowrap">
-                    <p>Pay with</p>
-                    <span className="ml-2">
-                      {method.card.brand.toUpperCase()} **** {method.card.last4}{" "}
-                      (Expires {method.card.exp_month}/{method.card.exp_year})
-                    </span>
+              {savedPaymentMethods.length > 0 && (
+                <>
+                  <h1 className="mb-3 font-semibold pb-1">Saved Cards</h1>
+                  {savedPaymentMethods.map((method: any, index: number) => (
+                    <label
+                      onClick={() => {
+                        setPaymentMethod(method.id);
+                      }}
+                      key={index}
+                      // onClick={(e) => {
+                      //
+                      // }}
+                      className="flex items-center p-3 border rounded-lg mb-2 cursor-pointer text-sm"
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={method.id === paymentMethod ? "yes" : ""}
+                      />
+                      <div className=" ml-2 w-full flex items-center justify-between whitespace-nowrap">
+                        <p>Pay with</p>
+                        <span className="ml-2">
+                          {method.card.brand.toUpperCase()} ****{" "}
+                          {method.card.last4} (Expires {method.card.exp_month}/
+                          {method.card.exp_year})
+                        </span>
+                      </div>
+                    </label>
+                  ))}
+                  <div className="my-5 font-semibold pb-1">
+                    <label
+                      onClick={() => {
+                        setPaymentMethod("new");
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={paymentMethod === "new" ? "yes" : ""}
+                      />
+                      <span className="ml-2">Add New Card</span>
+                    </label>
                   </div>
-                </label>
-              ))}
-              <div className="my-5 font-semibold pb-1">
-                <label
-                  onClick={() => {
-                    setPaymentMethod("new");
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value={paymentMethod === "new" ? "yes" : ""}
-                  />
-                  <span className="ml-2">Add New Card</span>
-                </label>
-              </div>
+                </>
+              )}
               {paymentMethod === "new" && <PaymentElement />}
               {paymentMethod == "new" ? (
                 <button
@@ -179,7 +186,7 @@ const Payment = ({
   price,
   onSuccess,
   onCancel,
-  onPaymentCreatedIntent,
+  onPaymentCreatedIntent = () => {},
 }: any) => {
   const user = auth.currentUser;
 

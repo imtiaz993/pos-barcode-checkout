@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
 import { toast } from "sonner";
@@ -10,14 +10,18 @@ import Payment from "@/components/Payment";
 import { auth } from "../../../../firebase";
 
 import "react-phone-input-2/lib/style.css";
+import Loader from "@/components/loader";
 
 export default function Page() {
   const router = useRouter();
+  const { storeId, region }: any = useParams();
+
   const user = auth.currentUser;
 
   const [showCheckout, setShowCheckout] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [amount, setAmount] = useState<any>(25);
+  const [amount, setAmount] = useState<any>(10);
   const [customAmount, setCustomAmount] = useState<any>("");
   const [message, setMessage] = useState("");
   const [fromName, setFromName] = useState("");
@@ -52,13 +56,19 @@ export default function Page() {
     "Back to School",
   ];
 
-  const presetAmounts = [25, 50, 100, 250, 500];
+  const presetAmounts = [10, 25, 50, 100, 250, 500];
 
   const validateForm = () => {
     let isValid = true;
 
     // Validate amount
-    if ((amount === "" || amount === undefined) && customAmount.trim() === "") {
+    if ((amount === "" || amount === undefined) && customAmount < 5) {
+      setAmountError("Please enter a value $5 and above.");
+      isValid = false;
+    } else if (
+      (amount === "" || amount === undefined) &&
+      customAmount.trim() === ""
+    ) {
       setAmountError("Please select or enter an amount.");
       isValid = false;
     } else {
@@ -109,6 +119,7 @@ export default function Page() {
 
   const handleAddToCart = async () => {
     if (!validateForm()) return; // Stop if validation fails
+    setLoading(true);
     setShowCheckout(true);
   };
 
@@ -133,7 +144,7 @@ export default function Page() {
         }
       );
       setLoading(false);
-      router.push("/success");
+      router.push(`/success?region=${region}&storeId=${storeId}`);
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
@@ -143,6 +154,7 @@ export default function Page() {
 
   return (
     <>
+      {loading && <Loader />}
       {showCheckout ? (
         <Payment
           price={(customAmount || amount) * quantity}
@@ -150,20 +162,15 @@ export default function Page() {
           onCancel={() => {
             setShowCheckout(false);
           }}
+          onPaymentCreatedIntent={() => {
+            setLoading(false);
+          }}
         />
       ) : (
         <></>
       )}
       <div className="max-w-md mx-auto px-4 py-2">
-      <p
-          className="cursor-pointer mb-2"
-          onClick={() => {
-            router.back();
-          }}
-        >
-          &larr; Back
-        </p>
-        <h1 className="text-xl font-bold mb-4 text-center">
+        <h1 className="text-xl font-bold mb-4 text-center mt-5">
           Buy your <span className="text-blue-600">Virtual Gift Card </span>!
         </h1>
 
@@ -336,7 +343,7 @@ export default function Page() {
               }}
             />
           </div>
-          
+
           {recipientPhoneError && (
             <p className="text-red-600 text-sm">{recipientPhoneError}</p>
           )}
