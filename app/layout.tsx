@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Convenience at Your Doorstep, Luxury in Every Detail.",
   openGraph: {
     description: "Convenience at Your Doorstep, Luxury in Every Detail.",
-    images: ["/public/images/APP ICON.png"],
+    images: ["/images/APP ICON.png"],
     url: "https://app.ecoboutiquemarket.com/",
   },
   twitter: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteId: "",
     creator: "@rasmic",
     creatorId: "",
-    images: ["/public/images/APP ICON.png"],
+    images: ["/images/APP ICON.png"],
   },
 };
 
