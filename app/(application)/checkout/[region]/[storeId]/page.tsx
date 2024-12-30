@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
@@ -14,14 +14,15 @@ const BarcodeScanner = dynamic(() => import("./components/BarcodeScanner"), {
 });
 
 const POS = () => {
-  const router = useRouter();
   const { storeId, region }: any = useParams();
 
   const [barcode, setBarcode] = useState("");
   const [isInputTabOpen, setIsInputTabOpen] = useState(false);
   const [inputBarcode, setInputBarcode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [products, setProducts] = useState<any>([]);
+  const [products, setProducts] = useState<any>(
+    JSON.parse(localStorage.getItem("products") || "[]")
+  );
   const [productFetching, setProductFetching] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const lastScannedRef = useRef<{ code: string; timestamp: number }>({
@@ -104,6 +105,12 @@ const POS = () => {
       console.error("Error fetching product:", error);
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("products", JSON.stringify(products));
+    }
+  }, [products]);
 
   return (
     <>
