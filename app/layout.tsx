@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://starter.rasmic.xyz"),
+  metadataBase: new URL("https://app.ecoboutiquemarket.com/"),
   title: {
     default: "Eco Boutique",
     template: `%s | Eco Boutique`,
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   description: "Convenience at Your Doorstep, Luxury in Every Detail.",
   openGraph: {
     description: "Convenience at Your Doorstep, Luxury in Every Detail.",
-    images: ["/images/APP ICON.png"],
-    url: "https://starter.rasmic.xyz/",
+    images: ["/public/images/APP ICON.png"],
+    url: "https://app.ecoboutiquemarket.com/",
   },
   twitter: {
     card: "summary_large_image",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteId: "",
     creator: "@rasmic",
     creatorId: "",
-    images: ["/images/APP ICON.png"],
+    images: ["/public/images/APP ICON.png"],
   },
 };
 
