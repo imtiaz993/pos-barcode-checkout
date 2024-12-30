@@ -126,7 +126,7 @@ const PaymentForm = ({
                       </div>
                     </label>
                   ))}
-                  <div className="my-5 font-semibold pb-1">
+                  <div className="my-5 font-semibold pb-1 pl-3">
                     <label
                       onClick={() => {
                         setPaymentMethod("new");

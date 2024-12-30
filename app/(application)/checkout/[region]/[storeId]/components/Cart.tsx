@@ -40,8 +40,8 @@ const Cart = (props: any) => {
   });
 
   const handleCheckout = async () => {
-    setLoading(true);
     if (total.productQuantity) {
+      setLoading(true);
       if (giftCardBalanceUsed) {
         try {
           const res: any = await axios.post(
@@ -262,7 +262,7 @@ const Cart = (props: any) => {
       if (promises.length) {
         await Promise.all(promises);
       }
-
+      localStorage.setItem("products", JSON.stringify([]));
       setLoading(false);
       router.push(`/success?region=${region}&storeId=${storeId}`);
     } catch (error: any) {
