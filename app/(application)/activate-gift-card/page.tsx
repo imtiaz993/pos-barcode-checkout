@@ -18,8 +18,8 @@ export default function Page() {
   useEffect(() => {
     axios
       .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
-        gift_card: gift_card,
-        userPhone: user?.phoneNumber,
+        unique_code: gift_card,
+        phone_number: user?.phoneNumber,
       })
       .then(() => {
         setActivating(false);
