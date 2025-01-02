@@ -112,44 +112,6 @@ const POS = () => {
     }
   }, [products]);
 
-  const [stream, setStream] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const requestCamera = async () => {
-      try {
-        const userStream: any = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        if (mounted) setStream(userStream);
-      } catch (err: any) {
-        // If camera is in use or not accessible, error will be thrown here
-        if (err.name === "NotReadableError" || err.name === "TrackStartError") {
-          // Camera is already in use by another app/website
-          setError("Camera is already in use by another site or application.");
-        } else {
-          // Handle other errors, e.g. user denied permission, etc.
-          setError(`Error accessing camera: ${err.message}`);
-        }
-      }
-    };
-
-    requestCamera();
-
-    // Cleanup: stop video stream on unmount
-    return () => {
-      mounted = false;
-      if (stream) {
-        stream.getTracks().forEach((track: any) => track.stop());
-      }
-    };
-  }, [stream]);
-
-  if (error) {
-    return <div style={{ color: "red" }}>{error}</div>;
-  }
 
   return (
     <>

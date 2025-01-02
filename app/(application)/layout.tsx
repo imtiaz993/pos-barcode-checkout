@@ -59,7 +59,7 @@ const Layout = ({ children }: any) => {
           href={`/user-profile?type=${type}&region=${region}&storeId=${storeId}`}
         >
           <Image
-          priority={true}
+            priority={true}
             src="/images/profile.png"
             width={0}
             height={0}

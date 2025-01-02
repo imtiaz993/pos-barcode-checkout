@@ -58,7 +58,7 @@ export default function Page() {
         {/* Card Preview */}
         <div className="w-full rounded-lg overflow-hidden mb-8 flex items-center justify-center">
           <Image
-          priority={true}
+            priority={true}
             src="/images/gift_card.png"
             width={0}
             height={0}

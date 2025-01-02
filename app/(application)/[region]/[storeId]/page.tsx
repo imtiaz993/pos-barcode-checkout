@@ -11,7 +11,7 @@ const Page = () => {
       <div className="rounded-lg p-6 pt-0 w-full max-w-md">
         <div className="flex justify-center">
           <Image
-          priority={true}
+            priority={true}
             src="/images/logo.png"
             width={0}
             height={0}
@@ -21,11 +21,11 @@ const Page = () => {
           />
         </div>
         <div className="mb-4">
-        <Link href={`/checkout/${region}/${storeId}`}>
-          <button className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg">
-            Go to Checkout
-          </button>
-        </Link>
+          <Link href={`/checkout/${region}/${storeId}`}>
+            <button className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg">
+              Go to Checkout
+            </button>
+          </Link>
         </div>
         <Link href={`/giftcard/${region}/${storeId}`}>
           <button className="w-full bg-blue-600 text-white py-2 text-sm rounded-lg">
