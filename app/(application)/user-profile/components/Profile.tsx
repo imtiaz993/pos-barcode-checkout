@@ -134,6 +134,7 @@ const Profile = () => {
           className="bg-blue-500 text-white py-2 px-3 text-sm rounded-lg hover:bg-blue-600 flex items-center"
         >
           <Image
+          priority={true}
             src="/images/logout.svg"
             width={0}
             height={0}

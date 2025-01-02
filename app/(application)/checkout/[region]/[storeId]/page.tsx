@@ -111,7 +111,6 @@ const POS = () => {
       localStorage.setItem("products", JSON.stringify(products));
     }
   }, [products]);
-  
 
   const [stream, setStream] = useState<any>(null);
   const [error, setError] = useState<any>(null);
@@ -121,13 +120,15 @@ const POS = () => {
 
     const requestCamera = async () => {
       try {
-        const userStream:any = await navigator.mediaDevices.getUserMedia({ video: true });
+        const userStream: any = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
         if (mounted) setStream(userStream);
-      } catch (err:any) {
+      } catch (err: any) {
         // If camera is in use or not accessible, error will be thrown here
-        if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        if (err.name === "NotReadableError" || err.name === "TrackStartError") {
           // Camera is already in use by another app/website
-          setError('Camera is already in use by another site or application.');
+          setError("Camera is already in use by another site or application.");
         } else {
           // Handle other errors, e.g. user denied permission, etc.
           setError(`Error accessing camera: ${err.message}`);
@@ -141,13 +142,13 @@ const POS = () => {
     return () => {
       mounted = false;
       if (stream) {
-        stream.getTracks().forEach((track:any) => track.stop());
+        stream.getTracks().forEach((track: any) => track.stop());
       }
     };
   }, [stream]);
-  
+
   if (error) {
-    return <div style={{ color: 'red' }}>{error}</div>;
+    return <div style={{ color: "red" }}>{error}</div>;
   }
 
   return (
@@ -186,6 +187,7 @@ const POS = () => {
                 <div className="p-5 h-full">
                   <Image
                     src="/images/exampleBarCode.png"
+                    priority={true}
                     width={0}
                     height={0}
                     sizes="100vw"
@@ -236,6 +238,7 @@ const POS = () => {
               <div>
                 <Image
                   src="/images/barcode_example.jpg"
+                  priority={true}
                   width={0}
                   height={0}
                   sizes="100vw"
@@ -243,7 +246,7 @@ const POS = () => {
                   className="w-full max-h-[136px] object-contain"
                 />
                 <h1 className="text-center mt-2 mb-6 font-medium text-sm">
-                Type all the digit as shown above.
+                  Type all the digit as shown above.
                 </h1>
               </div>
               <input

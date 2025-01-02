@@ -12,7 +12,13 @@ const SuccessPage = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-dvh mx-auto w-11/12">
       <div className="mb-6">
-        <Image src="/images/check.png" alt="Success" width={150} height={150} />
+        <Image
+          priority={true}
+          src="/images/check.png"
+          alt="Success"
+          width={150}
+          height={150}
+        />
       </div>
 
       <h1 className="text-3xl font-bold text-green-600 mb-4">

@@ -11,6 +11,7 @@ const Page = () => {
       <div className="rounded-lg p-6 pt-0 w-full max-w-md">
         <div className="flex justify-center">
           <Image
+          priority={true}
             src="/images/logo.png"
             width={0}
             height={0}

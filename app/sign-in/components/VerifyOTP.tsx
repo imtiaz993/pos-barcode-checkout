@@ -118,6 +118,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       <div className="rounded-lg shadow-sm border p-6 pt-0 w-full max-w-md">
         <div className="flex justify-center">
           <Image
+          priority={true}
             src="/images/logo.png"
             width={0}
             height={0}
