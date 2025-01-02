@@ -195,6 +195,19 @@ const POS = () => {
                   <span>X</span>
                 </p>
               </div>
+              <div>
+                <Image
+                  src="/images/barcode_example.jpg"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  alt=""
+                  className="w-full max-h-[136px] object-contain"
+                />
+                <h1 className="text-center mt-2 mb-6 font-medium text-sm">
+                Type all the digit as shown above.
+                </h1>
+              </div>
               <input
                 type="number"
                 value={inputBarcode}
