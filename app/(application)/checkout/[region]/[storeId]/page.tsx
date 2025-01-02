@@ -111,37 +111,44 @@ const POS = () => {
       localStorage.setItem("products", JSON.stringify(products));
     }
   }, [products]);
+  
 
-  const [error, setError] = useState("");
   const [stream, setStream] = useState<any>(null);
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
-    const checkCameraAccess = async () => {
+    let mounted = true;
+
+    const requestCamera = async () => {
       try {
-        const mediaStream:any = await navigator.mediaDevices.getUserMedia({ video: true });
-        setStream(mediaStream);
-        setError(""); // Clear any error if successful
+        const userStream:any = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (mounted) setStream(userStream);
       } catch (err:any) {
-        if (err.name === "NotReadableError") {
-          setError("Camera is currently being used by another application or website.");
-        } else if (err.name === "OverconstrainedError") {
-          setError("Camera constraints cannot be satisfied.");
+        // If camera is in use or not accessible, error will be thrown here
+        if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+          // Camera is already in use by another app/website
+          setError('Camera is already in use by another site or application.');
         } else {
-          setError("An unexpected error occurred while accessing the camera.");
+          // Handle other errors, e.g. user denied permission, etc.
+          setError(`Error accessing camera: ${err.message}`);
         }
       }
     };
 
-    checkCameraAccess();
+    requestCamera();
 
+    // Cleanup: stop video stream on unmount
     return () => {
+      mounted = false;
       if (stream) {
         stream.getTracks().forEach((track:any) => track.stop());
       }
     };
   }, [stream]);
-
   
+  if (error) {
+    return <div style={{ color: 'red' }}>{error}</div>;
+  }
 
   return (
     <>
@@ -160,9 +167,6 @@ const POS = () => {
       />
 
       <div className="px-4 py-2">
-      {error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : (<></>)}
         {productFetching && <Loader />}
         <div className="min-h-[calc(100dvh-82px-16px)] flex flex-col justify-between w-11/12 mx-auto max-w-md">
           <div></div>
