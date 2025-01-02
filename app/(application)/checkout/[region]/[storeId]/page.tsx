@@ -112,6 +112,38 @@ const POS = () => {
     }
   }, [products]);
 
+
+  const [cameraError, setCameraError] = useState("");
+  const [stream, setStream] = useState<any>(null);
+
+  useEffect(() => {
+    const requestCamera = async () => {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setStream(mediaStream);
+        setCameraError(""); // Clear any previous error
+      } catch (error:any) {
+        if (error.name === "NotAllowedError") {
+          setCameraError("Camera access is denied. Please allow camera permissions.");
+        } else if (error.name === "NotReadableError") {
+          setCameraError("Camera is being used by another application or website.");
+        } else {
+          setCameraError("An error occurred while accessing the camera.");
+        }
+      }
+    };
+
+    requestCamera();
+
+    // Clean up the media stream when the component unmounts
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track:any) => track.stop());
+      }
+    };
+  }, [stream]);
+
+
   return (
     <>
       <Cart
@@ -129,6 +161,11 @@ const POS = () => {
       />
 
       <div className="px-4 py-2">
+      {cameraError ? (
+        <p style={{ color: "red" }}>{cameraError}</p>
+      ) : (
+        <></>
+      )}
         {productFetching && <Loader />}
         <div className="min-h-[calc(100dvh-82px-16px)] flex flex-col justify-between w-11/12 mx-auto max-w-md">
           <div></div>
