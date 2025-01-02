@@ -112,6 +112,7 @@ const POS = () => {
     }
   }, [products]);
 
+
   return (
     <>
       <Cart
@@ -148,6 +149,7 @@ const POS = () => {
                 <div className="p-5 h-full">
                   <Image
                     src="/images/exampleBarCode.png"
+                    priority={true}
                     width={0}
                     height={0}
                     sizes="100vw"
@@ -194,6 +196,20 @@ const POS = () => {
                 >
                   <span>X</span>
                 </p>
+              </div>
+              <div>
+                <Image
+                  src="/images/barcode_example.jpg"
+                  priority={true}
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  alt=""
+                  className="w-full max-h-[136px] object-contain"
+                />
+                <h1 className="text-center mt-2 mb-6 font-medium text-sm">
+                  Type all the digit as shown above.
+                </h1>
               </div>
               <input
                 type="number"
