@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { auth } from "../../firebase";
+import { auth } from "../../../firebase";
 import Loader from "@/components/loader";
 
 export default function Page() {

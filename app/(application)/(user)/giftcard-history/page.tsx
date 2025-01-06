@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { app } from "@/app/firebase";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
+import Link from "next/link";
 
 const Page = () => {
   const router = useRouter();
@@ -55,6 +56,7 @@ const Page = () => {
                     <th className="p-2 text-gray-700">Date</th>
                     <th className="p-2 text-gray-700">Amount</th>
                     <th className="p-2 text-gray-700">Balance</th>
+                    <th className="p-2 text-gray-700">Order</th>
                   </tr>
                 </thead>
                 <tbody className="text-xs">
@@ -72,11 +74,23 @@ const Page = () => {
                           </td>
                           <td className="p-2">${item.amount}</td>
                           <td className="p-2">${item.balance}</td>
+                          <td className="p-2">
+                            {item.used_in_orders.map((order: any) => (
+                              <Link href={`/order-history/${order.orderId}`}>
+                                {order.orderId}
+                              </Link>
+                            ))}
+                          </td>
                         </tr>
                       ))
                     : !loading && (
                         <tr>
-                          <td colSpan={4} className="p-2 text-center font-medium">No History Found</td>
+                          <td
+                            colSpan={4}
+                            className="p-2 text-center font-medium"
+                          >
+                            No History Found
+                          </td>
                         </tr>
                       )}
                 </tbody>

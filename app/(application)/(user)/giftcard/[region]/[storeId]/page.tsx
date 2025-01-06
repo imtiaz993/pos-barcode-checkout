@@ -7,7 +7,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import PhoneInput from "react-phone-input-2";
 import Payment from "@/components/Payment";
-import { auth } from "../../../../firebase";
+import { auth } from "../../../../../firebase";
 
 import "react-phone-input-2/lib/style.css";
 import Loader from "@/components/loader";

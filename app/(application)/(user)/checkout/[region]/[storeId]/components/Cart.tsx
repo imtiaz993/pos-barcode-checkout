@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { auth } from "../../../../../firebase";
+import { auth } from "../../../../../../firebase";
 import CartProducts from "./CartProducts";
 import Loader from "@/components/loader";
 import Payment from "@/components/Payment";

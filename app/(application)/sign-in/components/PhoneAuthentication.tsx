@@ -8,7 +8,7 @@ import {
   signInWithPhoneNumber,
   RecaptchaVerifier,
 } from "firebase/auth";
-import { app } from "../../firebase";
+import { app } from "../../../firebase";
 
 import "react-phone-input-2/lib/style.css";
 
