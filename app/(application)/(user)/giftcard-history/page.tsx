@@ -75,14 +75,17 @@ const Page = () => {
                           <td className="p-2">${item.amount.toFixed(2)}</td>
                           <td className="p-2">${item.balance.toFixed(2)}</td>
                           <td className="p-2">
-                            {item.used_in_orders.map((order: any) => (
-                              <Link
-                                className="text-blue-600"
-                                href={`/order-history/${order.orderId}`}
-                              >
-                                {order.orderId}
-                              </Link>
-                            ))}
+                            {item.used_in_orders.map(
+                              (order: any, index: any) => (
+                                <Link
+                                  key={index}
+                                  className="text-blue-600"
+                                  href={`/order-history/${order.orderId}`}
+                                >
+                                  {order.orderId}
+                                </Link>
+                              )
+                            )}
                           </td>
                         </tr>
                       ))
