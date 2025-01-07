@@ -72,10 +72,11 @@ const OrderDetail = () => {
             <strong>Status:</strong> {orderDetails.status}
           </p>
           <p>
-            <strong>Store:</strong> {orderDetails.storeId}
+            <strong>Store:</strong> {orderDetails.storeId.split("s")[1]}
           </p>
           <p>
-            <strong>Total Amount:</strong> ${orderDetails.totalAmount}
+            <strong>Total Amount:</strong> $
+            {orderDetails.totalAmount?.toFixed(2)}
           </p>
           <p>
             <strong>Coupon Code:</strong> {orderDetails.couponId || "N/A"}
@@ -99,7 +100,7 @@ const OrderDetail = () => {
                     <strong>Quantity:</strong> {item.quantity}
                   </p>
                   <p>
-                    <strong>Price:</strong> ${item.price}
+                    <strong>Price:</strong> ${item.price?.toFixed(2)}
                   </p>
                 </div>
                 <p>
@@ -118,7 +119,7 @@ const OrderDetail = () => {
           </p>
           <p>
             <strong>Amount:</strong> $
-            {orderDetails.terminalCheckout.amount / 100} (
+            {(orderDetails.terminalCheckout.amount / 100)?.toFixed(2)} (
             {orderDetails.terminalCheckout.currency.toUpperCase()})
           </p>
         </div>

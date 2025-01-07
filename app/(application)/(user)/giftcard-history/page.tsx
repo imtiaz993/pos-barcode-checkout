@@ -48,7 +48,7 @@ const Page = () => {
             </p>
           </div>
           <div className="w-full max-w-md mx-auto">
-            <div className="bg-white">
+            <div className="bg-white overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-black">
@@ -72,11 +72,14 @@ const Page = () => {
                               }
                             )}
                           </td>
-                          <td className="p-2">${item.amount}</td>
-                          <td className="p-2">${item.balance}</td>
+                          <td className="p-2">${item.amount.toFixed(2)}</td>
+                          <td className="p-2">${item.balance.toFixed(2)}</td>
                           <td className="p-2">
                             {item.used_in_orders.map((order: any) => (
-                              <Link href={`/order-history/${order.orderId}`}>
+                              <Link
+                                className="text-blue-600"
+                                href={`/order-history/${order.orderId}`}
+                              >
                                 {order.orderId}
                               </Link>
                             ))}

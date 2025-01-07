@@ -48,7 +48,7 @@ const Page = () => {
             </p>
           </div>
           <div className="w-full max-w-md mx-auto">
-            <div className="bg-white">
+            <div className="bg-white overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-black">
@@ -64,7 +64,7 @@ const Page = () => {
                     ? history.map((item: any, index: any) => (
                         <tr key={index} className="border-b">
                           <td className="p-2">
-                            <Link href={`/order-history/${item.orderId}`}>
+                            <Link className="text-blue-600" href={`/order-history/${item.orderId}`}>
                               {item.orderId}
                             </Link>
                           </td>
@@ -73,8 +73,10 @@ const Page = () => {
                               timeZone: "UTC",
                             })}
                           </td>
-                          <td className="p-2">${item.storeId}</td>
-                          <td className="p-2">${item.totalAmount}</td>
+                          <td className="p-2">{item.storeId.split("s")[1]}</td>
+                          <td className="p-2">
+                            ${item.totalAmount.toFixed(2)}
+                          </td>
                           <td className="p-2">{item.couponId}</td>
                         </tr>
                       ))

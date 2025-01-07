@@ -103,7 +103,10 @@ const Page = () => {
                   />
                 </div>
                 <div className="flex-1">
-                  <label htmlFor="endDate" className="block text-sm font-medium">
+                  <label
+                    htmlFor="endDate"
+                    className="block text-sm font-medium"
+                  >
                     End Date
                   </label>
                   <input
@@ -128,7 +131,7 @@ const Page = () => {
 
           {/* Order Table */}
           <div className="w-full max-w-md mx-auto">
-            <div className="bg-white">
+            <div className="bg-white overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-black">
@@ -156,17 +159,14 @@ const Page = () => {
                             timeZone: "UTC",
                           })}
                         </td>
-                        <td className="p-2">{item.storeId}</td>
-                        <td className="p-2">${item.totalAmount}</td>
+                        <td className="p-2">{item.storeId.split("s")[1]}</td>
+                        <td className="p-2">${item.totalAmount.toFixed(2)}</td>
                         <td className="p-2">{item.couponId || "N/A"}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td
-                        colSpan={5}
-                        className="p-2 text-center font-medium"
-                      >
+                      <td colSpan={5} className="p-2 text-center font-medium">
                         No History Found
                       </td>
                     </tr>
