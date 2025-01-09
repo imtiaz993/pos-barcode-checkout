@@ -52,17 +52,6 @@ const Page = () => {
       {loading && <Loader />}
       <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
         <div className="max-w-md">
-          <div className="flex justify-between mb-2">
-            <p
-              className="cursor-pointer"
-              onClick={() => {
-                router.back();
-              }}
-            >
-              &larr; Back
-            </p>
-          </div>
-
           {/* Filter Section */}
           <div className="bg-white p-4 rounded-lg shadow mb-4">
             <h3 className="text-lg font-semibold mb-2">Filters</h3>

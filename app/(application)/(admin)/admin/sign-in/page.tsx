@@ -33,7 +33,7 @@ const EmailAuthentication = () => {
           values.password
         );
         localStorage.setItem("user", JSON.stringify(data.user));
-        router.replace("/admin/manage-orders");
+        router.replace("/admin/order-history");
       } catch (error) {
         formik.setFieldError("email", "Invalid email or password");
         console.error("Error during signInWithEmailAndPassword", error);
