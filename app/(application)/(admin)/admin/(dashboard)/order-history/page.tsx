@@ -8,6 +8,7 @@ import { app } from "@/app/firebase";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
+import { IoMdClose, IoMdFunnel } from "react-icons/io";
 
 const Page = () => {
   const router = useRouter();
@@ -20,6 +21,7 @@ const Page = () => {
   const [storeId, setStoreId] = useState(""); // Filter for store ID
   const [startDate, setStartDate] = useState(""); // Filter for start date
   const [endDate, setEndDate] = useState(""); // Filter for end date
+  const [filtersVisible, setFiltersVisible] = useState(false); // Toggle filter visibility
 
   const fetchHistory = () => {
     setLoading(true);
@@ -52,71 +54,91 @@ const Page = () => {
       {loading && <Loader />}
       <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
         <div className="max-w-md">
-          {/* Filter Section */}
-          <div className="bg-white p-4 rounded-lg shadow mb-4">
-            <h3 className="text-lg font-semibold mb-2">Filters</h3>
-            <div className="flex flex-col gap-4">
-              {/* Store ID Dropdown */}
-              <div>
-                <label htmlFor="storeId" className="block text-sm font-medium">
-                  Store ID
-                </label>
-                <select
-                  id="storeId"
-                  value={storeId}
-                  onChange={(e) => setStoreId(e.target.value)}
-                  className="w-full border px-3 py-2 rounded-lg text-sm"
-                >
-                  <option value="">All Stores</option>
-                  <option value="110">110</option>
-                  <option value="111">111</option>
-                  <option value="112">112</option>
-                </select>
-              </div>
-
-              {/* Date Range */}
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label
-                    htmlFor="startDate"
-                    className="block text-sm font-medium"
-                  >
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full border px-3 py-2 rounded-lg text-sm"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label
-                    htmlFor="endDate"
-                    className="block text-sm font-medium"
-                  >
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full border px-3 py-2 rounded-lg text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Apply Filters Button */}
-              <button
-                onClick={fetchHistory}
-                className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-              >
-                Apply Filters
-              </button>
-            </div>
+          {/* Filter Toggle Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setFiltersVisible(!filtersVisible)}
+              className="flex items-center gap-2 text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+            >
+              {filtersVisible ? (
+                <>
+                  <IoMdClose className="text-lg" /> Close Filters
+                </>
+              ) : (
+                <>
+                  <IoMdFunnel className="text-lg" /> Show Filters
+                </>
+              )}
+            </button>
           </div>
+
+          {/* Filter Section */}
+          {filtersVisible && (
+            <div className="bg-white p-4 rounded-lg shadow mb-4">
+              <h3 className="text-lg font-semibold mb-2">Filters</h3>
+              <div className="flex flex-col gap-4">
+                {/* Store ID Dropdown */}
+                <div>
+                  <label htmlFor="storeId" className="block text-sm font-medium">
+                    Store ID
+                  </label>
+                  <select
+                    id="storeId"
+                    value={storeId}
+                    onChange={(e) => setStoreId(e.target.value)}
+                    className="w-full border px-3 py-2 rounded-lg text-sm"
+                  >
+                    <option value="">All Stores</option>
+                    <option value="110">110</option>
+                    <option value="111">111</option>
+                    <option value="112">112</option>
+                  </select>
+                </div>
+
+                {/* Date Range */}
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label
+                      htmlFor="startDate"
+                      className="block text-sm font-medium"
+                    >
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-full border px-3 py-2 rounded-lg text-sm"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label
+                      htmlFor="endDate"
+                      className="block text-sm font-medium"
+                    >
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full border px-3 py-2 rounded-lg text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Apply Filters Button */}
+                <button
+                  onClick={fetchHistory}
+                  className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Order Table */}
           <div className="w-full max-w-md mx-auto">

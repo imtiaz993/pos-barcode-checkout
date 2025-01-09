@@ -36,10 +36,7 @@ const Layout = ({ children }: any) => {
           <h1>Eco Boutique</h1>
         </div>
 
-        <button
-          className="text-2xl md:hidden"
-          onClick={() => setSidebarOpen(true)}
-        >
+        <button className="text-2xl" onClick={() => setSidebarOpen(true)}>
           <IoMdMenu />
         </button>
       </div>
