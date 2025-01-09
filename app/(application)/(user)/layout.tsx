@@ -15,22 +15,31 @@ const Layout = ({ children }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const type: any = pathname.includes("/checkout")
+  const urlParams = useParams();
+
+  // Determine type based on pathname
+  let pageType: any = pathname.includes("/checkout")
     ? "/checkout"
     : pathname.includes("/giftcard")
     ? "/giftcard"
     : pathname.includes("/activate-gift-card")
     ? "/activate-gift-card"
     : "";
-  const { region, storeId }: any = useParams();
+
+  // Get region, storeId from URL params or query params
+  const region = urlParams?.region || searchParams.get("region");
+  const storeId = urlParams?.storeId || searchParams.get("storeId");
+  const type = pageType || searchParams.get("type");
   const gift_card = searchParams.get("gift_card");
+
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
+
       if (!isLoggedIn) {
-        if (type == "/activate-gift-card") {
+        if (type === "/activate-gift-card") {
           router.replace(`/sign-in?type=${type}&gift_card=${gift_card}`);
         } else {
           router.replace(
@@ -43,7 +52,7 @@ const Layout = ({ children }: any) => {
     };
 
     handleAuth();
-  }, []);
+  }, [type, region, storeId, gift_card]);
 
   if (checkingAuth) {
     return null;
@@ -64,7 +73,7 @@ const Layout = ({ children }: any) => {
             width={0}
             height={0}
             sizes="100vw"
-            alt=""
+            alt="Profile"
             className="w-8 cursor-pointer"
           />
         </Link>

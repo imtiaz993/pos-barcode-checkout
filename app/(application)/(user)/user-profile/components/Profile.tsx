@@ -162,9 +162,21 @@ const Profile = () => {
               </p>
             )}
           </div>
-          {/* <div className="flex justify-between items-center my-4">
-            <h2 className="text-xl font-bold ">Update Profile</h2>
-          </div> */}
+
+          {/* View Order History Button */}
+          <button
+            type="button"
+            onClick={() =>
+              router.push(
+                `/order-history?type=${type}&region=${region}&storeId=${storeId}`
+              )
+            }
+            className="w-full bg-gray-100 border border-gray-300 text-gray-700 py-1.5 text-sm rounded-lg hover:bg-gray-200 mb-6"
+          >
+            View Order History
+          </button>
+
+          {/* Update Profile Section */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Name</label>
             <input

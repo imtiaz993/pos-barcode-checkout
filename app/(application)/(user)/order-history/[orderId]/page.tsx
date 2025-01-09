@@ -56,36 +56,36 @@ const OrderDetail = () => {
           </p>
         </div>
 
-        <h1 className="text-lg font-bold">Order Details</h1>
+        <h1 className="text-lg font-medium">Order Details</h1>
 
         <div className="bg-white p-4 rounded-lg shadow mt-4">
           <p>
-            <strong>Order ID:</strong> {orderDetails.orderId}
+            <span className="font-medium">Order ID:</span> {orderDetails.orderId}
           </p>
           <p>
-            <strong>Date:</strong>{" "}
+            <span className="font-medium">Date:</span>{" "}
             {new Date(orderDetails.orderDate).toLocaleString("en-US", {
               timeZone: "UTC",
             })}
           </p>
           <p>
-            <strong>Status:</strong> {orderDetails.status}
+            <span className="font-medium">Status:</span> {orderDetails.status}
           </p>
           <p>
-            <strong>Store:</strong> {orderDetails.storeId.split("s")[1]}
+            <span className="font-medium">Store:</span> {orderDetails.storeId.split("s")[1]}
           </p>
           <p>
-            <strong>Total Amount:</strong> $
+            <span className="font-medium">Total Amount:</span> $
             {orderDetails.totalAmount?.toFixed(2)}
           </p>
           <p>
-            <strong>Coupon Code:</strong> {orderDetails.couponId || "N/A"}
+            <span className="font-medium">Coupon Code:</span> {orderDetails.couponId || "N/A"}
           </p>
           <p>
-            <strong>Gift Card:</strong> {orderDetails.giftCardCode || "N/A"}
+            <span className="font-medium">Gift Card:</span> {orderDetails.giftCardCode || "N/A"}
           </p>
 
-          <h2 className="text-lg font-semibold mt-4">Order Items</h2>
+          <h2 className="text-lg font-medium mt-4">Order Items</h2>
           <ul className="mt-2">
             {orderDetails.orderItems.map((item: any, index: number) => (
               <li
@@ -94,31 +94,31 @@ const OrderDetail = () => {
               >
                 <div>
                   <p>
-                    <strong>Product ID:</strong> {item.productId}
+                    <span className="font-medium">Product ID:</span> {item.productId}
                   </p>
                   <p>
-                    <strong>Quantity:</strong> {item.quantity}
+                    <span className="font-medium">Quantity:</span> {item.quantity}
                   </p>
                   <p>
-                    <strong>Price:</strong> ${item.price?.toFixed(2)}
+                    <span className="font-medium">Price:</span> ${item.price?.toFixed(2)}
                   </p>
                 </div>
                 <p>
-                  <strong>Reward Points:</strong> {item.reward_point}
+                  <span className="font-medium">Reward Points:</span> {item.reward_point}
                 </p>
               </li>
             ))}
           </ul>
 
-          <h2 className="text-lg font-semibold mt-4">Payment</h2>
+          <h2 className="text-lg font-medium mt-4">Payment</h2>
           <p>
-            <strong>Transaction ID:</strong> {orderDetails.terminalCheckout.id}
+            <span className="font-medium">Transaction ID:</span> {orderDetails.terminalCheckout.id}
           </p>
           <p>
-            <strong>Status:</strong> {orderDetails.terminalCheckout.status}
+            <span className="font-medium">Status:</span> {orderDetails.terminalCheckout.status}
           </p>
           <p>
-            <strong>Amount:</strong> $
+            <span className="font-medium">Amount:</span> $
             {(orderDetails.terminalCheckout.amount / 100)?.toFixed(2)} (
             {orderDetails.terminalCheckout.currency.toUpperCase()})
           </p>

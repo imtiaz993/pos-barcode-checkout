@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { app } from "@/app/firebase";
 import { toast } from "sonner";
@@ -9,6 +9,11 @@ import Loader from "@/components/loader";
 import Link from "next/link";
 
 const Page = () => {
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("storeId");
+  const region = searchParams.get("region");
+  const type = searchParams.get("type");
+  
   const router = useRouter();
   const auth = getAuth(app);
   const user = auth.currentUser;
@@ -64,7 +69,7 @@ const Page = () => {
                     ? history.map((item: any, index: any) => (
                         <tr key={index} className="border-b">
                           <td className="p-2">
-                            <Link className="text-blue-600" href={`/order-history/${item.orderId}`}>
+                            <Link className="text-blue-600" href={`/order-history/${item.orderId}?type=${type}&region=${region}&storeId=${storeId}`}>
                               {item.orderId}
                             </Link>
                           </td>
