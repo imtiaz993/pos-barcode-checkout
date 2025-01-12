@@ -1,20 +1,13 @@
 "use client";
 
 import axios from "axios";
-import { getAuth } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { app } from "@/app/firebase";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
 import { IoMdClose, IoMdFunnel } from "react-icons/io";
 
 const Page = () => {
-  const router = useRouter();
-  const auth = getAuth(app);
-  const user = auth.currentUser;
-
   const [history, setHistory] = useState<any>();
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +45,7 @@ const Page = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
+      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-4 py-2 max-w-md">
         <div className="max-w-md">
           {/* Filter Toggle Button */}
           <div className="flex justify-end mb-4">

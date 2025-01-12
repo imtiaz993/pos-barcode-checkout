@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import { checkAuthState } from "@/utils/firebaseAuth";
 import { IoMdMenu } from "react-icons/io";
 import Sidebar from "./sidebar";
+import { getAuth } from "firebase/auth";
+import { app } from "@/app/firebase";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();
+  
+  const auth = getAuth(app);
+  const user = auth.currentUser;
 
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);

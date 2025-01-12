@@ -26,8 +26,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } z-50`}
       >
-        <div className="flex items-center justify-between px-4 py-4 border-b">
-          <h2 className="text-lg font-semibold">Menu</h2>
+        <div className="flex items-center justify-between px-4 py-2 border-b">
+          <h2 className="font-semibold">Menu</h2>
           <button className="text-2xl" onClick={() => setSidebarOpen(false)}>
             <IoMdClose />
           </button>
