@@ -2,18 +2,31 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { auth } from "../../../firebase";
+import { auth } from "@/app/firebase";
 import Loader from "@/components/loader";
+import { logout } from "@/utils/firebaseAuth";
 
 export default function Page() {
+  const router = useRouter();
+
   const [activating, setActivating] = useState(true);
   const [error, setError] = useState("");
   const searchParams = useSearchParams();
   const gift_card = searchParams.get("gift_card");
   const user = auth.currentUser;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/sign-in");
+    } catch (error) {
+      alert("Failed to log out. Please try again.");
+      console.error("Error during logout:", error);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -25,9 +38,10 @@ export default function Page() {
         setActivating(false);
       })
       .catch((error) => {
-        setActivating(false);
-        setError(error?.response?.data?.message);
-        toast.error(error?.response?.data?.message);
+        handleLogout();
+        // setActivating(false);
+        // setError(error?.response?.data?.message);
+        // toast.error(error?.response?.data?.message);
         console.error("Error fetching client secret:", error);
       });
   }, []);
@@ -45,13 +59,19 @@ export default function Page() {
           </h1>
         ) : (
           !error && (
-            <h1 className="text-xl font-bold mb-4 text-center">
-              Your{" "}
-              <span className="text-blue-600">
-                Virtual Gift Card ({gift_card}){" "}
-              </span>{" "}
-              has been activated successfully!
-            </h1>
+            <>
+              <h1 className="text-xl font-bold mb-4 text-center">
+                Your{" "}
+                <span className="text-blue-600">
+                  Virtual Gift Card ({gift_card}){" "}
+                </span>{" "}
+                has been activated successfully!
+              </h1>
+              <h2 className="text-lg font-semibold mb-4 text-center">
+                Giftcard balance added to your account, feel free to use it on
+                your future eco-boutique purchases
+              </h2>
+            </>
           )
         )}
 

@@ -11,7 +11,7 @@ import { checkAuthState } from "@/utils/firebaseAuth";
 import Link from "next/link";
 import Image from "next/image";
 import { getAuth } from "firebase/auth";
-import { app } from "../../firebase";
+import { app } from "@/app/firebase";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();

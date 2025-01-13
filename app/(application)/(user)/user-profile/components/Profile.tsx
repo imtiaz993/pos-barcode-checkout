@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
 import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
 import { app } from "@/app/firebase";
-import { logout } from "../../../../../utils/firebaseAuth";
+import { logout } from "@/utils/firebaseAuth";
 import axios from "axios";
 import Link from "next/link";
 

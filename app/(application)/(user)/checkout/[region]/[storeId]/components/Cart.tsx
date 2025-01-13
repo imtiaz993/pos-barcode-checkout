@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { auth } from "../../../../../../firebase";
+import { auth } from "@/app/firebase";
 import CartProducts from "./CartProducts";
 import Loader from "@/components/loader";
 import Payment from "@/components/Payment";
@@ -390,7 +390,7 @@ const Cart = (props: any) => {
                 <div className="flex mt-5">
                   <input
                     type="text"
-                    value={couponCode} 
+                    value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="Enter Coupon Code?"
                     className="w-full px-2 py-2 text-sm border rounded-lg"

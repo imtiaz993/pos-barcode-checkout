@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { checkAuthState } from "@/utils/firebaseAuth";
+import { checkAuthState, logout } from "@/utils/firebaseAuth";
 import { IoMdMenu } from "react-icons/io";
 import Sidebar from "./sidebar";
 import { getAuth } from "firebase/auth";
 import { app } from "@/app/firebase";
+import Image from "next/image";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();
@@ -33,6 +34,16 @@ const Layout = ({ children }: any) => {
     handleAuth();
   }, [user]);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/admin/sign-in");
+    } catch (error) {
+      alert("Failed to log out. Please try again.");
+      console.error("Error during logout:", error);
+    }
+  };
+
   if (checkingAuth) {
     return null;
   }
@@ -44,8 +55,23 @@ const Layout = ({ children }: any) => {
           <h1>Eco Boutique</h1>
         </div>
 
-        <button className="text-2xl" onClick={() => setSidebarOpen(true)}>
+        {/* <button className="text-2xl" onClick={() => setSidebarOpen(true)}>
           <IoMdMenu />
+        </button> */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="bg-blue-500 text-white py-2 px-3 text-sm rounded-lg hover:bg-blue-600 flex items-center"
+        >
+          <Image
+            priority={true}
+            src="/images/logout.svg"
+            width={0}
+            height={0}
+            sizes="100vw"
+            alt=""
+            className="w-4 cursor-pointer mr-1"
+          />
         </button>
       </div>
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
