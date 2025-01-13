@@ -10,7 +10,7 @@ import { app } from "@/app/firebase";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();
-  
+
   const auth = getAuth(app);
   const user = auth.currentUser;
 
@@ -20,15 +20,18 @@ const Layout = ({ children }: any) => {
   useEffect(() => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
-      if (!isLoggedIn) {
+      if (isLoggedIn && !user?.email) {
+        router.replace("/sign-in");
+      } else if (!isLoggedIn) {
         router.replace("/admin/sign-in");
         return;
       }
+
       setCheckingAuth(false);
     };
 
     handleAuth();
-  }, []);
+  }, [user]);
 
   if (checkingAuth) {
     return null;

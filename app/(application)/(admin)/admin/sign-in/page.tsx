@@ -1,17 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../../../../firebase";
 import { useRouter } from "next/navigation";
+import { checkAuthState } from "@/utils/firebaseAuth";
 
 const EmailAuthentication = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const auth = getAuth(app);
+  const user = auth.currentUser;
+
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -42,6 +46,24 @@ const EmailAuthentication = () => {
       }
     },
   });
+
+  useEffect(() => {
+    const handleAuth = async () => {
+      const isLoggedIn = await checkAuthState();
+      if (isLoggedIn) {
+        if (user && user.email) {
+          router.replace("/admin/order-history");
+        }
+      }
+      setCheckingAuth(false);
+    };
+
+    handleAuth();
+  }, [user]);
+
+  if (checkingAuth) {
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-dvh">

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { checkAuthState } from "../../../utils/firebaseAuth";
 import PhoneAuthentication from "./components/PhoneAuthentication";
 import VerifyOTP from "./components/VerifyOTP";
+import { getAuth } from "firebase/auth";
+import { app } from "../../firebase";
 
 const PhoneAuth = () => {
   const router = useRouter();
@@ -14,6 +16,9 @@ const PhoneAuth = () => {
   const type = searchParams.get("type");
   const gift_card = searchParams.get("gift_card");
 
+  const auth = getAuth(app);
+  const user = auth.currentUser;
+
   let recaptchaVerifier = useRef<any>();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
@@ -22,11 +27,15 @@ const PhoneAuth = () => {
   useEffect(() => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
-      if (isLoggedIn) {
-        if (type == "/activate-gift-card") {
-          router.replace(`${type}?gift_card=${gift_card}`);
+      if (user && isLoggedIn) {
+        if (user.email) {
+          router.replace("/admin/order-history");
         } else {
-          router.replace(`${type}/${region}/${storeId}`);
+          if (type == "/activate-gift-card") {
+            router.replace(`${type}?gift_card=${gift_card}`);
+          } else {
+            router.replace(`${type}/${region}/${storeId}`);
+          }
         }
         return;
       }
@@ -34,7 +43,7 @@ const PhoneAuth = () => {
     };
 
     handleAuth();
-  }, []);
+  }, [user]);
 
   if (checkingAuth) {
     return null;

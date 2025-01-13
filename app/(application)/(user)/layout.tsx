@@ -10,12 +10,17 @@ import {
 import { checkAuthState } from "@/utils/firebaseAuth";
 import Link from "next/link";
 import Image from "next/image";
+import { getAuth } from "firebase/auth";
+import { app } from "../../firebase";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const urlParams = useParams();
+
+  const auth = getAuth(app);
+  const user = auth.currentUser;
 
   // Determine type based on pathname
   let pageType: any = pathname.includes("/checkout")
@@ -38,21 +43,28 @@ const Layout = ({ children }: any) => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
 
-      if (!isLoggedIn) {
-        if (type === "/activate-gift-card") {
-          router.replace(`/sign-in?type=${type}&gift_card=${gift_card}`);
+      if (user && isLoggedIn) {
+        if (user.email) {
+          router.replace("/admin/order-history");
         } else {
-          router.replace(
-            `/sign-in?type=${type}&region=${region}&storeId=${storeId}`
-          );
+          if (!isLoggedIn) {
+            if (type === "/activate-gift-card") {
+              router.replace(`/sign-in?type=${type}&gift_card=${gift_card}`);
+            } else {
+              router.replace(
+                `/sign-in?type=${type}&region=${region}&storeId=${storeId}`
+              );
+            }
+            return;
+          }
         }
-        return;
       }
+
       setCheckingAuth(false);
     };
 
     handleAuth();
-  }, [type, region, storeId, gift_card]);
+  }, [type, region, storeId, gift_card, user]);
 
   if (checkingAuth) {
     return null;
