@@ -6,8 +6,13 @@ import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
 import { IoMdClose, IoMdFunnel } from "react-icons/io";
+import { getAuth } from "firebase/auth";
+import { app } from "@/app/firebase";
 
 const Page = () => {
+  const auth = getAuth(app);
+  const user: any = auth.currentUser;
+
   const [history, setHistory] = useState<any>();
   const [loading, setLoading] = useState(true);
 
@@ -19,14 +24,38 @@ const Page = () => {
   const fetchHistory = () => {
     setLoading(true);
 
+    axios
+      .get("http://35.235.118.79:8000/orders/all", {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`, // Include the token in the Authorization header
+        },
+      })
+      .then((res) => {
+        setHistory(res.data.orders);
+        setLoading(false);
+      })
+      .catch((error) => {
+        toast.error(error?.response?.data?.message || "Error fetching data");
+        setLoading(false);
+        console.error("Error fetching client secret:", error);
+      });
+  };
+
+  const applyFilter = () => {
+    setLoading(true);
+
     // Construct query parameters
     const params: any = {};
-    if (storeId) params.storeId = storeId;
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
+    if (storeId) params.store_id = storeId;
+    if (startDate) params.start_date = startDate;
+    if (endDate) params.end_date = endDate;
 
     axios
-      .post("https://api.ecoboutiquemarket.com/order/history", params)
+      .post("http://35.235.118.79:8000/orders/filter", params, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      })
       .then((res) => {
         setHistory(res.data.orders);
         setLoading(false);
@@ -55,11 +84,11 @@ const Page = () => {
             >
               {filtersVisible ? (
                 <>
-                  <IoMdClose className="text-lg" /> Close Filters
+                  <IoMdClose className="text-lg" />
                 </>
               ) : (
                 <>
-                  <IoMdFunnel className="text-lg" /> Show Filters
+                  <IoMdFunnel className="text-lg" />
                 </>
               )}
             </button>
@@ -72,7 +101,10 @@ const Page = () => {
               <div className="flex flex-col gap-4">
                 {/* Store ID Dropdown */}
                 <div>
-                  <label htmlFor="storeId" className="block text-sm font-medium">
+                  <label
+                    htmlFor="storeId"
+                    className="block text-sm font-medium"
+                  >
                     Store ID
                   </label>
                   <select
@@ -124,7 +156,7 @@ const Page = () => {
 
                 {/* Apply Filters Button */}
                 <button
-                  onClick={fetchHistory}
+                  onClick={applyFilter}
                   className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
                 >
                   Apply Filters

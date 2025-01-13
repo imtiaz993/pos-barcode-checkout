@@ -6,8 +6,13 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import Loader from "@/components/loader";
 import { toast } from "sonner";
+import { getAuth } from "firebase/auth";
+import { app } from "@/app/firebase";
 
 const OrderDetail = () => {
+  const auth = getAuth(app);
+  const user: any = auth.currentUser;
+
   const { orderId } = useParams();
   const router = useRouter();
 
@@ -16,8 +21,10 @@ const OrderDetail = () => {
 
   useEffect(() => {
     axios
-      .post("https://api.ecoboutiquemarket.com/order/detail", {
-        order_id: orderId,
+      .get(`http://35.235.118.79:8000/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`, // Include the token in the Authorization header
+        },
       })
       .then((res) => {
         setOrderDetails(res.data.order);
