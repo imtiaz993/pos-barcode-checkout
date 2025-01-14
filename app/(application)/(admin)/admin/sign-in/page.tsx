@@ -49,11 +49,18 @@ const EmailAuthentication = () => {
           } else {
             console.error(res.error);
           }
+          await data.user.getIdToken(true); // Refresh token
+
+          // Get updated user claims
+          const tokenResult = await data.user.getIdTokenResult();
+          const claims = tokenResult.claims;
+          if (claims.admin) {
+            localStorage.setItem("user", JSON.stringify(data.user));
+            router.replace("/admin/order-history");
+          }
         } catch (error) {
           console.error("Error calling API:", error);
         }
-        localStorage.setItem("user", JSON.stringify(data.user));
-        router.replace("/admin/order-history");
       } catch (error) {
         formik.setFieldError("email", "Invalid email or password");
         console.error("Error during signInWithEmailAndPassword", error);

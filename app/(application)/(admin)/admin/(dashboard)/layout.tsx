@@ -21,10 +21,14 @@ const Layout = ({ children }: any) => {
   useEffect(() => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
+      const token = await user?.getIdTokenResult();
+      if (token?.claims?.admin) {
+        console.log("User is an admin.");
+      }
       if (isLoggedIn && !user?.email) {
         router.replace("/sign-in");
       } else if (!isLoggedIn) {
-        router.replace("/admin/sign-in");
+       
         return;
       }
 
