@@ -12,6 +12,9 @@ import { auth } from "@/app/firebase";
 import "react-phone-input-2/lib/style.css";
 import Loader from "@/components/loader";
 
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 export default function Page() {
   const router = useRouter();
   const { storeId, region }: any = useParams();
@@ -21,23 +24,7 @@ export default function Page() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [amount, setAmount] = useState<any>(10);
-  const [customAmount, setCustomAmount] = useState<any>("");
-  const [message, setMessage] = useState("");
-  const [fromName, setFromName] = useState("");
-  const [recipientName, setRecipientName] = useState("");
-  const [recipientPhone, setrecipientPhone] = useState("");
-  const [quantity, setQuantity] = useState(1);
-  // const [selectedTheme, setSelectedTheme] = useState(""); // New State for theme
-
-  // Error states
-  const [amountError, setAmountError] = useState("");
-  const [fromNameError, setFromNameError] = useState("");
-  const [recipientNameError, setRecipientNameError] = useState("");
-  const [messageError, setMessageError] = useState("");
-  const [recipientPhoneError, setRecipientPhoneError] = useState("");
-  const [themeError, setThemeError] = useState(""); // New Error for theme
-
+  const presetAmounts = [10, 25, 50, 100, 250, 500];
   const giftCardThemes = [
     "Birthday",
     "Thank You",
@@ -56,88 +43,74 @@ export default function Page() {
     "Back to School",
   ];
 
-  const presetAmounts = [10, 25, 50, 100, 250, 500];
+  const formik = useFormik({
+    initialValues: {
+      amount: 10,
+      customAmount: "",
+      message: "",
+      fromName: "",
+      recipientName: "",
+      recipientPhone: "",
+      quantity: 1,
+    },
+    validationSchema: Yup.object({
+      amount: Yup.number()
+        .test(
+          "amount-or-custom",
+          "Please select or enter a value $5 and above.",
+          function (value) {
+            const { customAmount } = this.parent;
+            return value || (customAmount && customAmount >= 5);
+          }
+        )
+        .nullable(),
+      customAmount: Yup.number()
+        .test(
+          "custom-amount-minimum",
+          "Please enter a value $5 and above.",
+          (value) => !value || value >= 5
+        )
+        .nullable(),
+      message: Yup.string().required("Please enter the gift card message."),
+      fromName: Yup.string().required("Please enter the sender name."),
+      recipientName: Yup.string().required("Please enter the recipient name."),
+      recipientPhone: Yup.string().required(
+        "Please enter the recipient phone number."
+      ),
+    }),
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+        setShowCheckout(true);
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.");
+        console.error(error);
+      }
+    },
+  });
 
-  const validateForm = () => {
-    let isValid = true;
-
-    // Validate amount
-    if ((amount === "" || amount === undefined) && customAmount < 5) {
-      setAmountError("Please enter a value $5 and above.");
-      isValid = false;
-    } else if (
-      (amount === "" || amount === undefined) &&
-      customAmount.trim() === ""
-    ) {
-      setAmountError("Please select or enter an amount.");
-      isValid = false;
-    } else {
-      setAmountError("");
-    }
-
-    // Validate fromName
-    if (fromName.trim() === "") {
-      setFromNameError("Please enter the sender name.");
-      isValid = false;
-    } else {
-      setFromNameError("");
-    }
-
-    // Validate recipientName
-    if (recipientName.trim() === "") {
-      setRecipientNameError("Please enter the recipient name.");
-      isValid = false;
-    } else {
-      setRecipientNameError("");
-    }
-    // Validate message
-    if (message.trim() === "") {
-      setMessageError("Please enter the gift card message.");
-      isValid = false;
-    } else {
-      setMessageError("");
-    }
-
-    // Validate recipientPhone
-    if (recipientPhone.trim() === "") {
-      setRecipientPhoneError("Please enter the recipient phone number.");
-      isValid = false;
-    } else {
-      setRecipientPhoneError("");
-    }
-
-    // // Validate theme
-    // if (selectedTheme === "") {
-    //   setThemeError("Please select a theme.");
-    //   isValid = false;
-    // } else {
-    //   setThemeError("");
-    // }
-
-    return isValid;
-  };
-
-  const handleAddToCart = async () => {
-    if (!validateForm()) return; // Stop if validation fails
-    setLoading(true);
-    setShowCheckout(true);
-  };
-
-  const handleBuyGiftCard = async (setLoading: any) => {
+  const handleBuyGiftCard = async () => {
+    const {
+      amount,
+      customAmount,
+      message,
+      fromName,
+      recipientName,
+      recipientPhone,
+      quantity,
+    } = formik.values;
     try {
       const response = await axios.post(
         `https://api.ecoboutiquemarket.com/giftcard/${
           quantity === 1 ? "purchase-custom" : "purchase-multiple"
         }`,
         {
-          amount: (customAmount || amount) * quantity,
-          message: message,
+          amount: (Number(customAmount) || amount) * quantity,
+          message,
           purchaserPhone: user?.phoneNumber,
           fromName,
           recipientName,
           recipientPhone,
-          quantity: quantity,
-          // theme: selectedTheme, // Include theme in API payload
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -157,7 +130,10 @@ export default function Page() {
       {loading && <Loader />}
       {showCheckout ? (
         <Payment
-          price={(customAmount || amount) * quantity}
+          price={
+            (Number(formik.values.customAmount) || formik.values.amount) *
+            formik.values.quantity
+          }
           onSuccess={handleBuyGiftCard}
           onCancel={() => {
             setShowCheckout(false);
@@ -187,175 +163,144 @@ export default function Page() {
           />
         </div>
 
-        {/* 1. Choose amount */}
-        <div className="mb-6">
-          <h2 className="font-semibold mb-2">
-            1. Choose Amount: <span className="text-red-600">*</span>
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {presetAmounts.map((amt) => (
-              <button
-                key={amt}
-                onClick={() => {
-                  setAmount(amt);
-                  setCustomAmount("");
+        <form onSubmit={formik.handleSubmit}>
+          {/* 1. Choose amount */}
+          <div className="mb-6">
+            <h2 className="font-semibold mb-2">
+              1. Choose Amount: <span className="text-red-600">*</span>
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {presetAmounts.map((amt) => (
+                <button
+                  type="button"
+                  key={amt}
+                  onClick={() => {
+                    formik.setFieldValue("amount", amt);
+                    formik.setFieldValue("customAmount", "");
+                  }}
+                  className={`px-4 py-2 rounded border ${
+                    formik.values.amount === amt
+                      ? "bg-blue-100 border-blue-600"
+                      : "border-gray-300"
+                  }`}
+                >
+                  ${amt}
+                </button>
+              ))}
+            </div>
+            <div className="mt-2">
+              <label htmlFor="customAmount" className="block text-sm mb-1">
+                Custom Amount
+              </label>
+              <input
+                type="number"
+                id="customAmount"
+                value={formik.values.customAmount}
+                onChange={(e) => {
+                  formik.setFieldValue("customAmount", e.target.value);
+                  formik.setFieldValue("amount", "");
                 }}
-                className={`px-4 py-2 rounded border ${
-                  amount === amt
-                    ? "bg-blue-100 border-blue-600"
-                    : "border-gray-300"
-                }`}
-              >
-                ${amt}
-              </button>
-            ))}
+                className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
+                placeholder="500.00"
+              />
+              {formik.errors.amount && (
+                <p className="text-red-600 text-sm">{formik.errors.amount}</p>
+              )}
+            </div>
           </div>
-          <div className="mt-2">
-            <label htmlFor="customAmount" className="block text-sm mb-1">
-              Custom Amount
+
+          {/* 2. Write a gift message */}
+          <div className="mb-6">
+            <h2 className="font-semibold mb-2">
+              2. Write a Gift Message: <span className="text-red-600">*</span>
+            </h2>
+            <textarea
+              id="message"
+              className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
+              placeholder="Enter a message..."
+              value={formik.values.message}
+              onChange={formik.handleChange}
+            />
+            {formik.errors.message && (
+              <p className="text-red-600 text-sm">{formik.errors.message}</p>
+            )}
+          </div>
+
+          {/* From field */}
+          <div className="mb-6">
+            <label htmlFor="fromName" className="font-semibold block mb-2">
+              3. Sender Details: <span className="text-red-600">*</span>
             </label>
             <input
-              type="number"
-              id="customAmount"
-              value={customAmount}
-              onChange={(e) => {
-                setCustomAmount(e.target.value);
-                setAmount("");
-              }}
+              type="text"
+              id="fromName"
+              value={formik.values.fromName}
+              onChange={formik.handleChange}
+              placeholder="Enter sender name..."
               className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
-              placeholder="500.00"
             />
+            {formik.errors.fromName && (
+              <p className="text-red-600 text-sm">{formik.errors.fromName}</p>
+            )}
           </div>
-          {amountError && <p className="text-red-600 text-sm">{amountError}</p>}
-        </div>
 
-        {/* 2. Choose quantity */}
-        {/* <div className="mb-6">
-          <h2 className="font-semibold mb-2">
-            2. Choose Quantity: <span className="text-red-600">*</span>
-          </h2>
-          <div className="flex items-center">
-            <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="px-4 py-2 border rounded-l-lg border-gray-300"
-            >
-              -
-            </button>
-            <span className="px-4 py-2 border-t border-b text-center w-12">
-              {quantity}
-            </span>
-            <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="px-4 py-2 border rounded-r-lg border-gray-300"
-            >
-              +
-            </button>
+          {/* Recipient information */}
+          <div className="mb-6">
+            <h2 className="font-semibold mb-2">4. Recipient Details:</h2>
+            <label className="block mb-1 text-sm" htmlFor="recipientName">
+              Name <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              id="recipientName"
+              value={formik.values.recipientName}
+              onChange={formik.handleChange}
+              placeholder="Enter recipient name"
+              className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
+            />
+            {formik.errors.recipientName && (
+              <p className="text-red-600 text-sm">
+                {formik.errors.recipientName}
+              </p>
+            )}
+
+            <label className="block mb-1 text-sm" htmlFor="recipientPhone">
+              Phone Number <span className="text-red-600">*</span>
+            </label>
+            <div className="mb-2">
+              <PhoneInput
+                country={"us"}
+                value={formik.values.recipientPhone}
+                onChange={(phone: string) =>
+                  formik.setFieldValue("recipientPhone", `+${phone}`)
+                }
+                inputStyle={{
+                  width: "100%",
+                  borderRadius: "0.5rem",
+                  borderColor: formik.errors.recipientPhone ? "red" : "#d1d5db",
+                  padding: "0.5rem 3rem",
+                  fontSize: "0.875rem",
+                }}
+                dropdownStyle={{
+                  borderRadius: "0.5rem",
+                }}
+              />
+            </div>
+
+            {formik.errors.recipientPhone && (
+              <p className="text-red-600 text-sm">
+                {formik.errors.recipientPhone}
+              </p>
+            )}
           </div>
-        </div>
 
-        <div className="mb-6">
-          <h2 className="font-semibold mb-2">
-            3. Choose a theme: <span className="text-red-600">*</span>
-          </h2>
-          <select
-            value={selectedTheme}
-            onChange={(e) => setSelectedTheme(e.target.value)}
-            className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
+          <button
+            type="submit"
+            className="mt-2 w-full bg-blue-600 text-white py-2 text-sm rounded-lg hover:bg-blue-700"
           >
-            <option value="">Select a theme</option>
-            {giftCardThemes.map((theme, index) => (
-              <option key={index} value={theme}>
-                {theme}
-              </option>
-            ))}
-          </select>
-          {themeError && <p className="text-red-600 text-sm">{themeError}</p>}
-        </div> */}
-
-        {/* 3. Write a gift message */}
-        <div className="mb-6">
-          <h2 className="font-semibold mb-2">
-            4. Write a Gift Message: <span className="text-red-600">*</span>
-          </h2>
-          <textarea
-            className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
-            placeholder="Enter a message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          {messageError && (
-            <p className="text-red-600 text-sm">{messageError}</p>
-          )}
-        </div>
-
-        {/* From field */}
-        <div className="mb-6">
-          <label htmlFor="fromName" className="font-semibold block mb-2">
-            5. Sender Details: <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            id="fromName"
-            value={fromName}
-            onChange={(e) => setFromName(e.target.value)}
-            placeholder="Enter sender name..."
-            className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
-          />
-          {fromNameError && (
-            <p className="text-red-600 text-sm">{fromNameError}</p>
-          )}
-        </div>
-
-        {/* Recipient information */}
-        <div className="mb-6">
-          <h2 className="font-semibold mb-2">6. Recipient Details:</h2>
-          <label className="block mb-1 text-sm" htmlFor="recipientName">
-            Name <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            id="recipientName"
-            value={recipientName}
-            onChange={(e) => setRecipientName(e.target.value)}
-            placeholder="Enter recipient name"
-            className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
-          />
-          {recipientNameError && (
-            <p className="text-red-600 text-sm">{recipientNameError}</p>
-          )}
-
-          <label className="block mb-1 text-sm" htmlFor="recipientPhone">
-            Phone Number <span className="text-red-600">*</span>
-          </label>
-          <div className="mb-2">
-            <PhoneInput
-              country={"us"}
-              value={recipientPhone}
-              onChange={(phone: string) => setrecipientPhone(`+${phone}`)}
-              inputStyle={{
-                width: "100%",
-                borderRadius: "0.5rem",
-                borderColor: recipientPhoneError ? "red" : "#d1d5db",
-                padding: "0.5rem 3rem",
-                fontSize: "0.875rem",
-              }}
-              dropdownStyle={{
-                borderRadius: "0.5rem",
-              }}
-            />
-          </div>
-
-          {recipientPhoneError && (
-            <p className="text-red-600 text-sm">{recipientPhoneError}</p>
-          )}
-        </div>
-
-        <button
-          onClick={handleAddToCart}
-          className="mt-2 w-full bg-blue-600 text-white py-2 text-sm rounded-lg hover:bg-blue-700"
-        >
-          Purchase
-        </button>
+            Purchase
+          </button>
+        </form>
       </div>
     </>
   );
