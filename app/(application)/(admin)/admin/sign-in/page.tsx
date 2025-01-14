@@ -31,11 +31,27 @@ const EmailAuthentication = () => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        const data = await signInWithEmailAndPassword(
+        const data: any = await signInWithEmailAndPassword(
           auth,
           values.email,
           values.password
         );
+        try {
+          const response: any = await fetch("/api/set-admin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ uid: data.user.uid }),
+          });
+
+          const res = await response.json();
+          if (response.ok) {
+            console.log(res.message);
+          } else {
+            console.error(res.error);
+          }
+        } catch (error) {
+          console.error("Error calling API:", error);
+        }
         localStorage.setItem("user", JSON.stringify(data.user));
         router.replace("/admin/order-history");
       } catch (error) {
