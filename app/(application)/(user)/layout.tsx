@@ -44,7 +44,8 @@ const Layout = ({ children }: any) => {
       const isLoggedIn = await checkAuthState();
 
       if (user && isLoggedIn) {
-        if (user.email) {
+        const token = await user.getIdTokenResult();
+        if (token.claims.admin) {
           router.replace("/admin/order-history");
         } else {
           if (!isLoggedIn) {

@@ -22,14 +22,11 @@ const Layout = ({ children }: any) => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
       const token = await user?.getIdTokenResult();
-      if (token?.claims?.admin) {
-        console.log("User is an admin.");
-      }
-      if (isLoggedIn && !user?.email) {
+      if (!isLoggedIn || !token?.claims?.admin) {
+        if (!token?.claims?.admin) {
+          await logout();
+        }
         router.replace("/sign-in");
-      } else if (!isLoggedIn) {
-       
-        return;
       }
 
       setCheckingAuth(false);

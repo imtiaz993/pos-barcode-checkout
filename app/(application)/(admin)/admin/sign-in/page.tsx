@@ -73,10 +73,12 @@ const EmailAuthentication = () => {
   useEffect(() => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
-      if (isLoggedIn) {
-        if (user && user.email) {
+      if (user && isLoggedIn) {
+        const token = await user.getIdTokenResult();
+        if (token.claims.admin) {
           router.replace("/admin/order-history");
         }
+        return;
       }
       setCheckingAuth(false);
     };
