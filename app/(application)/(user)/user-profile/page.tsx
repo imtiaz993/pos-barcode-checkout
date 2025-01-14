@@ -10,6 +10,10 @@ import { logout } from "@/utils/firebaseAuth";
 import axios from "axios";
 import Link from "next/link";
 import PhoneInput from "react-phone-input-2";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+import "react-phone-input-2/lib/style.css";
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -20,10 +24,6 @@ export default function ProfilePage() {
   const router = useRouter();
   const auth = getAuth(app);
   const user = auth.currentUser;
-  const [userData, setUserData] = useState({
-    name: "",
-    phone: "",
-  });
 
   const [giftCardBalance, setGiftCardBalance] = useState<any>();
   const [giftCardBalanceLoading, setGiftCardBalanceLoading] =
@@ -46,18 +46,6 @@ export default function ProfilePage() {
       });
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserData({
-          name: user?.displayName ?? "",
-          phone: user?.phoneNumber ?? "",
-        });
-      }
-    });
-
-    return () => unsubscribe(); // Cleanup the listener on unmount
-  }, [auth]);
   let recaptchaVerifier = useRef<any>();
 
   useEffect(() => {
@@ -72,41 +60,71 @@ export default function ProfilePage() {
     }
   }, [auth]);
 
-  // Update Profile
-  const handleUpdateProfile = async () => {
-    try {
-      if (!user) return alert("No user is signed in!");
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required"),
+    phone: Yup.string()
+      .required("Phone number is required")
+      .matches(
+        /^\+?[1-9]\d{1,14}$/,
+        "Phone number must be in international format (e.g., +1234567890)"
+      ),
+  });
 
-      const { name, phone } = userData;
+  const formik = useFormik({
+    initialValues: {
+      name: user?.displayName || "",
+      phone: user?.phoneNumber || "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        if (!user) {
+          return alert("No user is signed in!");
+        }
 
-      // Update name
-      if (name !== user.displayName) {
-        await updateProfile(user, { displayName: name });
+        // Update name
+        if (values.name !== user.displayName) {
+          await updateProfile(user, { displayName: values.name });
+        }
+
+        // Update phone
+        if (values.phone !== user.phoneNumber) {
+          const phoneProvider = new PhoneAuthProvider(auth);
+          const verificationId = await phoneProvider.verifyPhoneNumber(
+            "+" + values.phone,
+            recaptchaVerifier.current
+          );
+          const verificationCode: any = window.prompt(
+            "Enter the verification code:"
+          );
+          const credential = PhoneAuthProvider.credential(
+            verificationId,
+            verificationCode
+          );
+          await updatePhoneNumber(user, credential);
+        }
+
+        toast.success("Profile updated successfully!");
+      } catch (error: any) {
+        console.error("Error updating profile:", error);
+        toast.error("Error updating profile");
       }
+    },
+  });
 
-      // Update phone
-      if (phone !== user.phoneNumber) {
-        const phoneProvider = new PhoneAuthProvider(auth);
-        const verificationId = await phoneProvider.verifyPhoneNumber(
-          phone,
-          recaptchaVerifier.current
-        );
-        const verificationCode: any = window.prompt(
-          "Enter the verification code:"
-        );
-        const credential = PhoneAuthProvider.credential(
-          verificationId,
-          verificationCode
-        );
-        await updatePhoneNumber(user, credential);
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        formik.setValues({
+          name: user?.displayName ?? "",
+          phone: user?.phoneNumber ?? "",
+        });
       }
+    });
 
-      toast.success("Profile updated successfully!");
-    } catch (error: any) {
-      console.error("Error updating profile:", error);
-      toast.error("Error updating profile");
-    }
-  };
+    return () => unsubscribe(); // Cleanup the listener on unmount
+  }, [auth]);
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -118,7 +136,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
+    <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 ">
       <div className="max-w-md">
         <div className="flex justify-between mb-2">
           <p
@@ -147,12 +165,16 @@ export default function ProfilePage() {
             Logout
           </button>
         </div>
-        <div className="w-full max-w-md mx-auto">
+
+        <form
+          onSubmit={formik.handleSubmit}
+          className="w-full max-w-md mx-auto"
+        >
           <div className="bg-white">
             <div className="flex items-center">
               <h1 className="font-semibold my-4">
                 Gift Card Balance:{" "}
-                {giftCardBalanceLoading ? "Loading..." : "$" + giftCardBalance}
+                {giftCardBalanceLoading ? "Loading..." : `$${giftCardBalance}`}
               </h1>
               {!giftCardBalanceLoading && (
                 <p className="ml-3 text-blue-600 border-b border-b-blue-600 cursor-pointer text-sm">
@@ -177,19 +199,24 @@ export default function ProfilePage() {
             >
               View Order History
             </button>
-
-            {/* Update Profile Section */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Name</label>
               <input
                 type="text"
-                className="w-full px-2 py-2 text-sm border rounded-lg mb-2"
+                className={`w-full px-2 py-2 text-sm border rounded-lg mb-2 ${
+                  formik.touched.name && formik.errors.name
+                    ? "border-red-500"
+                    : ""
+                }`}
                 placeholder="Your name"
-                value={userData.name}
-                onChange={(e) =>
-                  setUserData({ ...userData, name: e.target.value })
-                }
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="name"
               />
+              {formik.touched.name && formik.errors.name && (
+                <p className="text-red-500 text-xs">{formik.errors.name}</p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -197,17 +224,15 @@ export default function ProfilePage() {
               <div className="mb-2">
                 <PhoneInput
                   country={"us"}
-                  value={userData.phone}
-                  onChange={(phone: string) =>
-                    setUserData({ ...userData, phone: phone })
-                  }
+                  value={formik.values.phone}
+                  onChange={(phone) => formik.setFieldValue("phone", phone)}
                   inputStyle={{
                     width: "100%",
                     borderRadius: "0.5rem",
-                    // borderColor:
-                    //   formik.touched.phone && formik.errors.phone
-                    //     ? "red"
-                    //     : "#d1d5db",
+                    borderColor:
+                      formik.touched.phone && formik.errors.phone
+                        ? "red"
+                        : "#d1d5db",
                     padding: "0.5rem 3rem",
                     fontSize: "0.875rem",
                   }}
@@ -215,18 +240,20 @@ export default function ProfilePage() {
                     borderRadius: "0.5rem",
                   }}
                 />
+                {formik.touched.phone && formik.errors.phone && (
+                  <p className="text-red-500 text-xs">{formik.errors.phone}</p>
+                )}
               </div>
             </div>
             <button
-              type="button"
-              onClick={handleUpdateProfile}
+              type="submit"
               className="w-full bg-blue-500 text-white py-2 text-sm rounded-lg hover:bg-blue-600"
             >
               Update Profile
             </button>
-            <div id="recaptcha-container"></div>
           </div>
-        </div>
+        </form>
+        <div id="recaptcha-container"></div>
       </div>
     </div>
   );
