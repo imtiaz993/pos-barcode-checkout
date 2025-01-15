@@ -51,11 +51,15 @@ const Page = () => {
     if (endDate) params.end_date = endDate;
 
     axios
-      .post("https://www.adminapi.ecoboutiquemarket.com/orders/filter", params, {
-        headers: {
-          Authorization: `Bearer ${user?.accessToken}`,
-        },
-      })
+      .post(
+        "https://www.adminapi.ecoboutiquemarket.com/orders/filter",
+        params,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+          },
+        }
+      )
       .then((res) => {
         setHistory(res.data.orders);
         setLoading(false);
