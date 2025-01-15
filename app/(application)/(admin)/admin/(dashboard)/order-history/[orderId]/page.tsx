@@ -21,7 +21,7 @@ const OrderDetail = () => {
 
   useEffect(() => {
     axios
-      .get(`http://35.235.118.79:8000/orders/${orderId}`, {
+      .get(`https://www.adminapi.ecoboutiquemarket.com/orders/${orderId}`, {
         headers: {
           Authorization: `Bearer ${user?.accessToken}`, // Include the token in the Authorization header
         },

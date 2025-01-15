@@ -25,7 +25,7 @@ const Page = () => {
     setLoading(true);
 
     axios
-      .get("http://35.235.118.79:8000/orders/all", {
+      .get("https://www.adminapi.ecoboutiquemarket.com/orders/all", {
         headers: {
           Authorization: `Bearer ${user?.accessToken}`, // Include the token in the Authorization header
         },
@@ -51,7 +51,7 @@ const Page = () => {
     if (endDate) params.end_date = endDate;
 
     axios
-      .post("http://35.235.118.79:8000/orders/filter", params, {
+      .post("https://www.adminapi.ecoboutiquemarket.com/orders/filter", params, {
         headers: {
           Authorization: `Bearer ${user?.accessToken}`,
         },
