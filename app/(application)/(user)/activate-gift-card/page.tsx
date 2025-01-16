@@ -29,22 +29,27 @@ export default function Page() {
   };
 
   useEffect(() => {
-    axios
-      .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
-        unique_code: gift_card,
-        phone_number: user?.phoneNumber,
-      })
-      .then(() => {
-        setActivating(false);
-      })
-      .catch((error) => {
-        handleLogout();
-        // setActivating(false);
-        // setError(error?.response?.data?.message);
-        // toast.error(error?.response?.data?.message);
-        console.error("Error fetching client secret:", error);
-      });
-  }, []);
+    if (user) {
+      axios
+        .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
+          unique_code: gift_card,
+          phone_number: user?.phoneNumber,
+        })
+        .then(() => {
+          setActivating(false);
+        })
+        .catch((error) => {
+          if (error.response.data.message === "User not found") {
+            handleLogout();
+          } else {
+            setActivating(false);
+            setError(error?.response?.data?.message);
+            toast.error(error?.response?.data?.message);
+          }
+          console.log(error.response.data.message);
+        });
+    }
+  }, [user]);
 
   return (
     <>

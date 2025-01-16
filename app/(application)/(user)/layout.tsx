@@ -47,17 +47,14 @@ const Layout = ({ children }: any) => {
         const token = await user.getIdTokenResult();
         if (token.claims.admin) {
           router.replace("/admin/order-history");
+        }
+      } else if (!user && !isLoggedIn) {
+        if (type === "/activate-gift-card") {
+          router.replace(`/sign-in?type=${type}&gift_card=${gift_card}`);
         } else {
-          if (!isLoggedIn) {
-            if (type === "/activate-gift-card") {
-              router.replace(`/sign-in?type=${type}&gift_card=${gift_card}`);
-            } else {
-              router.replace(
-                `/sign-in?type=${type}&region=${region}&storeId=${storeId}`
-              );
-            }
-            return;
-          }
+          router.replace(
+            `/sign-in?type=${type}&region=${region}&storeId=${storeId}`
+          );
         }
       }
 
