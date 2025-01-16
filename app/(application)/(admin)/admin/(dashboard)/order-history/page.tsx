@@ -8,18 +8,22 @@ import Link from "next/link";
 import { IoMdClose, IoMdFunnel } from "react-icons/io";
 import { getAuth } from "firebase/auth";
 import { app } from "@/app/firebase";
+import ReactPaginate from "react-paginate";
 
 const Page = () => {
   const auth = getAuth(app);
   const user: any = auth.currentUser;
 
-  const [history, setHistory] = useState<any>();
+  const [history, setHistory] = useState<any>([]);
   const [loading, setLoading] = useState(true);
 
   const [storeId, setStoreId] = useState(""); // Filter for store ID
   const [startDate, setStartDate] = useState(""); // Filter for start date
   const [endDate, setEndDate] = useState(""); // Filter for end date
   const [filtersVisible, setFiltersVisible] = useState(false); // Toggle filter visibility
+
+  const [currentPage, setCurrentPage] = useState(0); // Current page index
+  const [pageSize, setPageSize] = useState(10); // Number of items per page
 
   const fetchHistory = () => {
     setLoading(true);
@@ -52,7 +56,7 @@ const Page = () => {
 
     axios
       .post(
-        "https://www.adminapi.ecoboutiquemarket.com/orders/filter",
+        "https://www.adminapi.ecoboutiquemarket.com/orders/filter_orders",
         params,
         {
           headers: {
@@ -74,6 +78,11 @@ const Page = () => {
   useEffect(() => {
     fetchHistory(); // Fetch history on component load
   }, []);
+
+  // Calculate paginated data
+  const startIndex = currentPage * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedData = history.slice(startIndex, endIndex);
 
   return (
     <>
@@ -169,6 +178,35 @@ const Page = () => {
             </div>
           )}
 
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-sm">Page Size:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="border px-2 py-1 rounded-lg"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
+
+          <ReactPaginate
+            previousLabel={"← Previous"}
+            nextLabel={"Next →"}
+            breakLabel={"..."}
+            pageCount={Math.ceil(history.length / pageSize)}
+            onPageChange={(selectedItem) =>
+              setCurrentPage(selectedItem.selected)
+            }
+            containerClassName={"pagination"}
+            previousLinkClassName={"pagination__link"}
+            nextLinkClassName={"pagination__link"}
+            disabledClassName={"pagination__link--disabled"}
+            activeClassName={"pagination__link--active"}
+          />
           {/* Order Table */}
           <div className="w-full max-w-md mx-auto">
             <div className="bg-white overflow-x-auto">
@@ -183,13 +221,13 @@ const Page = () => {
                   </tr>
                 </thead>
                 <tbody className="text-xs">
-                  {history && history.length > 0 ? (
-                    history.map((item: any, index: any) => (
+                  {paginatedData && paginatedData.length > 0 ? (
+                    paginatedData.map((item: any, index: any) => (
                       <tr key={index} className="border-b">
                         <td className="p-2">
                           <Link
                             href={`/admin/order-history/${item.orderId}`}
-                            className="text-blue-500"
+                            className="text-blue-600"
                           >
                             {item.orderId}
                           </Link>

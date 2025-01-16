@@ -27,7 +27,7 @@ const OrderDetail = () => {
         },
       })
       .then((res) => {
-        setOrderDetails(res.data.order);
+        setOrderDetails(res.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -56,7 +56,7 @@ const OrderDetail = () => {
       <div className="max-w-md">
         <div className="flex justify-between mb-4">
           <p
-            className="cursor-pointer text-blue-500"
+            className="cursor-pointer text-blue-600"
             onClick={() => router.back()}
           >
             &larr; Back
@@ -68,32 +68,31 @@ const OrderDetail = () => {
         <div className="bg-white p-4 rounded-lg shadow mt-4">
           <p>
             <span className="font-medium">Order ID:</span>{" "}
-            {orderDetails.orderId}
+            {orderDetails?.orderId}
           </p>
           <p>
             <span className="font-medium">Date:</span>{" "}
-            {new Date(orderDetails.orderDate).toLocaleString("en-US", {
+            {new Date(orderDetails?.orderDate).toLocaleString("en-US", {
               timeZone: "UTC",
             })}
           </p>
           <p>
-            <span className="font-medium">Status:</span> {orderDetails.status}
+            <span className="font-medium">Status:</span> {orderDetails?.status}
           </p>
           <p>
-            <span className="font-medium">Store:</span>{" "}
-            {orderDetails.storeId.split("s")[1]}
+            <span className="font-medium">Store:</span> {orderDetails?.storeId}
           </p>
           <p>
             <span className="font-medium">Total Amount:</span> $
-            {orderDetails.totalAmount?.toFixed(2)}
+            {orderDetails?.totalAmount?.toFixed(2)}
           </p>
           <p>
             <span className="font-medium">Coupon Code:</span>{" "}
-            {orderDetails.couponId || "N/A"}
+            {orderDetails?.couponId || "N/A"}
           </p>
           <p>
             <span className="font-medium">Gift Card:</span>{" "}
-            {orderDetails.giftCardCode || "N/A"}
+            {orderDetails?.giftCardCode || "N/A"}
           </p>
 
           <h2 className="text-lg font-medium mt-4">Order Items</h2>
@@ -106,20 +105,20 @@ const OrderDetail = () => {
                 <div>
                   <p>
                     <span className="font-medium">Product ID:</span>{" "}
-                    {item.productId}
+                    {item?.productId}
                   </p>
                   <p>
                     <span className="font-medium">Quantity:</span>{" "}
-                    {item.quantity}
+                    {item?.quantity}
                   </p>
                   <p>
                     <span className="font-medium">Price:</span> $
-                    {item.price?.toFixed(2)}
+                    {item?.price?.toFixed(2)}
                   </p>
                 </div>
                 <p>
                   <span className="font-medium">Reward Points:</span>{" "}
-                  {item.reward_point}
+                  {item?.reward_point}
                 </p>
               </li>
             ))}
@@ -128,16 +127,16 @@ const OrderDetail = () => {
           <h2 className="text-lg font-medium mt-4">Payment</h2>
           <p>
             <span className="font-medium">Transaction ID:</span>{" "}
-            {orderDetails.terminalCheckout.id}
+            {orderDetails?.terminalCheckout?.id}
           </p>
           <p>
             <span className="font-medium">Status:</span>{" "}
-            {orderDetails.terminalCheckout.status}
+            {orderDetails?.terminalCheckout?.status}
           </p>
           <p>
             <span className="font-medium">Amount:</span> $
-            {(orderDetails.terminalCheckout.amount / 100)?.toFixed(2)} (
-            {orderDetails.terminalCheckout.currency.toUpperCase()})
+            {(orderDetails?.terminalCheckout?.amount / 100)?.toFixed(2)} (
+            {orderDetails?.terminalCheckout?.currency?.toUpperCase()})
           </p>
         </div>
       </div>

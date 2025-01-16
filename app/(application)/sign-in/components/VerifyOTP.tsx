@@ -172,7 +172,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
           <button
             onClick={resendOtp}
             type="button"
-            className={`text-blue-500 text-sm hover:underline ${
+            className={`text-blue-600 text-sm hover:underline ${
               !resendOtpEnabled ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={!resendOtpEnabled}

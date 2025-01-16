@@ -49,7 +49,7 @@ const OrderDetail = () => {
       <div className="max-w-md">
         <div className="flex justify-between mb-4">
           <p
-            className="cursor-pointer text-blue-500"
+            className="cursor-pointer text-blue-600"
             onClick={() => router.back()}
           >
             &larr; Back

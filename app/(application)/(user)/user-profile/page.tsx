@@ -140,7 +140,7 @@ export default function ProfilePage() {
       <div className="max-w-md">
         <div className="flex justify-between mb-2">
           <p
-            className="cursor-pointer"
+            className="cursor-pointer text-blue-600"
             onClick={() => {
               router.back();
             }}
