@@ -31,7 +31,7 @@ const Page = () => {
         },
       })
       .then((res) => {
-        setHistory(res.data.orders);
+        setHistory(res.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -61,7 +61,7 @@ const Page = () => {
         }
       )
       .then((res) => {
-        setHistory(res.data.orders);
+        setHistory(res.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -199,7 +199,7 @@ const Page = () => {
                             timeZone: "UTC",
                           })}
                         </td>
-                        <td className="p-2">{item.storeId.split("s")[1]}</td>
+                        <td className="p-2">{item.storeId}</td>
                         <td className="p-2">${item.totalAmount.toFixed(2)}</td>
                         <td className="p-2">{item.couponId || "N/A"}</td>
                       </tr>
