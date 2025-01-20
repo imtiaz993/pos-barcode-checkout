@@ -14,82 +14,170 @@ const Page = () => {
   const auth = getAuth(app);
   const user: any = auth.currentUser;
 
-  const [history, setHistory] = useState<any>([]);
-  const [loading, setLoading] = useState(true);
+  // Orders data
+  const [orders, setOrders] = useState<any[]>([]);
+  // For server-side pagination (total number of orders)
+  const [totalRecords, setTotalRecords] = useState(0);
 
-  const [storeId, setStoreId] = useState(""); // Filter for store ID
-  const [startDate, setStartDate] = useState(""); // Filter for start date
-  const [endDate, setEndDate] = useState(""); // Filter for end date
-  const [filtersVisible, setFiltersVisible] = useState(false); // Toggle filter visibility
+  // UI state
+  const [loading, setLoading] = useState(false);
+  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [filterMode, setFilterMode] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(0); // Current page index
-  const [pageSize, setPageSize] = useState(10); // Number of items per page
+  // Filters
+  const [storeId, setStoreId] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  const fetchHistory = () => {
-    setLoading(true);
+  // Pagination
+  // Note: ReactPaginate uses zero-based pages, but your API might be 1-based.
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
-    axios
-      .get("https://www.adminapi.ecoboutiquemarket.com/orders/all", {
-        headers: {
-          Authorization: `Bearer ${user?.accessToken}`, // Include the token in the Authorization header
-        },
-      })
-      .then((res) => {
-        setHistory(res.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        toast.error(error?.response?.data?.message || "Error fetching data");
-        setLoading(false);
-        console.error("Error fetching client secret:", error);
-      });
-  };
+  /**
+   * Fetch all orders (unfiltered).
+   */
+  const fetchAllOrders = async (page = 0, limit = 10) => {
+    try {
+      setLoading(true);
 
-  const applyFilter = () => {
-    setLoading(true);
-
-    // Construct query parameters
-    const params: any = {};
-    if (storeId) params.store_id = storeId;
-    if (startDate) params.start_date = startDate;
-    if (endDate) params.end_date = endDate;
-
-    axios
-      .post(
-        "https://www.adminapi.ecoboutiquemarket.com/orders/filter_orders",
-        params,
+      // If API is 1-based, convert `page` to `page + 1`:
+      const response = await axios.get(
+        "https://www.adminapi.ecoboutiquemarket.com/orders/all",
         {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
           },
+          params: {
+            page: page + 1, // if needed
+            page_size: limit,
+          },
         }
-      )
-      .then((res) => {
-        setHistory(res.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        toast.error(error?.response?.data?.message || "Error fetching data");
-        setLoading(false);
-        console.error("Error fetching client secret:", error);
-      });
+      );
+
+      // Adjust this according to your response structure
+      // Example response: { orders: [...], totalRecords: 150 }
+      setOrders(response.data.orders);
+      setTotalRecords(response.data.totalRecords);
+      setLoading(false);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Error fetching data");
+      setLoading(false);
+    }
   };
 
+  /**
+   * Fetch filtered orders.
+   */
+  const fetchFilteredOrders = async (page = 0, limit = 10) => {
+    try {
+      setLoading(true);
+
+      // If your API for filter is a POST, use axios.post.
+      // If it's GET, adapt accordingly. Example with POST:
+      const response = await axios.post(
+        "https://www.adminapi.ecoboutiquemarket.com/orders/filter_orders",
+        {
+          store_id: storeId,
+          start_date: startDate,
+          end_date: endDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+          },
+          params: {
+            page: page + 1, // if needed
+            page_size: limit,
+          },
+        }
+      );
+
+      // Adjust to match server response
+      setOrders(response.data.orders);
+      setTotalRecords(response.data.totalRecords);
+      setLoading(false);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Error fetching data");
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Applies filters:
+   * - Enables filter mode
+   * - Resets page to 0
+   * - Calls fetchFilteredOrders
+   */
+  const applyFilter = () => {
+    setFilterMode(true);
+    setCurrentPage(0);
+    fetchFilteredOrders(0, pageSize);
+  };
+
+  /**
+   * Clears filters (optional function).
+   * - Disables filter mode
+   * - Resets filter fields
+   * - Resets pagination to page 0
+   * - Fetches all orders again
+   */
+  const clearFilter = () => {
+    setFilterMode(false);
+    setStoreId("");
+    setStartDate("");
+    setEndDate("");
+    setCurrentPage(0);
+    fetchAllOrders(0, pageSize);
+  };
+
+  /**
+   * Initial fetch on mount (unfiltered).
+   * We do this once.
+   * After that, page changes or filter changes will be handled manually.
+   */
   useEffect(() => {
-    fetchHistory(); // Fetch history on component load
+    fetchAllOrders(0, pageSize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Calculate paginated data
-  const startIndex = currentPage * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedData = history.slice(startIndex, endIndex);
+  // Calculate total pages for ReactPaginate
+  const pageCount = Math.ceil(totalRecords / pageSize);
+
+  /**
+   * Handle page change from ReactPaginate
+   */
+  const handlePageChange = (selectedItem: { selected: number }) => {
+    setCurrentPage(selectedItem.selected);
+    if (filterMode) {
+      fetchFilteredOrders(selectedItem.selected, pageSize);
+    } else {
+      fetchAllOrders(selectedItem.selected, pageSize);
+    }
+  };
+
+  /**
+   * Handle page size change
+   */
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = Number(e.target.value);
+    setPageSize(newSize);
+    setCurrentPage(0);
+
+    // Re-fetch from first page with new page size
+    if (filterMode) {
+      fetchFilteredOrders(0, newSize);
+    } else {
+      fetchAllOrders(0, newSize);
+    }
+  };
 
   return (
     <>
       {loading && <Loader />}
       <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-4 py-2 max-w-md">
         <div className="max-w-md">
-          {/* Filter Toggle Button */}
+          {/* Toggle Filters Button */}
           <div className="flex justify-end mb-4">
             <button
               onClick={() => setFiltersVisible(!filtersVisible)}
@@ -98,10 +186,12 @@ const Page = () => {
               {filtersVisible ? (
                 <>
                   <IoMdClose className="text-lg" />
+                  <span>Close Filters</span>
                 </>
               ) : (
                 <>
                   <IoMdFunnel className="text-lg" />
+                  <span>Show Filters</span>
                 </>
               )}
             </button>
@@ -168,22 +258,34 @@ const Page = () => {
                 </div>
 
                 {/* Apply Filters Button */}
-                <button
-                  onClick={applyFilter}
-                  className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-                >
-                  Apply Filters
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={applyFilter}
+                    className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Apply Filters
+                  </button>
+
+                  {/* Clear Filters Button (optional) */}
+                  {filterMode && (
+                    <button
+                      onClick={clearFilter}
+                      className="text-sm bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           )}
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between mt-4">
+          {/* Pagination Controls (Page Size) */}
+          <div className="flex items-center justify-between mt-4 mb-2">
             <span className="text-sm">Page Size:</span>
             <select
               value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
+              onChange={handlePageSizeChange}
               className="border px-2 py-1 rounded-lg"
             >
               <option value={10}>10</option>
@@ -193,22 +295,24 @@ const Page = () => {
             </select>
           </div>
 
+          {/* React Paginate Component */}
           <ReactPaginate
             previousLabel={"← Previous"}
             nextLabel={"Next →"}
             breakLabel={"..."}
-            pageCount={Math.ceil(history.length / pageSize)}
-            onPageChange={(selectedItem) =>
-              setCurrentPage(selectedItem.selected)
-            }
+            pageCount={pageCount}
+            // Keep the paginator's displayed page in sync with currentPage
+            forcePage={currentPage}
+            onPageChange={handlePageChange}
             containerClassName={"pagination"}
             previousLinkClassName={"pagination__link"}
             nextLinkClassName={"pagination__link"}
             disabledClassName={"pagination__link--disabled"}
             activeClassName={"pagination__link--active"}
           />
+
           {/* Order Table */}
-          <div className="w-full max-w-md mx-auto">
+          <div className="w-full max-w-md mx-auto mt-4">
             <div className="bg-white overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
@@ -221,8 +325,8 @@ const Page = () => {
                   </tr>
                 </thead>
                 <tbody className="text-xs">
-                  {paginatedData && paginatedData.length > 0 ? (
-                    paginatedData.map((item: any, index: any) => (
+                  {orders && orders.length > 0 ? (
+                    orders.map((item: any, index: number) => (
                       <tr key={index} className="border-b">
                         <td className="p-2">
                           <Link
@@ -238,7 +342,9 @@ const Page = () => {
                           })}
                         </td>
                         <td className="p-2">{item.storeId}</td>
-                        <td className="p-2">${item.totalAmount.toFixed(2)}</td>
+                        <td className="p-2">
+                          ${item.totalAmount?.toFixed(2) ?? "0.00"}
+                        </td>
                         <td className="p-2">{item.couponId || "N/A"}</td>
                       </tr>
                     ))
@@ -253,6 +359,21 @@ const Page = () => {
               </table>
             </div>
           </div>
+
+          {/* React Paginate at bottom (optional) */}
+          <ReactPaginate
+            previousLabel={"← Previous"}
+            nextLabel={"Next →"}
+            breakLabel={"..."}
+            pageCount={pageCount}
+            forcePage={currentPage}
+            onPageChange={handlePageChange}
+            containerClassName={"pagination mt-4"}
+            previousLinkClassName={"pagination__link"}
+            nextLinkClassName={"pagination__link"}
+            disabledClassName={"pagination__link--disabled"}
+            activeClassName={"pagination__link--active"}
+          />
         </div>
       </div>
     </>
