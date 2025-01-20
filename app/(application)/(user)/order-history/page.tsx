@@ -61,7 +61,7 @@ const Page = () => {
                     <th className="p-2 text-gray-700">Date</th>
                     <th className="p-2 text-gray-700">Store</th>
                     <th className="p-2 text-gray-700">Amount</th>
-                    <th className="p-2 text-gray-700">couponId</th>
+                    <th className="p-2 text-gray-700">Coupon</th>
                   </tr>
                 </thead>
                 <tbody className="text-xs">

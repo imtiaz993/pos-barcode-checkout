@@ -8,7 +8,7 @@ import Link from "next/link";
 import { IoMdClose, IoMdFunnel } from "react-icons/io";
 import { getAuth } from "firebase/auth";
 import { app } from "@/app/firebase";
-import ReactPaginate from "react-paginate";
+import Pagination from "react-js-pagination";
 
 const Page = () => {
   const auth = getAuth(app);
@@ -55,7 +55,7 @@ const Page = () => {
       );
 
       setOrders(response.data.orders);
-      setTotalRecords(response.data.totalRecords);
+      setTotalRecords(response.data.totalRecords || 500);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
     } finally {
@@ -89,7 +89,7 @@ const Page = () => {
       );
 
       setOrders(response.data.orders);
-      setTotalRecords(response.data.totalRecords);
+      setTotalRecords(response.data.totalRecords || 500);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
     } finally {
@@ -143,12 +143,12 @@ const Page = () => {
   /**
    * Handle page change from ReactPaginate
    */
-  const handlePageChange = (selectedItem: { selected: number }) => {
-    setCurrentPage(selectedItem.selected);
+  const handlePageChange = (selected: number) => {
+    setCurrentPage(selected);
     if (filterMode) {
-      fetchFilteredOrders(selectedItem.selected, pageSize);
+      fetchFilteredOrders(selected, pageSize);
     } else {
-      fetchAllOrders(selectedItem.selected, pageSize);
+      fetchAllOrders(selected, pageSize);
     }
   };
 
@@ -294,18 +294,24 @@ const Page = () => {
           </div>
 
           {/* React Paginate at bottom (optional) */}
-          <ReactPaginate
-            previousLabel={"← Previous"}
-            nextLabel={"Next →"}
-            breakLabel={"..."}
+          {/* <Pagination
             pageCount={pageCount}
             forcePage={currentPage}
             onPageChange={handlePageChange}
-            containerClassName={"pagination mt-4"}
-            previousLinkClassName={"pagination__link"}
-            nextLinkClassName={"pagination__link"}
-            disabledClassName={"pagination__link--disabled"}
-            activeClassName={"pagination__link--active"}
+          /> */}
+          <Pagination
+            activePage={currentPage}
+            itemsCountPerPage={pageSize}
+            totalItemsCount={totalRecords}
+            pageRangeDisplayed={5}
+            onChange={(pageNumber) => {
+              handlePageChange(pageNumber);
+            }}
+            // Tailwind classes
+            innerClass="flex gap-1 mt-4 flex-wrap items-center justify-between"
+            itemClass="px-2.5 py-0.5 border rounded-md text-sm hover:bg-gray-100"
+            activeClass="bg-blue-600 text-white hover:!bg-blue-600"
+            disabledClass="opacity-50 cursor-not-allowed"
           />
 
           {/* Order Table */}
