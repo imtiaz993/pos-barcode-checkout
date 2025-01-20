@@ -56,7 +56,7 @@ const Page = () => {
                     <th className="p-2 text-gray-700">Date</th>
                     <th className="p-2 text-gray-700">Amount</th>
                     <th className="p-2 text-gray-700">Balance</th>
-                    <th className="p-2 text-gray-700">Order</th>
+                    <th className="p-2 text-gray-700">Action</th>
                   </tr>
                 </thead>
                 <tbody className="text-xs">
@@ -82,7 +82,9 @@ const Page = () => {
                                   className="text-blue-600"
                                   href={`/order-history/${order.orderId}`}
                                 >
-                                  {order.orderId}
+                                  <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1 px-2 rounded-lg hover:bg-blue-700 transition">
+                                    View Order
+                                  </button>
                                 </Link>
                               )
                             )}

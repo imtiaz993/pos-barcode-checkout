@@ -312,7 +312,7 @@ const Cart = (props: any) => {
         <></>
       )}
       <div
-        className={`sm:w-[450px] fixed top-0 w-full h-full z-[100] bg-white border shadow-sm transition-all duration-500 ${
+        className={`sm:w-[450px] fixed top-2 w-full h-full z-[100] bg-white border shadow-sm transition-all duration-500 ${
           isOpen ? "right-0" : "-right-full sm:right-[-450px]"
         }`}
       >

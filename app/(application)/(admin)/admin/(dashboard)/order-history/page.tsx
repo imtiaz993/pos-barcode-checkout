@@ -137,7 +137,6 @@ const Page = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   /**
    * Handle page change from ReactPaginate
    */
@@ -318,25 +317,19 @@ const Page = () => {
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-black">
-                    <th className="p-2 text-gray-700">Order</th>
                     <th className="p-2 text-gray-700">Date</th>
                     <th className="p-2 text-gray-700">Store</th>
                     <th className="p-2 text-gray-700">Amount</th>
                     <th className="p-2 text-gray-700">Coupon</th>
+                    <th className="p-2 text-gray-700">Status</th>
+                    <th className="p-2 text-gray-700">Action</th>
                   </tr>
                 </thead>
                 <tbody className="text-xs">
                   {orders && orders.length > 0 ? (
                     orders.map((item: any, index: number) => (
                       <tr key={index} className="border-b">
-                        <td className="p-2">
-                          <Link
-                            href={`/admin/order-history/${item.orderId}`}
-                            className="text-blue-600"
-                          >
-                            {item.orderId}
-                          </Link>
-                        </td>
+                       
                         <td className="p-2">
                           {new Date(item.orderDate).toLocaleString("en-US", {
                             timeZone: "UTC",
@@ -347,6 +340,17 @@ const Page = () => {
                           ${item.totalAmount?.toFixed(2) ?? "0.00"}
                         </td>
                         <td className="p-2">{item.couponId || "N/A"}</td>
+                        <td className="p-2 capitalize">{item.status}</td>
+                        <td className="p-2">
+                          <Link
+                            href={`/admin/order-history/${item.orderId}`}
+                            className="text-blue-600"
+                          >
+                            <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1 px-2 rounded-lg hover:bg-blue-700 transition">
+                              View
+                            </button>
+                          </Link>
+                        </td>
                       </tr>
                     ))
                   ) : (

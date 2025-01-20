@@ -13,7 +13,7 @@ const Page = () => {
   const storeId = searchParams.get("storeId");
   const region = searchParams.get("region");
   const type = searchParams.get("type");
-  
+
   const router = useRouter();
   const auth = getAuth(app);
   const user = auth.currentUser;
@@ -57,22 +57,17 @@ const Page = () => {
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="border-b border-black">
-                    <th className="p-2 text-gray-700">Order</th>
                     <th className="p-2 text-gray-700">Date</th>
                     <th className="p-2 text-gray-700">Store</th>
                     <th className="p-2 text-gray-700">Amount</th>
                     <th className="p-2 text-gray-700">Coupon</th>
+                    <th className="p-2 text-gray-700">Order</th>
                   </tr>
                 </thead>
                 <tbody className="text-xs">
                   {history && history.length > 0
                     ? history.map((item: any, index: any) => (
                         <tr key={index} className="border-b">
-                          <td className="p-2">
-                            <Link className="text-blue-600" href={`/order-history/${item.orderId}?type=${type}&region=${region}&storeId=${storeId}`}>
-                              {item.orderId}
-                            </Link>
-                          </td>
                           <td className="p-2">
                             {new Date(item.orderDate).toLocaleString("en-US", {
                               timeZone: "UTC",
@@ -83,6 +78,16 @@ const Page = () => {
                             ${item.totalAmount.toFixed(2)}
                           </td>
                           <td className="p-2">{item.couponId}</td>
+                          <td className="p-2">
+                          <Link
+                            className="text-blue-600"
+                            href={`/order-history/${item.orderId}?type=${type}&region=${region}&storeId=${storeId}`}
+                          >
+                            <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1 px-2 rounded-lg hover:bg-blue-700 transition">
+                              View
+                            </button>
+                          </Link>
+                          </td>
                         </tr>
                       ))
                     : !loading && (
