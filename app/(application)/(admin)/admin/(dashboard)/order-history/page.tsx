@@ -30,7 +30,6 @@ const Page = () => {
   const [endDate, setEndDate] = useState("");
 
   // Pagination
-  // Note: ReactPaginate uses zero-based pages, but your API might be 1-based.
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
@@ -55,13 +54,11 @@ const Page = () => {
         }
       );
 
-      // Adjust this according to your response structure
-      // Example response: { orders: [...], totalRecords: 150 }
       setOrders(response.data.orders);
       setTotalRecords(response.data.totalRecords);
-      setLoading(false);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
+    } finally {
       setLoading(false);
     }
   };
@@ -73,8 +70,6 @@ const Page = () => {
     try {
       setLoading(true);
 
-      // If your API for filter is a POST, use axios.post.
-      // If it's GET, adapt accordingly. Example with POST:
       const response = await axios.post(
         "https://www.adminapi.ecoboutiquemarket.com/orders/filter_orders",
         {
@@ -87,18 +82,17 @@ const Page = () => {
             Authorization: `Bearer ${user?.accessToken}`,
           },
           params: {
-            page: page + 1, // if needed
+            page: page + 1,
             page_size: limit,
           },
         }
       );
 
-      // Adjust to match server response
       setOrders(response.data.orders);
       setTotalRecords(response.data.totalRecords);
-      setLoading(false);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
+    } finally {
       setLoading(false);
     }
   };
@@ -110,9 +104,12 @@ const Page = () => {
    * - Calls fetchFilteredOrders
    */
   const applyFilter = () => {
-    setFilterMode(true);
-    setCurrentPage(0);
-    fetchFilteredOrders(0, pageSize);
+    if (storeId || startDate || endDate) {
+      setFilterMode(true);
+      setCurrentPage(0);
+      fetchFilteredOrders(0, pageSize);
+      setFiltersVisible(false); // close the popup on apply
+    }
   };
 
   /**
@@ -129,12 +126,11 @@ const Page = () => {
     setEndDate("");
     setCurrentPage(0);
     fetchAllOrders(0, pageSize);
+    setFiltersVisible(false); // close the popup on clear
   };
 
   /**
    * Initial fetch on mount (unfiltered).
-   * We do this once.
-   * After that, page changes or filter changes will be handled manually.
    */
   useEffect(() => {
     fetchAllOrders(0, pageSize);
@@ -175,136 +171,137 @@ const Page = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-4 py-2 max-w-md">
-        <div className="max-w-md">
-          {/* Toggle Filters Button */}
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => setFiltersVisible(!filtersVisible)}
-              className="flex items-center gap-2 text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-            >
-              {filtersVisible ? (
-                <>
-                  <IoMdClose className="text-lg" />
-                  <span>Close Filters</span>
-                </>
-              ) : (
-                <>
-                  <IoMdFunnel className="text-lg" />
-                  <span>Show Filters</span>
-                </>
-              )}
-            </button>
-          </div>
 
-          {/* Filter Section */}
-          {filtersVisible && (
-            <div className="bg-white p-4 rounded-lg shadow mb-4">
-              <h3 className="text-lg font-semibold mb-2">Filters</h3>
-              <div className="flex flex-col gap-4">
-                {/* Store ID Dropdown */}
-                <div>
+      {/* FILTERS POPUP MODAL */}
+      {filtersVisible && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)]">
+          <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all">
+            <div className="flex justify-between mb-2">
+              <p className="text-lg font-semibold">Filters</p>
+              <button
+                className="text-lg font-medium text-center"
+                onClick={() => setFiltersVisible(false)}
+              >
+                <IoMdClose />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4 mt-4">
+              {/* Store ID Dropdown */}
+              <div>
+                <label htmlFor="storeId" className="block text-sm font-medium">
+                  Store ID
+                </label>
+                <select
+                  id="storeId"
+                  value={storeId}
+                  onChange={(e) => setStoreId(e.target.value)}
+                  className="w-full border px-3 py-2 rounded-lg text-sm"
+                >
+                  <option value="">All Stores</option>
+                  <option value="110">110</option>
+                  <option value="111">111</option>
+                  <option value="112">112</option>
+                </select>
+              </div>
+
+              {/* Date Range */}
+              <div className="flex gap-4">
+                <div className="flex-1 min-w-0">
                   <label
-                    htmlFor="storeId"
+                    htmlFor="startDate"
                     className="block text-sm font-medium"
                   >
-                    Store ID
+                    Start Date
                   </label>
-                  <select
-                    id="storeId"
-                    value={storeId}
-                    onChange={(e) => setStoreId(e.target.value)}
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
                     className="w-full border px-3 py-2 rounded-lg text-sm"
-                  >
-                    <option value="">All Stores</option>
-                    <option value="110">110</option>
-                    <option value="111">111</option>
-                    <option value="112">112</option>
-                  </select>
+                  />
                 </div>
-
-                {/* Date Range */}
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label
-                      htmlFor="startDate"
-                      className="block text-sm font-medium"
-                    >
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      id="startDate"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full border px-3 py-2 rounded-lg text-sm"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label
-                      htmlFor="endDate"
-                      className="block text-sm font-medium"
-                    >
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      id="endDate"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full border px-3 py-2 rounded-lg text-sm"
-                    />
-                  </div>
-                </div>
-
-                {/* Apply Filters Button */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={applyFilter}
-                    className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                <div className="flex-1 min-w-0">
+                  <label
+                    htmlFor="endDate"
+                    className="block text-sm font-medium"
                   >
-                    Apply Filters
-                  </button>
-
-                  {/* Clear Filters Button (optional) */}
-                  {filterMode && (
-                    <button
-                      onClick={clearFilter}
-                      className="text-sm bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition"
-                    >
-                      Clear Filters
-                    </button>
-                  )}
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full border px-3 py-2 rounded-lg text-sm"
+                  />
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Pagination Controls (Page Size) */}
-          <div className="flex items-center justify-between mt-4 mb-2">
-            <span className="text-sm">Page Size:</span>
-            <select
-              value={pageSize}
-              onChange={handlePageSizeChange}
-              className="border px-2 py-1 rounded-lg"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
+              {/* Action Buttons */}
+              <div className="flex flex-row-reverse gap-2 mt-4">
+                <button
+                  onClick={applyFilter}
+                  className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Apply Filters
+                </button>
+
+                {/* Clear Filters Button (optional) */}
+                {filterMode && (storeId || startDate || endDate) && (
+                  <button
+                    onClick={clearFilter}
+                    className="text-sm bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition"
+                  >
+                    Clear Filters
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* END FILTERS POPUP MODAL */}
+
+      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-4 py-2 max-w-md">
+        <div className="max-w-md">
+          <div className="flex items-center flex-row-reverse justify-between">
+            {/* Toggle Filters Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => setFiltersVisible(true)}
+                className="flex items-center gap-2 text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+              >
+                <IoMdFunnel className="text-lg" />
+              </button>
+            </div>
+
+            {/* Pagination Controls (Page Size) */}
+            <div className="flex items-center">
+              <span className="text-sm">Page Size:</span>
+              <select
+                value={pageSize}
+                onChange={handlePageSizeChange}
+                className="border px-2 py-1 rounded-lg ml-2"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
           </div>
 
-          {/* React Paginate Component */}
+          {/* React Paginate at bottom (optional) */}
           <ReactPaginate
             previousLabel={"← Previous"}
             nextLabel={"Next →"}
             breakLabel={"..."}
             pageCount={pageCount}
-            // Keep the paginator's displayed page in sync with currentPage
             forcePage={currentPage}
             onPageChange={handlePageChange}
-            containerClassName={"pagination"}
+            containerClassName={"pagination mt-4"}
             previousLinkClassName={"pagination__link"}
             nextLinkClassName={"pagination__link"}
             disabledClassName={"pagination__link--disabled"}
@@ -359,21 +356,6 @@ const Page = () => {
               </table>
             </div>
           </div>
-
-          {/* React Paginate at bottom (optional) */}
-          <ReactPaginate
-            previousLabel={"← Previous"}
-            nextLabel={"Next →"}
-            breakLabel={"..."}
-            pageCount={pageCount}
-            forcePage={currentPage}
-            onPageChange={handlePageChange}
-            containerClassName={"pagination mt-4"}
-            previousLinkClassName={"pagination__link"}
-            nextLinkClassName={"pagination__link"}
-            disabledClassName={"pagination__link--disabled"}
-            activeClassName={"pagination__link--active"}
-          />
         </div>
       </div>
     </>
