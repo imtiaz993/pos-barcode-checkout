@@ -19,7 +19,7 @@ const PhoneAuth = () => {
   const auth = getAuth(app);
   const user = auth.currentUser;
 
-  let recaptchaVerifier = useRef<any>();
+  let recaptchaVerifier = useRef<any>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [phone, setPhone] = useState("");

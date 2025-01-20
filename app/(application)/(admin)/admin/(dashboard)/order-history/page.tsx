@@ -55,7 +55,7 @@ const Page = () => {
       );
 
       setOrders(response.data.orders);
-      setTotalRecords(response.data.totalRecords || 500);
+      setTotalRecords(response.data.totalRecords);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
     } finally {
@@ -89,7 +89,7 @@ const Page = () => {
       );
 
       setOrders(response.data.orders);
-      setTotalRecords(response.data.totalRecords || 500);
+      setTotalRecords(response.data.totalRecords);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
     } finally {
@@ -137,8 +137,6 @@ const Page = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Calculate total pages for ReactPaginate
-  const pageCount = Math.ceil(totalRecords / pageSize);
 
   /**
    * Handle page change from ReactPaginate

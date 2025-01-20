@@ -64,7 +64,7 @@ const Layout = ({ children }: any) => {
         <button
           type="button"
           onClick={handleLogout}
-          className="bg-blue-500 text-white py-2 px-3 text-sm rounded-lg hover:bg-blue-600 flex items-center"
+          className="bg-blue-600 text-white py-2 px-3 text-sm rounded-lg flex items-center"
         >
           <Image
             priority={true}

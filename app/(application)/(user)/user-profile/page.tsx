@@ -46,7 +46,7 @@ export default function ProfilePage() {
       });
   }, []);
 
-  let recaptchaVerifier = useRef<any>();
+  let recaptchaVerifier = useRef<any>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
