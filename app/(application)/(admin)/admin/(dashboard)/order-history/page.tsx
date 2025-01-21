@@ -55,7 +55,7 @@ const Page = () => {
       );
 
       setOrders(response.data.orders);
-      setTotalRecords(response.data.totalRecords);
+      setTotalRecords(response.data.total_count);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
     } finally {
@@ -89,7 +89,7 @@ const Page = () => {
       );
 
       setOrders(response.data.orders);
-      setTotalRecords(response.data.totalRecords);
+      setTotalRecords(response.data.total_count);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching data");
     } finally {
