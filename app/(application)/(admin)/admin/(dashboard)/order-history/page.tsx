@@ -30,17 +30,16 @@ const Page = () => {
   const [endDate, setEndDate] = useState("");
 
   // Pagination
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   /**
    * Fetch all orders (unfiltered).
    */
-  const fetchAllOrders = async (page = 0, limit = 10) => {
+  const fetchAllOrders = async (page = 1, limit = 10) => {
     try {
       setLoading(true);
 
-      // If API is 1-based, convert `page` to `page + 1`:
       const response = await axios.get(
         "https://www.adminapi.ecoboutiquemarket.com/orders/all",
         {
@@ -48,7 +47,7 @@ const Page = () => {
             Authorization: `Bearer ${user?.accessToken}`,
           },
           params: {
-            page: page + 1, // if needed
+            page: page, // if needed
             page_size: limit,
           },
         }
@@ -66,7 +65,7 @@ const Page = () => {
   /**
    * Fetch filtered orders.
    */
-  const fetchFilteredOrders = async (page = 0, limit = 10) => {
+  const fetchFilteredOrders = async (page = 1, limit = 10) => {
     try {
       setLoading(true);
 
@@ -82,7 +81,7 @@ const Page = () => {
             Authorization: `Bearer ${user?.accessToken}`,
           },
           params: {
-            page: page + 1,
+            page: page,
             page_size: limit,
           },
         }
@@ -100,14 +99,14 @@ const Page = () => {
   /**
    * Applies filters:
    * - Enables filter mode
-   * - Resets page to 0
+   * - Resets page to 1
    * - Calls fetchFilteredOrders
    */
   const applyFilter = () => {
     if (storeId || startDate || endDate) {
       setFilterMode(true);
-      setCurrentPage(0);
-      fetchFilteredOrders(0, pageSize);
+      setCurrentPage(1);
+      fetchFilteredOrders(1, pageSize);
       setFiltersVisible(false); // close the popup on apply
     }
   };
@@ -116,7 +115,7 @@ const Page = () => {
    * Clears filters (optional function).
    * - Disables filter mode
    * - Resets filter fields
-   * - Resets pagination to page 0
+   * - Resets pagination to page 1
    * - Fetches all orders again
    */
   const clearFilter = () => {
@@ -124,8 +123,8 @@ const Page = () => {
     setStoreId("");
     setStartDate("");
     setEndDate("");
-    setCurrentPage(0);
-    fetchAllOrders(0, pageSize);
+    setCurrentPage(1);
+    fetchAllOrders(1, pageSize);
     setFiltersVisible(false); // close the popup on clear
   };
 
@@ -133,7 +132,7 @@ const Page = () => {
    * Initial fetch on mount (unfiltered).
    */
   useEffect(() => {
-    fetchAllOrders(0, pageSize);
+    fetchAllOrders(1, pageSize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -155,13 +154,13 @@ const Page = () => {
   const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSize = Number(e.target.value);
     setPageSize(newSize);
-    setCurrentPage(0);
+    setCurrentPage(1);
 
     // Re-fetch from first page with new page size
     if (filterMode) {
-      fetchFilteredOrders(0, newSize);
+      fetchFilteredOrders(1, newSize);
     } else {
-      fetchAllOrders(0, newSize);
+      fetchAllOrders(1, newSize);
     }
   };
 
