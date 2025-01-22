@@ -20,7 +20,7 @@ const Page = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   // UI state
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filterMode, setFilterMode] = useState(false);
 
@@ -168,109 +168,111 @@ const Page = () => {
     <>
       {loading && <Loader />}
 
-      {/* FILTERS POPUP MODAL */}
-      {filtersVisible && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)]">
-          <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all">
-            <div className="flex justify-between mb-2">
-              <p className="text-lg font-semibold">Filters</p>
-              <button
-                className="text-lg font-medium text-center"
-                onClick={() => setFiltersVisible(false)}
-              >
-                <IoMdClose />
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4 mt-4">
-              {/* Store ID Dropdown */}
-              <div>
-                <label htmlFor="storeId" className="block text-sm font-medium">
-                  Store ID
-                </label>
-                <select
-                  id="storeId"
-                  value={storeId}
-                  onChange={(e) => setStoreId(e.target.value)}
-                  className="w-full border px-3 py-2 rounded-lg text-sm"
-                >
-                  <option value="">All Stores</option>
-                  <option value="110">110</option>
-                  <option value="111">111</option>
-                  <option value="112">112</option>
-                </select>
-              </div>
-
-              {/* Date Range */}
-              <div className="flex gap-4">
-                <div className="flex-1 min-w-0">
-                  <label
-                    htmlFor="startDate"
-                    className="block text-sm font-medium"
-                  >
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full border px-3 py-2 rounded-lg text-sm"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <label
-                    htmlFor="endDate"
-                    className="block text-sm font-medium"
-                  >
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full border px-3 py-2 rounded-lg text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-row-reverse gap-2 mt-4">
-                <button
-                  onClick={applyFilter}
-                  className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-                >
-                  Apply Filters
-                </button>
-
-                {/* Clear Filters Button (optional) */}
-                {filterMode && (storeId || startDate || endDate) && (
-                  <button
-                    onClick={clearFilter}
-                    className="text-sm bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition"
-                  >
-                    Clear Filters
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* END FILTERS POPUP MODAL */}
-
-      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-4 py-2 max-w-md">
-        <div className="max-w-md">
-          <div className="flex items-center flex-row-reverse justify-between">
+      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto sm:px-4 py-2">
+        <div className="">
+          <div className="flex items-center flex-row-reverse justify-between px-4 sm:px-0">
             {/* Toggle Filters Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end relative">
               <button
-                onClick={() => setFiltersVisible(true)}
+                onClick={() => setFiltersVisible(!filtersVisible)}
                 className="flex items-center gap-2 text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
               >
                 <IoMdFunnel className="text-lg" />
               </button>
+              {/* FILTERS POPUP MODAL */}
+              {filtersVisible && (
+                <div className="fixed sm:absolute sm:right-0 sm:top-9 inset-0 sm:inset-auto z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)] sm:bg-transparent">
+                  <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all min-w-96 max-w-lg sm:shadow-xl">
+                    <div className="flex justify-between mb-2">
+                      <p className="text-lg font-semibold">Filters</p>
+                      <button
+                        className="text-lg font-medium text-center sm:hidden"
+                        onClick={() => setFiltersVisible(false)}
+                      >
+                        <IoMdClose />
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col gap-4 mt-4">
+                      {/* Store ID Dropdown */}
+                      <div>
+                        <label
+                          htmlFor="storeId"
+                          className="block text-sm font-medium"
+                        >
+                          Store ID
+                        </label>
+                        <select
+                          id="storeId"
+                          value={storeId}
+                          onChange={(e) => setStoreId(e.target.value)}
+                          className="w-full border px-3 py-2 rounded-lg text-sm"
+                        >
+                          <option value="">All Stores</option>
+                          <option value="110">110</option>
+                          <option value="111">111</option>
+                          <option value="112">112</option>
+                        </select>
+                      </div>
+
+                      {/* Date Range */}
+                      <div className="flex gap-4">
+                        <div className="flex-1 min-w-0">
+                          <label
+                            htmlFor="startDate"
+                            className="block text-sm font-medium"
+                          >
+                            Start Date
+                          </label>
+                          <input
+                            type="date"
+                            id="startDate"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="w-full border px-3 py-2 rounded-lg text-sm"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <label
+                            htmlFor="endDate"
+                            className="block text-sm font-medium"
+                          >
+                            End Date
+                          </label>
+                          <input
+                            type="date"
+                            id="endDate"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="w-full border px-3 py-2 rounded-lg text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-row-reverse gap-2 mt-4">
+                        <button
+                          onClick={applyFilter}
+                          className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                        >
+                          Apply Filters
+                        </button>
+
+                        {/* Clear Filters Button (optional) */}
+                        {filterMode && (storeId || startDate || endDate) && (
+                          <button
+                            onClick={clearFilter}
+                            className="text-sm bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition"
+                          >
+                            Clear Filters
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* END FILTERS POPUP MODAL */}
             </div>
 
             {/* Pagination Controls (Page Size) */}
@@ -304,61 +306,71 @@ const Page = () => {
               handlePageChange(pageNumber);
             }}
             // Tailwind classes
-            innerClass="flex gap-1 mt-4 flex-wrap items-center justify-between"
-            itemClass="px-2.5 py-0.5 border rounded-md text-sm hover:bg-gray-100"
+            innerClass="px-4 sm:px-0 flex gap-1 sm:gap-2 mt-4 flex-wrap items-center justify-between sm:justify-start"
+            itemClass="px-2.5 sm:px-3 py-0.5 sm:py-1 border rounded-md text-sm hover:bg-gray-100"
             activeClass="bg-blue-600 text-white hover:!bg-blue-600"
             disabledClass="opacity-50 cursor-not-allowed"
           />
 
           {/* Order Table */}
-          <div className="w-full max-w-md mx-auto mt-4">
-            <div className="bg-white overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
+          <div className="w-full mx-auto mt-4">
+            <div className="bg-white overflow-auto max-h-[calc(100dvh-180px)] shadow-2xl rounded-lg sm:py-2 px-4">
+              <table className="w-full text-left border-collapse text-sm sm:text-base">
                 <thead>
                   <tr className="border-b border-black">
-                    <th className="p-2 text-gray-700">Date</th>
-                    <th className="p-2 text-gray-700">Store</th>
-                    <th className="p-2 text-gray-700">Amount</th>
-                    <th className="p-2 text-gray-700">Coupon</th>
-                    <th className="p-2 text-gray-700">Status</th>
-                    <th className="p-2 text-gray-700">Action</th>
+                    <th className="p-2 sm:p-4 text-gray-700">Date</th>
+                    <th className="p-2 sm:p-4 text-gray-700">Store</th>
+                    <th className="p-2 sm:p-4 text-gray-700 whitespace-nowrap">Sub Total</th>
+                    <th className="p-2 sm:p-4 text-gray-700">Tax</th>
+                    <th className="p-2 sm:p-4 text-gray-700">Total</th>
+                    <th className="p-2 sm:p-4 text-gray-700">Coupon</th>
+                    <th className="p-2 sm:p-4 text-gray-700">Status</th>
+                    <th className="p-2 sm:p-4 text-gray-700">Action</th>
                   </tr>
                 </thead>
-                <tbody className="text-xs">
-                  {orders && orders.length > 0 ? (
-                    orders.map((item: any, index: number) => (
-                      <tr key={index} className="border-b">
-                       
-                        <td className="p-2">
-                          {new Date(item.orderDate).toLocaleString("en-US", {
-                            timeZone: "UTC",
-                          })}
-                        </td>
-                        <td className="p-2">{item.storeId}</td>
-                        <td className="p-2">
-                          ${item.totalAmount?.toFixed(2) ?? "0.00"}
-                        </td>
-                        <td className="p-2">{item.couponId || "N/A"}</td>
-                        <td className="p-2 capitalize">{item.status}</td>
-                        <td className="p-2">
-                          <Link
-                            href={`/admin/order-history/${item.orderId}`}
-                            className="text-blue-600"
+                <tbody className="text-xs sm:text-sm">
+                  {orders && orders.length > 0
+                    ? orders.map((item: any, index: number) => (
+                        <tr key={index} className="border-b">
+                          <td className="p-2 sm:p-4">
+                            {new Date(item.orderDate).toLocaleString("en-US", {
+                              timeZone: "UTC",
+                            })}
+                          </td>
+                          <td className="p-2 sm:p-4">{item.storeId}</td>
+                          <th className="p-2 sm:p-4 font-normal">
+                            ${item.subTotal?.toFixed(2) ?? "0.00"}
+                          </th>
+                          <th className="p-2 sm:p-4 font-normal">
+                            ${item.tax?.toFixed(2) ?? "0.00"}
+                          </th>
+                          <td className="p-2 sm:p-4 font-normal">
+                            ${item.totalAmount?.toFixed(2) ?? "0.00"}
+                          </td>
+                          <td className="p-2 sm:p-4">{item.couponId || "N/A"}</td>
+                          <td className="p-2 sm:p-4 capitalize">{item.status}</td>
+                          <td className="p-2 sm:p-2">
+                            <Link
+                              href={`/admin/order-history/${item.orderId}`}
+                              className="text-blue-600"
+                            >
+                              <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1.5 px-4 rounded-lg hover:bg-blue-700 transition">
+                                View
+                              </button>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))
+                    : !loading && (
+                        <tr>
+                          <td
+                            colSpan={8}
+                            className="p-2 sm:p-4 text-center font-medium"
                           >
-                            <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1 px-2 rounded-lg hover:bg-blue-700 transition">
-                              View
-                            </button>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={5} className="p-2 text-center font-medium">
-                        No History Found
-                      </td>
-                    </tr>
-                  )}
+                            No History Found
+                          </td>
+                        </tr>
+                      )}
                 </tbody>
               </table>
             </div>

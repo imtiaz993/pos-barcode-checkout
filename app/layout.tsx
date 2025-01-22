@@ -40,7 +40,7 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1.0, user-scalable=no"
         ></meta>
       </head>
-      <body className="max-w-md mx-auto pb-4">
+      <body className="mx-auto">
         <Suspense>{children}</Suspense>
         <Toaster />
       </body>

@@ -69,7 +69,7 @@ const Layout = ({ children }: any) => {
   }
 
   return (
-    <>
+    <div className="pb-4 max-w-md ">
       <div className="w-full border-b flex justify-between items-center px-4 py-2">
         <div>
           <h1>Eco Boutique</h1>
@@ -89,7 +89,7 @@ const Layout = ({ children }: any) => {
         </Link>
       </div>
       {children}
-    </>
+    </div>
   );
 };
 

@@ -51,7 +51,7 @@ const PhoneAuth = () => {
   }
 
   return (
-    <div>
+    <div className="max-w-md">
       {!confirmationResult ? (
         <PhoneAuthentication
           setConfirmationResult={setConfirmationResult}
