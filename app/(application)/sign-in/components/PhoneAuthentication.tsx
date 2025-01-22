@@ -35,7 +35,7 @@ const PhoneAuthentication = ({
 
   const formik: any = useFormik({
     initialValues: {
-      phone: phone_number ?? "",
+      phone: phone_number ? "+" + phone_number.replace(" ", "") : "",
     },
     validationSchema: Yup.object({
       phone: Yup.string()
