@@ -58,27 +58,34 @@ const Layout = ({ children }: any) => {
           <h1>Eco Boutique</h1>
         </div>
 
-        {/* <button className="text-2xl" onClick={() => setSidebarOpen(true)}>
-          <IoMdMenu />
-        </button> */}
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="bg-blue-600 text-white py-2 px-3 text-sm rounded-lg flex items-center"
-        >
-          <Image
-            priority={true}
-            src="/images/logout.svg"
-            width={0}
-            height={0}
-            sizes="100vw"
-            alt=""
-            className="w-4 cursor-pointer mr-1"
-          />
-        </button>
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="bg-blue-600 text-white py-2 px-3 text-sm rounded-lg flex items-center "
+          >
+            <Image
+              priority={true}
+              src="/images/logout.svg"
+              width={0}
+              height={0}
+              sizes="100vw"
+              alt=""
+              className="w-4 cursor-pointer mr-1"
+            />
+          </button>
+          <button
+            className="text-2xl lg:hidden ml-4"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <IoMdMenu />
+          </button>
+        </div>
       </div>
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      {children}
+      <div className="flex">
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="w-full">{children}</div>
+      </div>
     </>
   );
 };
