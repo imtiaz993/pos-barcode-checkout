@@ -314,23 +314,26 @@ const Page = () => {
 
           {/* Order Table */}
           <div className="w-full mx-auto mt-4">
-            <div className="bg-white overflow-auto max-h-[calc(100dvh-180px)] shadow-2xl rounded-lg sm:py-2 px-4">
-              <table className="w-full text-left border-collapse text-sm sm:text-base">
-                <thead>
-                  <tr className="border-b border-black">
-                    <th className="p-2 sm:p-4 text-gray-700">Date</th>
-                    <th className="p-2 sm:p-4 text-gray-700">Store</th>
-                    <th className="p-2 sm:p-4 text-gray-700 whitespace-nowrap">Sub Total</th>
-                    <th className="p-2 sm:p-4 text-gray-700">Tax</th>
-                    <th className="p-2 sm:p-4 text-gray-700">Total</th>
-                    <th className="p-2 sm:p-4 text-gray-700">Coupon</th>
-                    <th className="p-2 sm:p-4 text-gray-700">Status</th>
-                    <th className="p-2 sm:p-4 text-gray-700">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="text-xs sm:text-sm">
-                  {orders && orders.length > 0
-                    ? orders.map((item: any, index: number) => (
+            <div className="bg-white shadow-2xl rounded-lg sm:py-2overflow-hidden">
+              <div className="max-h-[calc(100dvh-180px)] overflow-y-auto">
+                <table className="w-full text-left border-collapse text-sm sm:text-base">
+                  <thead className="sticky top-0 bg-white shadow-md">
+                    <tr className="">
+                      <th className="p-2 sm:p-4 text-gray-700">Date</th>
+                      <th className="p-2 sm:p-4 text-gray-700">Store</th>
+                      <th className="p-2 sm:p-4 text-gray-700 whitespace-nowrap">
+                        Sub Total
+                      </th>
+                      <th className="p-2 sm:p-4 text-gray-700">Tax</th>
+                      <th className="p-2 sm:p-4 text-gray-700">Total</th>
+                      <th className="p-2 sm:p-4 text-gray-700">Coupon</th>
+                      <th className="p-2 sm:p-4 text-gray-700">Status</th>
+                      <th className="p-2 sm:p-4 text-gray-700">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-xs sm:text-sm">
+                    {orders && orders.length > 0 ? (
+                      orders.map((item: any, index: number) => (
                         <tr key={index} className="border-b">
                           <td className="p-2 sm:p-4">
                             {new Date(item.orderDate).toLocaleString("en-US", {
@@ -338,41 +341,46 @@ const Page = () => {
                             })}
                           </td>
                           <td className="p-2 sm:p-4">{item.storeId}</td>
-                          <th className="p-2 sm:p-4 font-normal">
+                          <td className="p-2 sm:p-4 font-normal">
                             ${item.subTotal?.toFixed(2) ?? "0.00"}
-                          </th>
-                          <th className="p-2 sm:p-4 font-normal">
+                          </td>
+                          <td className="p-2 sm:p-4 font-normal">
                             ${item.tax?.toFixed(2) ?? "0.00"}
-                          </th>
+                          </td>
                           <td className="p-2 sm:p-4 font-normal">
                             ${item.totalAmount?.toFixed(2) ?? "0.00"}
                           </td>
-                          <td className="p-2 sm:p-4">{item.couponId || "N/A"}</td>
-                          <td className="p-2 sm:p-4 capitalize">{item.status}</td>
-                          <td className="p-2 sm:p-2">
+                          <td className="p-2 sm:p-4">
+                            {item.couponId || "N/A"}
+                          </td>
+                          <td className="p-2 sm:p-4 capitalize">
+                            {item.status}
+                          </td>
+                          <td className="p-2 sm:p-4">
                             <Link
                               href={`/admin/order-history/${item.orderId}`}
                               className="text-blue-600"
                             >
-                              <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1.5 px-4 rounded-lg hover:bg-blue-700 transition">
+                              <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1 sm:py-1.5 px-2 sm:px-4 rounded-lg hover:bg-blue-700 transition">
                                 View
                               </button>
                             </Link>
                           </td>
                         </tr>
                       ))
-                    : !loading && (
-                        <tr>
-                          <td
-                            colSpan={8}
-                            className="p-2 sm:p-4 text-center font-medium"
-                          >
-                            No History Found
-                          </td>
-                        </tr>
-                      )}
-                </tbody>
-              </table>
+                    ) : !loading ? (
+                      <tr>
+                        <td
+                          colSpan={8}
+                          className="p-2 sm:p-4 text-center font-medium"
+                        >
+                          No History Found
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
