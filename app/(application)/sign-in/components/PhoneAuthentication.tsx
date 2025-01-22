@@ -33,7 +33,7 @@ const PhoneAuthentication = ({
     }
   }, [auth, recaptchaVerifier]);
 
-  const formik = useFormik({
+  const formik: any = useFormik({
     initialValues: {
       phone: phone_number ?? "",
     },
