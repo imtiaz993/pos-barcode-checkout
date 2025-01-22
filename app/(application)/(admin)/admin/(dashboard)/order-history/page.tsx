@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import Pagination from "react-js-pagination";
 const Page = () => {
   const auth = getAuth(app);
   const user: any = auth.currentUser;
+  const filterRef = useRef<HTMLDivElement | null>(null);
 
   // Orders data
   const [orders, setOrders] = useState<any[]>([]);
@@ -164,6 +165,32 @@ const Page = () => {
     }
   };
 
+  /**
+   * Close filters when clicking outside, but only on desktop screens.
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
+        if (window.innerWidth >= 640) {
+          setFiltersVisible(false);
+        }
+      }
+    };
+
+    if (filtersVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [filtersVisible]);
+
   return (
     <>
       {loading && <Loader />}
@@ -181,7 +208,10 @@ const Page = () => {
               </button>
               {/* FILTERS POPUP MODAL */}
               {filtersVisible && (
-                <div className="fixed sm:absolute sm:right-0 sm:top-9 inset-0 sm:inset-auto z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)] sm:bg-transparent">
+                <div
+                  ref={filterRef}
+                  className="fixed sm:absolute sm:right-0 sm:top-9 inset-0 sm:inset-auto z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)] sm:bg-transparent"
+                >
                   <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all min-w-96 max-w-lg sm:shadow-xl">
                     <div className="flex justify-between mb-2">
                       <p className="text-lg font-semibold">Filters</p>
