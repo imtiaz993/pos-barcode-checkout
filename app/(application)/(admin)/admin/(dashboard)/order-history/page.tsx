@@ -313,9 +313,9 @@ const Page = () => {
           />
 
           {/* Order Table */}
-          <div className="w-full mx-auto mt-4">
-            <div className="bg-white shadow-2xl rounded-lg sm:py-2overflow-hidden">
-              <div className="max-h-[calc(100dvh-180px)] overflow-y-auto">
+          <div className="w-full mx-auto mt-4 flex flex-col min-h-[calc(100dvh-180px)]">
+            <div className="bg-white shadow-2xl rounded-lg flex-grow flex flex-col">
+              <div className="overflow-auto flex-grow">
                 <table className="w-full text-left border-collapse text-sm sm:text-base">
                   <thead className="sticky top-0 bg-white shadow-md">
                     <tr className="">
