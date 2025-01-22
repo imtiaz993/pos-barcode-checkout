@@ -15,45 +15,32 @@ const Page = () => {
   const user: any = auth.currentUser;
   const filterRef = useRef<HTMLDivElement | null>(null);
 
-  // Orders data
   const [orders, setOrders] = useState<any[]>([]);
-  // For server-side pagination (total number of orders)
   const [totalRecords, setTotalRecords] = useState(0);
 
-  // UI state
   const [loading, setLoading] = useState(true);
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filterMode, setFilterMode] = useState(false);
 
-  // Filters
   const [storeId, setStoreId] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  /**
-   * Fetch all orders (unfiltered).
-   */
   const fetchAllOrders = async (page = 1, limit = 10) => {
     try {
       setLoading(true);
-
       const response = await axios.get(
         "https://www.adminapi.ecoboutiquemarket.com/orders/all",
         {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
           },
-          params: {
-            page: page, // if needed
-            page_size: limit,
-          },
+          params: { page: page, page_size: limit },
         }
       );
-
       setOrders(response.data.orders);
       setTotalRecords(response.data.total_count);
     } catch (error: any) {
@@ -63,31 +50,17 @@ const Page = () => {
     }
   };
 
-  /**
-   * Fetch filtered orders.
-   */
   const fetchFilteredOrders = async (page = 1, limit = 10) => {
     try {
       setLoading(true);
-
       const response = await axios.post(
         "https://www.adminapi.ecoboutiquemarket.com/orders/filter_orders",
+        { store_id: storeId, start_date: startDate, end_date: endDate },
         {
-          store_id: storeId,
-          start_date: startDate,
-          end_date: endDate,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user?.accessToken}`,
-          },
-          params: {
-            page: page,
-            page_size: limit,
-          },
+          headers: { Authorization: `Bearer ${user?.accessToken}` },
+          params: { page, page_size: limit },
         }
       );
-
       setOrders(response.data.orders);
       setTotalRecords(response.data.total_count);
     } catch (error: any) {
@@ -97,28 +70,15 @@ const Page = () => {
     }
   };
 
-  /**
-   * Applies filters:
-   * - Enables filter mode
-   * - Resets page to 1
-   * - Calls fetchFilteredOrders
-   */
   const applyFilter = () => {
     if (storeId || startDate || endDate) {
       setFilterMode(true);
       setCurrentPage(1);
       fetchFilteredOrders(1, pageSize);
-      setFiltersVisible(false); // close the popup on apply
+      setFiltersVisible(false);
     }
   };
 
-  /**
-   * Clears filters (optional function).
-   * - Disables filter mode
-   * - Resets filter fields
-   * - Resets pagination to page 1
-   * - Fetches all orders again
-   */
   const clearFilter = () => {
     setFilterMode(false);
     setStoreId("");
@@ -126,15 +86,11 @@ const Page = () => {
     setEndDate("");
     setCurrentPage(1);
     fetchAllOrders(1, pageSize);
-    setFiltersVisible(false); // close the popup on clear
+    setFiltersVisible(false);
   };
 
-  /**
-   * Initial fetch on mount (unfiltered).
-   */
   useEffect(() => {
     fetchAllOrders(1, pageSize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -168,6 +124,7 @@ const Page = () => {
   /**
    * Close filters when clicking outside, but only on desktop screens.
    */
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -197,43 +154,35 @@ const Page = () => {
 
       <div className="min-h-[calc(100dvh-60px-16px)] mx-auto sm:px-4 py-2">
         <div className="">
-          <div className="flex items-center flex-row-reverse justify-between px-4 sm:px-0">
-            {/* Toggle Filters Button */}
-            <div className="flex justify-end relative">
+          <div className="flex items-center px-4 sm:px-0 justify-end relative">
+            <div ref={filterRef} className="relative">
               <button
                 onClick={() => setFiltersVisible(!filtersVisible)}
                 className="flex items-center gap-2 text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
               >
                 <IoMdFunnel className="text-lg" />
+                Filters
               </button>
-              {/* FILTERS POPUP MODAL */}
+
               {filtersVisible && (
-                <div
-                  ref={filterRef}
-                  className="fixed sm:absolute sm:right-0 sm:top-9 inset-0 sm:inset-auto z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)] sm:bg-transparent"
-                >
-                  <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all min-w-96 max-w-lg sm:shadow-xl">
+                <div className="fixed sm:absolute sm:right-0 sm:top-9 inset-0 sm:inset-auto z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)] sm:bg-transparent">
+                  <div className="bg-white border px-5 py-5 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all min-w-96 max-w-lg sm:shadow-xl">
                     <div className="flex justify-between mb-2">
-                      <p className="text-lg font-semibold">Filters</p>
+                      <h2 className="text-lg font-semibold">Filters</h2>
                       <button
-                        className="text-lg font-medium text-center sm:hidden"
                         onClick={() => setFiltersVisible(false)}
+                        className="text-red-500 hover:text-red-700 sm:hidden"
                       >
-                        <IoMdClose />
+                        <IoMdClose className="text-lg" />
                       </button>
                     </div>
 
-                    <div className="flex flex-col gap-4 mt-4">
-                      {/* Store ID Dropdown */}
+                    <div className="space-y-4 mt-4">
                       <div>
-                        <label
-                          htmlFor="storeId"
-                          className="block text-sm font-medium"
-                        >
+                        <label className="block text-sm font-medium">
                           Store ID
                         </label>
                         <select
-                          id="storeId"
                           value={storeId}
                           onChange={(e) => setStoreId(e.target.value)}
                           className="w-full border px-3 py-2 rounded-lg text-sm"
@@ -245,153 +194,108 @@ const Page = () => {
                         </select>
                       </div>
 
-                      {/* Date Range */}
                       <div className="flex gap-4">
-                        <div className="flex-1 min-w-0">
-                          <label
-                            htmlFor="startDate"
-                            className="block text-sm font-medium"
-                          >
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium">
                             Start Date
                           </label>
                           <input
                             type="date"
-                            id="startDate"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             className="w-full border px-3 py-2 rounded-lg text-sm"
                           />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <label
-                            htmlFor="endDate"
-                            className="block text-sm font-medium"
-                          >
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium">
                             End Date
                           </label>
                           <input
                             type="date"
-                            id="endDate"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
                             className="w-full border px-3 py-2 rounded-lg text-sm"
                           />
                         </div>
                       </div>
+                    </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex flex-row-reverse gap-2 mt-4">
+                    <div className="mt-4 flex justify-end gap-2">
+                      {filterMode && (storeId || startDate || endDate) && (
                         <button
-                          onClick={applyFilter}
-                          className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                          onClick={clearFilter}
+                          className="text-sm bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition"
                         >
-                          Apply Filters
+                          Clear
                         </button>
-
-                        {/* Clear Filters Button (optional) */}
-                        {filterMode && (storeId || startDate || endDate) && (
-                          <button
-                            onClick={clearFilter}
-                            className="text-sm bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition"
-                          >
-                            Clear Filters
-                          </button>
-                        )}
-                      </div>
+                      )}
+                      <button
+                        onClick={applyFilter}
+                        className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                      >
+                        Apply
+                      </button>
                     </div>
                   </div>
                 </div>
               )}
-              {/* END FILTERS POPUP MODAL */}
-            </div>
-
-            {/* Pagination Controls (Page Size) */}
-            <div className="flex items-center">
-              <span className="text-sm">Page Size:</span>
-              <select
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className="border px-2 py-1 rounded-lg ml-2"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
             </div>
           </div>
 
-          {/* React Paginate at bottom (optional) */}
-          {/* <Pagination
-            pageCount={pageCount}
-            forcePage={currentPage}
-            onPageChange={handlePageChange}
-          /> */}
-          <Pagination
-            activePage={currentPage}
-            itemsCountPerPage={pageSize}
-            totalItemsCount={totalRecords}
-            pageRangeDisplayed={5}
-            onChange={(pageNumber) => {
-              handlePageChange(pageNumber);
-            }}
-            // Tailwind classes
-            innerClass="px-4 sm:px-0 flex gap-1 sm:gap-2 mt-4 flex-wrap items-center justify-between sm:justify-start"
-            itemClass="px-2.5 sm:px-3 py-0.5 sm:py-1 border rounded-md text-sm hover:bg-gray-100"
-            activeClass="bg-blue-600 text-white hover:!bg-blue-600"
-            disabledClass="opacity-50 cursor-not-allowed"
-          />
-
-          {/* Order Table */}
-          <div className="w-full mx-auto mt-4 flex flex-col min-h-[calc(100dvh-180px)]">
-            <div className="bg-white shadow-2xl rounded-lg flex-grow flex flex-col">
+          <div className="w-full mx-auto mt-4 flex flex-col min-h-[calc(100dvh-210px)]  sm:min-h-[calc(100dvh-180px)]">
+            <div className="bg-white shadow-lg rounded-lg flex-grow flex flex-col">
               <div className="overflow-auto flex-grow">
                 <table className="w-full text-left border-collapse text-sm sm:text-base">
-                  <thead className="sticky top-0 bg-white shadow-md">
-                    <tr className="">
-                      <th className="p-2 sm:p-4 text-gray-700">Date</th>
-                      <th className="p-2 sm:p-4 text-gray-700">Store</th>
-                      <th className="p-2 sm:p-4 text-gray-700 whitespace-nowrap">
+                  <thead className="sticky top-0 bg-gray-100 shadow-md">
+                    <tr>
+                      <th className="p-2 sm:p-4">Date</th>
+                      <th className="p-2 sm:p-4">Store</th>
+                      <th className="p-2 sm:p-4 whitespace-nowrap">
                         Sub Total
                       </th>
-                      <th className="p-2 sm:p-4 text-gray-700">Tax</th>
-                      <th className="p-2 sm:p-4 text-gray-700">Total</th>
-                      <th className="p-2 sm:p-4 text-gray-700">Coupon</th>
-                      <th className="p-2 sm:p-4 text-gray-700">Status</th>
-                      <th className="p-2 sm:p-4 text-gray-700">Action</th>
+                      <th className="p-2 sm:p-4">Tax</th>
+                      <th className="p-2 sm:p-4">Total</th>
+                      <th className="p-2 sm:p-4">Coupon</th>
+                      <th className="p-2 sm:p-4">Status</th>
+                      <th className="p-2 sm:p-4">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="text-xs sm:text-sm">
-                    {orders && orders.length > 0 ? (
-                      orders.map((item: any, index: number) => (
-                        <tr key={index} className="border-b">
+                  <tbody className="text-xs sm:text-base">
+                    {orders.length > 0 ? (
+                      orders.map((order, index) => (
+                        <tr
+                          key={index}
+                          className={`border-b ${
+                            index % 2 == 0 ? "" : "bg-gray-100"
+                          }`}
+                        >
                           <td className="p-2 sm:p-4">
-                            {new Date(item.orderDate).toLocaleString("en-US", {
+                            {" "}
+                            {new Date(order.orderDate).toLocaleString("en-US", {
                               timeZone: "UTC",
                             })}
                           </td>
-                          <td className="p-2 sm:p-4">{item.storeId}</td>
-                          <td className="p-2 sm:p-4 font-normal">
-                            ${item.subTotal?.toFixed(2) ?? "0.00"}
-                          </td>
-                          <td className="p-2 sm:p-4 font-normal">
-                            ${item.tax?.toFixed(2) ?? "0.00"}
-                          </td>
-                          <td className="p-2 sm:p-4 font-normal">
-                            ${item.totalAmount?.toFixed(2) ?? "0.00"}
+                          <td className="p-2 sm:p-4">{order.storeId}</td>
+                          <td className="p-2 sm:p-4">
+                            ${order?.subTotal?.toFixed(2)}
                           </td>
                           <td className="p-2 sm:p-4">
-                            {item.couponId || "N/A"}
+                            ${order?.tax?.toFixed(2)}
+                          </td>
+                          <td className="p-2 sm:p-4">
+                            ${order?.totalAmount?.toFixed(2)}
+                          </td>
+                          <td className="p-2 sm:p-4">
+                            {order.couponId || "N/A"}
                           </td>
                           <td className="p-2 sm:p-4 capitalize">
-                            {item.status}
+                            {order.status}
                           </td>
                           <td className="p-2 sm:p-4">
                             <Link
-                              href={`/admin/order-history/${item.orderId}`}
-                              className="text-blue-600"
+                              href={`/admin/order-history/${order.orderId}`}
                             >
-                              <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1 sm:py-1.5 px-2 sm:px-4 rounded-lg hover:bg-blue-700 transition">
+                              <button className="text-blue-600 hover:text-blue-800">
                                 View
                               </button>
                             </Link>
@@ -400,17 +304,46 @@ const Page = () => {
                       ))
                     ) : !loading ? (
                       <tr>
-                        <td
-                          colSpan={8}
-                          className="p-2 sm:p-4 text-center font-medium"
-                        >
-                          No History Found
+                        <td colSpan={8} className="text-center p-2 sm:p-4">
+                          No records found
                         </td>
                       </tr>
                     ) : null}
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+
+          <div className="px-4 sm:px-0 sm:flex flex-row-reverse justify-between items-center mt-4">
+            <div className="flex justify-end sm:justify-start items-center mb-4 sm:mb-0">
+              <label className="text-sm">Page Size:</label>
+              <select
+                value={pageSize}
+                onChange={handlePageSizeChange}
+                className="ml-2 border px-2 py-1 rounded-lg"
+              >
+                {[10, 25, 50, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Pagination
+              activePage={currentPage}
+              itemsCountPerPage={pageSize}
+              totalItemsCount={totalRecords}
+              onChange={handlePageChange}
+              innerClass="flex gap-1 sm:gap-2 flex-wrap items-center justify-between sm:justify-start"
+              itemClass="px-2.5 sm:px-3 py-0.5 sm:py-1 border rounded-md text-sm hover:bg-gray-100"
+              activeClass="bg-blue-600 text-white hover:!bg-blue-600"
+              disabledClass="opacity-50 cursor-not-allowed"
+            />
+            <div className="text-sm sm:text-base text-gray-600">
+              Showing{" "}
+              {totalRecords === 0 ? 0 : (currentPage - 1) * pageSize + 1}-
+              {Math.min(currentPage * pageSize, totalRecords)} of {totalRecords}
             </div>
           </div>
         </div>

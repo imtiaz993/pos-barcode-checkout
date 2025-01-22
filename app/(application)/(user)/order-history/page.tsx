@@ -83,7 +83,7 @@ const Page = () => {
                               className="text-blue-600"
                               href={`/order-history/${item.orderId}?type=${type}&region=${region}&storeId=${storeId}`}
                             >
-                              <button className="flex items-center gap-2 text-sm bg-blue-600 text-white py-1 px-2 rounded-lg hover:bg-blue-700 transition">
+                              <button className="text-blue-600 hover:text-blue-800">
                                 View
                               </button>
                             </Link>
