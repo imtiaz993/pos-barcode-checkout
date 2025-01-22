@@ -316,19 +316,27 @@ const Page = () => {
           </div>
 
           <div className="px-4 sm:px-0 sm:flex flex-row-reverse justify-between items-center mt-4">
-            <div className="flex justify-end sm:justify-start items-center mb-4 sm:mb-0">
-              <label className="text-sm">Page Size:</label>
-              <select
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className="ml-2 border px-2 py-1 rounded-lg"
-              >
-                {[10, 25, 50, 100].map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
+            <div className="flex items-center justify-between mb-4 sm:mb-0">
+              <div className="text-sm sm:text-base text-gray-600 sm:hidden">
+                Showing{" "}
+                {totalRecords === 0 ? 0 : (currentPage - 1) * pageSize + 1}-
+                {Math.min(currentPage * pageSize, totalRecords)} of{" "}
+                {totalRecords}
+              </div>
+              <div className="flex justify-end sm:justify-start items-center">
+                <label className="text-sm">Page Size:</label>
+                <select
+                  value={pageSize}
+                  onChange={handlePageSizeChange}
+                  className="ml-2 border px-2 py-1 rounded-lg"
+                >
+                  {[10, 25, 50, 100].map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <Pagination
               activePage={currentPage}
@@ -340,7 +348,7 @@ const Page = () => {
               activeClass="bg-blue-600 text-white hover:!bg-blue-600"
               disabledClass="opacity-50 cursor-not-allowed"
             />
-            <div className="text-sm sm:text-base text-gray-600">
+            <div className="text-sm sm:text-base text-gray-600 hidden sm:block">
               Showing{" "}
               {totalRecords === 0 ? 0 : (currentPage - 1) * pageSize + 1}-
               {Math.min(currentPage * pageSize, totalRecords)} of {totalRecords}
