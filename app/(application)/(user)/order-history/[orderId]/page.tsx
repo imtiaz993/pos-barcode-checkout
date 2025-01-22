@@ -60,7 +60,8 @@ const OrderDetail = () => {
 
         <div className="bg-white p-4 rounded-lg shadow mt-4">
           <p>
-            <span className="font-medium">Order ID:</span> {orderDetails.orderId}
+            <span className="font-medium">Order ID:</span>{" "}
+            {orderDetails.orderId}
           </p>
           <p>
             <span className="font-medium">Date:</span>{" "}
@@ -72,17 +73,20 @@ const OrderDetail = () => {
             <span className="font-medium">Status:</span> {orderDetails.status}
           </p>
           <p>
-            <span className="font-medium">Store:</span> {orderDetails.storeId.split("s")[1]}
+            <span className="font-medium">Store:</span>{" "}
+            {orderDetails.storeId.split("s")[1]}
           </p>
           <p>
             <span className="font-medium">Total Amount:</span> $
             {orderDetails.totalAmount?.toFixed(2)}
           </p>
           <p>
-            <span className="font-medium">Coupon Code:</span> {orderDetails.couponId || "N/A"}
+            <span className="font-medium">Coupon Code:</span>{" "}
+            {orderDetails.couponId || "N/A"}
           </p>
           <p>
-            <span className="font-medium">Gift Card:</span> {orderDetails.giftCardCode || "N/A"}
+            <span className="font-medium">Gift Card:</span>{" "}
+            {orderDetails.giftCardCode || "N/A"}
           </p>
 
           <h2 className="text-lg font-medium mt-4">Order Items</h2>
@@ -94,34 +98,25 @@ const OrderDetail = () => {
               >
                 <div>
                   <p>
-                    <span className="font-medium">Product ID:</span> {item.productId}
+                    <span className="font-medium">Product ID:</span>{" "}
+                    {item.productId}
                   </p>
                   <p>
-                    <span className="font-medium">Quantity:</span> {item.quantity}
+                    <span className="font-medium">Quantity:</span>{" "}
+                    {item.quantity}
                   </p>
                   <p>
-                    <span className="font-medium">Price:</span> ${item.price?.toFixed(2)}
+                    <span className="font-medium">Price:</span> $
+                    {item.price?.toFixed(2)}
                   </p>
                 </div>
                 <p>
-                  <span className="font-medium">Reward Points:</span> {item.reward_point}
+                  <span className="font-medium">Reward Points:</span>{" "}
+                  {item.reward_point}
                 </p>
               </li>
             ))}
           </ul>
-
-          <h2 className="text-lg font-medium mt-4">Payment</h2>
-          <p>
-            <span className="font-medium">Transaction ID:</span> {orderDetails.terminalCheckout.id}
-          </p>
-          <p>
-            <span className="font-medium">Status:</span> {orderDetails.terminalCheckout.status}
-          </p>
-          <p>
-            <span className="font-medium">Amount:</span> $
-            {(orderDetails.terminalCheckout.amount / 100)?.toFixed(2)} (
-            {orderDetails.terminalCheckout.currency.toUpperCase()})
-          </p>
         </div>
       </div>
     </div>

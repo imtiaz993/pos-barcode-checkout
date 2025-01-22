@@ -100,7 +100,7 @@ const OrderDetail = () => {
             {orderDetails.orderItems.map((item: any, index: number) => (
               <li
                 key={index}
-                className="border-b py-2 flex justify-between items-center"
+                className="py-2 flex justify-between items-center"
               >
                 <div>
                   <p>
@@ -123,21 +123,6 @@ const OrderDetail = () => {
               </li>
             ))}
           </ul>
-
-          <h2 className="text-lg font-medium mt-4">Payment</h2>
-          <p>
-            <span className="font-medium">Transaction ID:</span>{" "}
-            {orderDetails?.terminalCheckout?.id}
-          </p>
-          <p>
-            <span className="font-medium">Status:</span>{" "}
-            {orderDetails?.terminalCheckout?.status}
-          </p>
-          <p>
-            <span className="font-medium">Amount:</span> $
-            {(orderDetails?.terminalCheckout?.amount / 100)?.toFixed(2)} (
-            {orderDetails?.terminalCheckout?.currency?.toUpperCase()})
-          </p>
         </div>
       </div>
     </div>
