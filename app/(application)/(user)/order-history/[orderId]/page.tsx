@@ -63,17 +63,17 @@ const OrderDetail = () => {
           >
             <FaArrowLeft /> Back
           </button>
-          <h1 className="sm:text-xl font-bold text-gray-800">Order Details</h1>
+          <h1 className="font-bold text-gray-800">Order Details</h1>
           <div></div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-blue-50">
-              <FaRegCalendarAlt className="text-blue-600 text-xl sm:text-3xl" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="px-4 py-2 border rounded-lg flex items-center gap-4 bg-blue-50">
+              <FaRegCalendarAlt className="text-blue-600 text-xl" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Order Date</p>
-                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                <p className="font-medium text-gray-800">
                   {new Date(orderDetails?.orderDate).toLocaleString("en-US", {
                     timeZone: "UTC",
                   })}
@@ -81,54 +81,54 @@ const OrderDetail = () => {
               </div>
             </div>
 
-            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-green-50">
-              <FaStore className="text-green-600 text-xl sm:text-3xl" />
+            <div className="px-4 py-2  border rounded-lg flex items-center gap-4 bg-green-50">
+              <FaStore className="text-green-600 text-xl " />
               <div>
                 <p className="text-sm font-medium text-gray-600">Store ID</p>
-                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                <p className=" font-medium  text-gray-800">
                   {orderDetails?.storeId.split("s")[1]}
                 </p>
               </div>
             </div>
 
-            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-yellow-50">
-              <FaDollarSign className="text-yellow-600 text-xl sm:text-3xl" />
+            <div className="px-4 py-2  border rounded-lg flex items-center gap-4 bg-yellow-50">
+              <FaDollarSign className="text-yellow-600 text-xl " />
               <div>
                 <p className="text-sm font-medium text-gray-600">
                   Total Amount
                 </p>
-                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                <p className=" font-medium  text-gray-800">
                   ${orderDetails?.totalAmount?.toFixed(2)}
                 </p>
               </div>
             </div>
 
-            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-red-50">
-              <FaTag className="text-red-600 text-xl sm:text-3xl" />
+            <div className="px-4 py-2  border rounded-lg flex items-center gap-4 bg-red-50">
+              <FaTag className="text-red-600 text-xl " />
               <div>
                 <p className="text-sm font-medium text-gray-600">Coupon Code</p>
-                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                <p className=" font-medium  text-gray-800">
                   {orderDetails?.couponId || "N/A"}
                 </p>
               </div>
             </div>
 
-            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-purple-50">
-              <FaGift className="text-purple-600 text-xl sm:text-3xl" />
+            <div className="px-4 py-2  border rounded-lg flex items-center gap-4 bg-purple-50">
+              <FaGift className="text-purple-600 text-xl " />
               <div>
                 <p className="text-sm font-medium text-gray-600">Gift Card</p>
-                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                <p className=" font-medium  text-gray-800">
                   {orderDetails?.giftCardCode || "N/A"}
                 </p>
               </div>
             </div>
           </div>
 
-          <h2 className="sm:text-xl font-semibold text-gray-800 mt-8 flex items-center gap-2">
+          <h2 className="font-semibold text-gray-800 mt-8 flex items-center gap-2">
             <FaBoxOpen className="text-gray-600" />
             Order Items
           </h2>
-          <div className="mt-4 bg-gray-100 px-4 py-2 sm:p-4 rounded-lg">
+          <div className="mt-4 bg-gray-100 px-4 py-2  rounded-lg">
             {orderDetails.orderItems.map((item: any, index: number) => (
               <div
                 key={index}
