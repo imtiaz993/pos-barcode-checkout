@@ -52,8 +52,8 @@ const OrderDetail = () => {
   }
 
   return (
-    <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-[calc(100dvh-41px-24px)] px-4 py-2">
+      <div className="">
         <div className="flex justify-between mb-4">
           <p
             className="cursor-pointer text-blue-600"
@@ -83,6 +83,14 @@ const OrderDetail = () => {
             <span className="font-medium">Store:</span> {orderDetails?.storeId}
           </p>
           <p>
+            <span className="font-medium">Sub Total:</span> $
+            {orderDetails?.subTotal?.toFixed(2)}
+          </p>
+          <p>
+            <span className="font-medium">Tax:</span> $
+            {orderDetails?.tax?.toFixed(2)}
+          </p>
+          <p>
             <span className="font-medium">Total Amount:</span> $
             {orderDetails?.totalAmount?.toFixed(2)}
           </p>
@@ -108,6 +116,10 @@ const OrderDetail = () => {
                     {item?.productId}
                   </p>
                   <p>
+                    <span className="font-medium">Product Name:</span>{" "}
+                    {item?.productName}
+                  </p>
+                  <p>
                     <span className="font-medium">Quantity:</span>{" "}
                     {item?.quantity}
                   </p>
@@ -116,10 +128,6 @@ const OrderDetail = () => {
                     {item?.price?.toFixed(2)}
                   </p>
                 </div>
-                <p>
-                  <span className="font-medium">Reward Points:</span>{" "}
-                  {item?.reward_point}
-                </p>
               </li>
             ))}
           </ul>

@@ -94,7 +94,7 @@ const OrderDetail = () => {
             {orderDetails.orderItems.map((item: any, index: number) => (
               <li
                 key={index}
-                className="border-b py-2 flex justify-between items-center"
+                className="py-2 flex justify-between items-center"
               >
                 <div>
                   <p>
