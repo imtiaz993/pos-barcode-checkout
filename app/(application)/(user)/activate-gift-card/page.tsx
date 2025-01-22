@@ -16,6 +16,7 @@ export default function Page() {
   const [error, setError] = useState("");
   const searchParams = useSearchParams();
   const gift_card = searchParams.get("gift_card");
+  const phone_number = searchParams.get("phone_number");
   const user = auth.currentUser;
 
   const handleLogout = async () => {
@@ -30,24 +31,24 @@ export default function Page() {
 
   useEffect(() => {
     if (user) {
-      axios
-        .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
-          unique_code: gift_card,
-          phone_number: user?.phoneNumber,
-        })
-        .then(() => {
-          setActivating(false);
-        })
-        .catch((error) => {
-          if (error.response.data.message === "User not found") {
-            handleLogout();
-          } else {
+      if (phone_number === user.phoneNumber) {
+        axios
+          .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
+            unique_code: gift_card,
+            phone_number: user?.phoneNumber,
+          })
+          .then(() => {
+            setActivating(false);
+          })
+          .catch((error) => {
             setActivating(false);
             setError(error?.response?.data?.message);
             toast.error(error?.response?.data?.message);
-          }
-          console.log(error.response.data.message);
-        });
+            console.log(error.response.data.message);
+          });
+      } else {
+        handleLogout();
+      }
     }
   }, [user]);
 

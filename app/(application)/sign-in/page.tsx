@@ -15,6 +15,7 @@ const PhoneAuth = () => {
   const region = searchParams.get("region");
   const type = searchParams.get("type");
   const gift_card = searchParams.get("gift_card");
+  const phone_number = searchParams.get("phone_number");
 
   const auth = getAuth(app);
   const user = auth.currentUser;
@@ -33,7 +34,9 @@ const PhoneAuth = () => {
           router.replace("/admin/order-history");
         } else {
           if (type == "/activate-gift-card") {
-            router.replace(`${type}?gift_card=${gift_card}`);
+            router.replace(
+              `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+            );
           } else {
             router.replace(`${type}/${region}/${storeId}`);
           }
@@ -57,6 +60,7 @@ const PhoneAuth = () => {
           setConfirmationResult={setConfirmationResult}
           setPhone={setPhone}
           recaptchaVerifier={recaptchaVerifier}
+          phone_number={phone_number}
         />
       ) : (
         <VerifyOTP

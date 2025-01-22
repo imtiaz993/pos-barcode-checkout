@@ -36,6 +36,7 @@ const Layout = ({ children }: any) => {
   const storeId = urlParams?.storeId || searchParams.get("storeId");
   const type = pageType || searchParams.get("type");
   const gift_card = searchParams.get("gift_card");
+  const phone_number = searchParams.get("phone_number");
 
   const [checkingAuth, setCheckingAuth] = useState(true);
 
@@ -50,7 +51,9 @@ const Layout = ({ children }: any) => {
         }
       } else if (!user && !isLoggedIn) {
         if (type === "/activate-gift-card") {
-          router.replace(`/sign-in?type=${type}&gift_card=${gift_card}`);
+          router.replace(
+            `/sign-in?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`
+          );
         } else {
           router.replace(
             `/sign-in?type=${type}&region=${region}&storeId=${storeId}`
@@ -62,7 +65,7 @@ const Layout = ({ children }: any) => {
     };
 
     handleAuth();
-  }, [type, region, storeId, gift_card, user]);
+  }, [type, region, storeId, gift_card, , phone_number, user]);
 
   if (checkingAuth) {
     return null;

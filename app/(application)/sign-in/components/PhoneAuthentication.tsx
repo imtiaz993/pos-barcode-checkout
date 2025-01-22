@@ -16,6 +16,7 @@ const PhoneAuthentication = ({
   setConfirmationResult,
   setPhone,
   recaptchaVerifier,
+  phone_number,
 }: any) => {
   const [loading, setLoading] = useState(false);
   const auth = getAuth(app);
@@ -34,7 +35,7 @@ const PhoneAuthentication = ({
 
   const formik = useFormik({
     initialValues: {
-      phone: "",
+      phone: phone_number ?? "",
     },
     validationSchema: Yup.object({
       phone: Yup.string()
@@ -112,7 +113,7 @@ const PhoneAuthentication = ({
             />
           </div>
           {formik.touched.phone && formik.errors.phone && (
-            <p className="text-red-500 text-sm mt-2">{formik.errors.phone}</p>
+            <p className="text-red-500 text-sm mt-2">{formik?.errors?.phone}</p>
           )}
 
           <button
