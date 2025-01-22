@@ -6,6 +6,15 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import Loader from "@/components/loader";
 import { toast } from "sonner";
+import {
+  FaRegCalendarAlt,
+  FaStore,
+  FaDollarSign,
+  FaTag,
+  FaGift,
+  FaBoxOpen,
+  FaArrowLeft,
+} from "react-icons/fa";
 
 const OrderDetail = () => {
   const { orderId } = useParams();
@@ -39,84 +48,113 @@ const OrderDetail = () => {
   if (!orderDetails) {
     return (
       <div className="min-h-[calc(100dvh-41px-16px)] flex items-center justify-center">
-        <p className="text-gray-500">Order not found</p>
+        <p className="text-gray-500 text-lg">Order not found</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
+    <div className="min-h-[calc(100dvh-41px-16px)] px-4 py-4 bg-gray-50">
       <div className="max-w-md mx-auto">
-        <div className="flex justify-between mb-4">
-          <p
-            className="cursor-pointer text-blue-600"
+        <div className="flex items-center justify-between mb-4">
+          <button
             onClick={() => router.back()}
+            className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition"
           >
-            &larr; Back
-          </p>
+            <FaArrowLeft /> Back
+          </button>
+          <h1 className="sm:text-xl font-bold text-gray-800">Order Details</h1>
+          <div></div>
         </div>
 
-        <h1 className="text-lg font-medium">Order Details</h1>
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-blue-50">
+              <FaRegCalendarAlt className="text-blue-600 text-xl sm:text-3xl" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Order Date</p>
+                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                  {new Date(orderDetails?.orderDate).toLocaleString("en-US", {
+                    timeZone: "UTC",
+                  })}
+                </p>
+              </div>
+            </div>
 
-        <div className="bg-white p-4 rounded-lg shadow mt-4">
-          <p>
-            <span className="font-medium">Order ID:</span>{" "}
-            {orderDetails.orderId}
-          </p>
-          <p>
-            <span className="font-medium">Date:</span>{" "}
-            {new Date(orderDetails.orderDate).toLocaleString("en-US", {
-              timeZone: "UTC",
-            })}
-          </p>
-          <p>
-            <span className="font-medium">Status:</span> {orderDetails.status}
-          </p>
-          <p>
-            <span className="font-medium">Store:</span>{" "}
-            {orderDetails.storeId.split("s")[1]}
-          </p>
-          <p>
-            <span className="font-medium">Total Amount:</span> $
-            {orderDetails.totalAmount?.toFixed(2)}
-          </p>
-          <p>
-            <span className="font-medium">Coupon Code:</span>{" "}
-            {orderDetails.couponId || "N/A"}
-          </p>
-          <p>
-            <span className="font-medium">Gift Card:</span>{" "}
-            {orderDetails.giftCardCode || "N/A"}
-          </p>
+            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-green-50">
+              <FaStore className="text-green-600 text-xl sm:text-3xl" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Store ID</p>
+                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                  {orderDetails?.storeId.split("s")[1]}
+                </p>
+              </div>
+            </div>
 
-          <h2 className="text-lg font-medium mt-4">Order Items</h2>
-          <ul className="mt-2">
+            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-yellow-50">
+              <FaDollarSign className="text-yellow-600 text-xl sm:text-3xl" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Amount
+                </p>
+                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                  ${orderDetails?.totalAmount?.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-red-50">
+              <FaTag className="text-red-600 text-xl sm:text-3xl" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Coupon Code</p>
+                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                  {orderDetails?.couponId || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-purple-50">
+              <FaGift className="text-purple-600 text-xl sm:text-3xl" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Gift Card</p>
+                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                  {orderDetails?.giftCardCode || "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <h2 className="sm:text-xl font-semibold text-gray-800 mt-8 flex items-center gap-2">
+            <FaBoxOpen className="text-gray-600" />
+            Order Items
+          </h2>
+          <div className="mt-4 bg-gray-100 px-4 py-2 sm:p-4 rounded-lg">
             {orderDetails.orderItems.map((item: any, index: number) => (
-              <li
+              <div
                 key={index}
-                className="py-2 flex justify-between items-center"
+                className="border-b border-gray-300 py-3 last:border-b-0 flex justify-between items-center"
               >
                 <div>
-                  <p>
-                    <span className="font-medium">Product ID:</span>{" "}
+                  <p className="text-gray-700">
+                    <span className="font-medium">Product:</span>{" "}
                     {item.productId}
                   </p>
-                  <p>
+                  <p className="text-gray-700">
                     <span className="font-medium">Quantity:</span>{" "}
                     {item.quantity}
                   </p>
-                  <p>
+                  <p className="text-gray-700">
                     <span className="font-medium">Price:</span> $
                     {item.price?.toFixed(2)}
                   </p>
                 </div>
-                <p>
+                <p className="text-gray-700">
                   <span className="font-medium">Reward Points:</span>{" "}
                   {item.reward_point}
                 </p>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>

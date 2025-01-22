@@ -53,7 +53,7 @@ const Layout = ({ children }: any) => {
 
   return (
     <>
-      <div className="w-full border-b flex justify-between items-center px-4 py-2 mb-4">
+      <div className="w-full border-b flex justify-between items-center px-4 py-2">
         <div>
           <h1>Eco Boutique</h1>
         </div>
