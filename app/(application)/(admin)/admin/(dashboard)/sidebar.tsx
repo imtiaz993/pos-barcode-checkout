@@ -22,7 +22,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
   return (
     <div>
       <div
-        className={`fixed lg:static top-0 left-0 h-full lg:h-[calc(100dvh-50)] bg-white shadow-md w-64 transform transition-transform duration-300 ${
+        className={`fixed lg:static top-0 left-0 h-full lg:min-h-[calc(100dvh-50px)] bg-white shadow-md w-64 transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 z-50`}
       >
