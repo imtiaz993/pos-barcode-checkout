@@ -184,7 +184,7 @@ const POS = () => {
         </div>
         {isInputTabOpen && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)]">
-            <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all max-w-md">
+            <div className="bg-white border px-5 pt-5 pb-10 rounded-lg w-11/12 sm:w-1/2 mx-auto lg:w-1/3 transform transition-all max-w-md">
               <div className="flex justify-between">
                 <p className="text-lg font-semibold">Enter Barcode Manually</p>
                 <p

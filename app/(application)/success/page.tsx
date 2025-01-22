@@ -10,7 +10,7 @@ const SuccessPage = () => {
   const storeId = searchParams.get("storeId");
 
   return (
-    <div className="max-w-md">
+    <div className="max-w-md mx-auto">
       <div className="flex flex-col items-center justify-center min-h-dvh mx-auto w-11/12">
         <div className="mb-6">
           <Image

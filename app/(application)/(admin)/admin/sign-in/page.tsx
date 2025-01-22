@@ -92,7 +92,7 @@ const EmailAuthentication = () => {
 
   return (
     <div className="flex items-center justify-center min-h-dvh">
-      <div className="rounded-lg shadow-sm border p-6 pt-0 w-full max-w-md">
+      <div className="rounded-lg shadow-sm border p-6 pt-0 w-full max-w-md mx-auto">
         <div className="flex justify-center">
           <Image
             priority={true}

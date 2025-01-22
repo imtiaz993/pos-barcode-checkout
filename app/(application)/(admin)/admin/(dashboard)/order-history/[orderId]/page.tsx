@@ -53,7 +53,7 @@ const OrderDetail = () => {
 
   return (
     <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md">
-      <div className="max-w-md">
+      <div className="max-w-md mx-auto">
         <div className="flex justify-between mb-4">
           <p
             className="cursor-pointer text-blue-600"
