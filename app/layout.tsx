@@ -39,6 +39,12 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1.0, user-scalable=no"
         ></meta>
+        <Script
+          src="https://tools.luckyorange.com/core/lo.js?site-id=4e0fd289"
+          strategy="lazyOnload"
+          async
+          defer
+        />
       </head>
       <body className="mx-auto">
         <Suspense>{children}</Suspense>
