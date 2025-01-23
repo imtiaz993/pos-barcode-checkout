@@ -25,11 +25,12 @@ const Page = () => {
   const [storeId, setStoreId] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [orderType, setOrderType] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const fetchAllOrders = async (page = 1, limit = 10) => {
+  const fetchAllOrders = async (page = 1, limit = 10, type = "all") => {
     try {
       setLoading(true);
       const response = await axios.get(
@@ -38,7 +39,11 @@ const Page = () => {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
           },
-          params: { page: page, page_size: limit },
+          params: {
+            page: page,
+            page_size: limit,
+            order_type: type !== "all" ? type : undefined,
+          },
         }
       );
       setOrders(response.data.orders);
@@ -50,12 +55,17 @@ const Page = () => {
     }
   };
 
-  const fetchFilteredOrders = async (page = 1, limit = 10) => {
+  const fetchFilteredOrders = async (page = 1, limit = 10, type = "all") => {
     try {
       setLoading(true);
       const response = await axios.post(
         "https://www.adminapi.ecoboutiquemarket.com/orders/filter_orders",
-        { store_id: storeId, start_date: startDate, end_date: endDate },
+        {
+          store_id: storeId,
+          start_date: startDate,
+          end_date: endDate,
+          order_type: type !== "all" ? type : undefined,
+        },
         {
           headers: { Authorization: `Bearer ${user?.accessToken}` },
           params: { page, page_size: limit },
@@ -74,7 +84,7 @@ const Page = () => {
     if (storeId || startDate || endDate) {
       setFilterMode(true);
       setCurrentPage(1);
-      fetchFilteredOrders(1, pageSize);
+      fetchFilteredOrders(1, pageSize, orderType);
       setFiltersVisible(false);
     }
   };
@@ -85,13 +95,13 @@ const Page = () => {
     setStartDate("");
     setEndDate("");
     setCurrentPage(1);
-    fetchAllOrders(1, pageSize);
+    fetchAllOrders(1, pageSize, orderType);
     setFiltersVisible(false);
   };
 
   useEffect(() => {
-    fetchAllOrders(1, pageSize);
-  }, []);
+    fetchAllOrders(1, pageSize, orderType);
+  }, [orderType]);
 
   /**
    * Handle page change from ReactPaginate
@@ -99,9 +109,9 @@ const Page = () => {
   const handlePageChange = (selected: number) => {
     setCurrentPage(selected);
     if (filterMode) {
-      fetchFilteredOrders(selected, pageSize);
+      fetchFilteredOrders(selected, pageSize, orderType);
     } else {
-      fetchAllOrders(selected, pageSize);
+      fetchAllOrders(selected, pageSize, orderType);
     }
   };
 
@@ -115,9 +125,9 @@ const Page = () => {
 
     // Re-fetch from first page with new page size
     if (filterMode) {
-      fetchFilteredOrders(1, newSize);
+      fetchFilteredOrders(1, newSize, orderType);
     } else {
-      fetchAllOrders(1, newSize);
+      fetchAllOrders(1, newSize, orderType);
     }
   };
 
@@ -154,7 +164,21 @@ const Page = () => {
 
       <div className="min-h-[calc(100dvh-60px-16px)] mx-auto sm:px-4 py-2">
         <div className="">
-          <div className="flex items-center px-4 sm:px-0 justify-end relative">
+          <div className="flex items-center px-4 sm:px-0 justify-between relative">
+            <div className="flex items-center gap-2">
+              <label htmlFor="orderType" className="text-sm font-medium">
+                Order Type:
+              </label>
+              <select
+                id="orderType"
+                value={orderType}
+                onChange={(e) => setOrderType(e.target.value)}
+                className="border px-3 py-2 rounded-lg text-sm"
+              >
+                <option value="all">All</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
             <div ref={filterRef} className="relative">
               <button
                 onClick={() => setFiltersVisible(!filtersVisible)}

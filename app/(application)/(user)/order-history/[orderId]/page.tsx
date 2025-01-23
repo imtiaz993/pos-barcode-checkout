@@ -136,8 +136,12 @@ const OrderDetail = () => {
               >
                 <div>
                   <p className="text-gray-700">
-                    <span className="font-medium">Product:</span>{" "}
+                    <span className="font-medium">Product Id:</span>{" "}
                     {item.productId}
+                  </p>
+                  <p className="text-gray-700">
+                    <span className="font-medium">Product Name:</span>{" "}
+                    {item?.productName}
                   </p>
                   <p className="text-gray-700">
                     <span className="font-medium">Quantity:</span>{" "}

@@ -128,6 +128,19 @@ const OrderDetail = () => {
                 </p>
               </div>
             </div>
+
+            {/* New Phone Number Card */}
+            <div className="px-4 py-2 sm:p-4 border rounded-lg flex items-center gap-4 bg-indigo-50">
+              <FaShoppingCart className="text-indigo-600 text-3xl" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Phone Number
+                </p>
+                <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
+                  {orderDetails?.phoneNumber || "Not Provided"}
+                </p>
+              </div>
+            </div>
           </div>
 
           <h2 className="sm:text-xl font-semibold text-gray-800 mt-8 flex items-center gap-2">
