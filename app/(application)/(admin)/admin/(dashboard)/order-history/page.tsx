@@ -162,9 +162,9 @@ const Page = () => {
     <>
       {loading && <Loader />}
 
-      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto sm:px-4 py-2">
+      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-2 sm:px-4 py-2">
         <div className="">
-          <div className="flex items-center px-4 sm:px-0 justify-between relative">
+          <div className="flex items-center justify-between relative">
             <div className="flex items-center gap-2">
               <label htmlFor="orderType" className="text-sm font-medium">
                 Order Type:
@@ -267,10 +267,10 @@ const Page = () => {
           </div>
 
           <div className="w-full mx-auto mt-4 flex flex-col min-h-[calc(100dvh-210px)]  sm:min-h-[calc(100dvh-180px)]">
-            <div className="bg-white shadow-lg rounded-lg flex-grow flex flex-col">
+            <div className="bg-white shadow-lg rounded-lg flex-grow flex flex-col overflow-hidden">
               <div className="overflow-auto flex-grow">
                 <table className="w-full text-left border-collapse text-sm sm:text-base">
-                  <thead className="sticky top-0 bg-gray-100 shadow-md">
+                  <thead className="sticky top-0 bg-gray-100">
                     <tr>
                       <th className="p-2 sm:p-4">Date</th>
                       <th className="p-2 sm:p-4">Store</th>
@@ -290,32 +290,34 @@ const Page = () => {
                         <tr
                           key={index}
                           className={`border-b ${
-                            index % 2 == 0 ? "" : "bg-gray-100"
+                            index % 2 == 0 ? "" : "bg-gray-50"
                           }`}
                         >
-                          <td className="p-2 sm:p-4">
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
                             {" "}
                             {new Date(order.orderDate).toLocaleString("en-US", {
                               timeZone: "UTC",
                             })}
                           </td>
-                          <td className="p-2 sm:p-4">{order.storeId}</td>
-                          <td className="p-2 sm:p-4">
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
+                            {order.storeId}
+                          </td>
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
                             ${order?.subTotal?.toFixed(2)}
                           </td>
-                          <td className="p-2 sm:p-4">
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
                             ${order?.tax?.toFixed(2)}
                           </td>
-                          <td className="p-2 sm:p-4">
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
                             ${order?.totalAmount?.toFixed(2)}
                           </td>
-                          <td className="p-2 sm:p-4">
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
                             {order.couponId || "N/A"}
                           </td>
-                          <td className="p-2 sm:p-4 capitalize">
+                          <td className="p-2 sm:p-4 whitespace-nowrap capitalize">
                             {order.status}
                           </td>
-                          <td className="p-2 sm:p-4">
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
                             <Link
                               href={`/admin/order-history/${order.orderId}`}
                             >
@@ -339,7 +341,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="px-4 sm:px-0 sm:flex flex-row-reverse justify-between items-center mt-4">
+          <div className="px-2 sm:px-0 sm:flex flex-row-reverse justify-between items-center mt-4">
             <div className="flex items-center justify-between mb-4 sm:mb-0">
               <div className="text-sm sm:text-base text-gray-600 sm:hidden">
                 Showing{" "}

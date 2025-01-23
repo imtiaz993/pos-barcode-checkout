@@ -63,8 +63,10 @@ const Page = () => {
                   {history && history.length > 0
                     ? history.map((item: any, index: any) => (
                         <tr key={index} className="border-b">
-                          <td className="p-2">{item.unique_code}</td>
-                          <td className="p-2">
+                          <td className="p-2 whitespace-nowrap">
+                            {item.unique_code}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
                             {new Date(item.purchased_at).toLocaleString(
                               "en-US",
                               {
@@ -72,9 +74,13 @@ const Page = () => {
                               }
                             )}
                           </td>
-                          <td className="p-2">${item.amount.toFixed(2)}</td>
-                          <td className="p-2">${item.balance.toFixed(2)}</td>
-                          <td className="p-2">
+                          <td className="p-2 whitespace-nowrap">
+                            ${item.amount.toFixed(2)}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
+                            ${item.balance.toFixed(2)}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
                             {item.used_in_orders.map(
                               (order: any, index: any) => (
                                 <Link

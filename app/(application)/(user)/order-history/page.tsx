@@ -68,17 +68,21 @@ const Page = () => {
                   {history && history.length > 0
                     ? history.map((item: any, index: any) => (
                         <tr key={index} className="border-b">
-                          <td className="p-2">
+                          <td className="p-2 whitespace-nowrap">
                             {new Date(item.orderDate).toLocaleString("en-US", {
                               timeZone: "UTC",
                             })}
                           </td>
-                          <td className="p-2">{item.storeId.split("s")[1]}</td>
-                          <td className="p-2">
+                          <td className="p-2 whitespace-nowrap">
+                            {item.storeId.split("s")[1]}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
                             ${item.totalAmount.toFixed(2)}
                           </td>
-                          <td className="p-2">{item.couponId || "N/A"}</td>
-                          <td className="p-2">
+                          <td className="p-2 whitespace-nowrap">
+                            {item.couponId || "N/A"}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
                             <Link
                               className="text-blue-600"
                               href={`/order-history/${item.orderId}?type=${type}&region=${region}&storeId=${storeId}`}
