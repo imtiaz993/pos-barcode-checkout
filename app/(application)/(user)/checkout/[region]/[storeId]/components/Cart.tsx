@@ -209,6 +209,7 @@ const Cart = (props: any) => {
         orderDate: new Date(),
         orderItems: products.map((product: any) => ({
           productId: product.barcode,
+          productName: product.name,
           quantity: product.quantity,
           price: product.price,
           reward_point: product?.reward_points,

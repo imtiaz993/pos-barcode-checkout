@@ -137,7 +137,7 @@ const OrderDetail = () => {
                   Phone Number
                 </p>
                 <p className="sm:text-lg font-medium sm:font-semibold text-gray-800">
-                  {orderDetails?.phoneNumber || "Not Provided"}
+                  {orderDetails?.userPhone || "Not Provided"}
                 </p>
               </div>
             </div>

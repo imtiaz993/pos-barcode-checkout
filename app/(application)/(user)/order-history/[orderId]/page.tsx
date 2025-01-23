@@ -59,7 +59,7 @@ const OrderDetail = () => {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-blue-600 font-medium hover:text-blue-800 transition"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition"
           >
             <FaArrowLeft /> Back
           </button>
@@ -132,7 +132,7 @@ const OrderDetail = () => {
             {orderDetails.orderItems.map((item: any, index: number) => (
               <div
                 key={index}
-                className="border-b border-gray-300 py-3 last:border-b-0 flex justify-between items-center"
+                className="border-b border-gray-300 py-3 last:border-b-0 flex flex-col justify-between"
               >
                 <div>
                   <p className="text-gray-700">
@@ -151,11 +151,11 @@ const OrderDetail = () => {
                     <span className="font-medium">Price:</span> $
                     {item.price?.toFixed(2)}
                   </p>
+                  <p className="text-gray-700">
+                    <span className="font-medium">Reward Points:</span>{" "}
+                    {item.reward_point}
+                  </p>
                 </div>
-                <p className="text-gray-700">
-                  <span className="font-medium">Reward Points:</span>{" "}
-                  {item.reward_point}
-                </p>
               </div>
             ))}
           </div>

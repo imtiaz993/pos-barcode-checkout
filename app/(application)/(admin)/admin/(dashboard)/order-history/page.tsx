@@ -163,6 +163,10 @@ const Page = () => {
       {loading && <Loader />}
 
       <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-2 sm:px-4 py-2">
+        <h1 className="mb-3 sm:mb-5 text-lg sm:text-2xl font-semibold text-gray-700 mt-3 sm:mt-4">
+          All Orders
+        </h1>
+
         <div className="">
           <div className="flex items-center justify-between relative">
             <div className="flex items-center gap-2">
@@ -266,7 +270,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="w-full mx-auto mt-4 flex flex-col min-h-[calc(100dvh-210px)]  sm:min-h-[calc(100dvh-180px)]">
+          <div className="w-full mx-auto mt-4 flex flex-col min-h-[calc(100dvh-270px)]  sm:min-h-[calc(100dvh-240px)]">
             <div className="bg-white shadow-lg rounded-lg flex-grow flex flex-col overflow-hidden">
               <div className="overflow-auto flex-grow">
                 <table className="w-full text-left border-collapse text-sm sm:text-base">
