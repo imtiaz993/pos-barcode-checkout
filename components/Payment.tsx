@@ -85,7 +85,7 @@ const PaymentForm = ({
     <>
       {loading && <Loader />}
       <div className="fixed inset-0 z-[9999999] flex items-center justify-center">
-        <div className="bg-white shadow-md md:rounded-lg p-6 w-full max-w-md h-full md:h-fit overflow-auto">
+        <div className="bg-white shadow-md md:rounded-lg p-6 w-full mx-auto max-w-md h-full md:h-fit overflow-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Complete Your Payment</h1>
             <button
