@@ -27,7 +27,7 @@ const ZXingScanner = ({ onScan, openCart }: any) => {
   return (
     <div className="h-44 w-3/4 mx-auto relative border-2 border-white">
       {cameraAccessError && (
-        <div className="text-red-500">
+        <div className="text-red-500 text-center">
           Camera access denied.{" "}
           <span className="text-blue-500 cursor-pointer" onClick={handleReload}>
             Reload page{" "}
