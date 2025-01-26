@@ -57,18 +57,18 @@ export default function Page() {
       amount: Yup.number()
         .test(
           "amount-or-custom",
-          "Please select or enter a value $5 and above.",
+          "Please select or enter a value $10 and above.",
           function (value) {
             const { customAmount } = this.parent;
-            return value || (customAmount && customAmount >= 5);
+            return value || (customAmount && customAmount >= 10);
           }
         )
         .nullable(),
       customAmount: Yup.number()
         .test(
           "custom-amount-minimum",
-          "Please enter a value $5 and above.",
-          (value) => !value || value >= 5
+          "Please enter a value $10 and above.",
+          (value) => !value || value >= 10
         )
         .nullable(),
       message: Yup.string().required("Please enter the gift card message."),

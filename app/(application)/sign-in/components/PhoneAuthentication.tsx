@@ -56,9 +56,26 @@ const PhoneAuthentication = ({
           recaptchaVerifier.current
         );
         setConfirmationResult(confirmation);
-      } catch (error) {
-        formik.setFieldError("phone", "Failed to send OTP. Please try again.");
-        console.error("Error during signInWithPhoneNumber", error);
+      } catch (error: any) {
+        const firebaseError = error?.code || "UNKNOWN_ERROR";
+
+        if (firebaseError === "auth/invalid-phone-number") {
+          formik.setFieldError(
+            "phone",
+            "Invalid phone number. Please enter a valid number."
+          );
+        } else if (firebaseError === "auth/too-many-requests") {
+          formik.setFieldError(
+            "phone",
+            "Too many requests. Please try again later."
+          );
+        } else {
+          formik.setFieldError(
+            "phone",
+            "Failed to send OTP. Please try again."
+          );
+        }
+        console.log("Error during signInWithPhoneNumber", error);
       } finally {
         setLoading(false);
       }
