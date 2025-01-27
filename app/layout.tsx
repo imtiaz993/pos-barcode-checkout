@@ -39,7 +39,6 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1.0, user-scalable=no"
         ></meta>
-        <meta http-equiv="refresh" content="0; url=https://dev-eco-boutique.vercel.app/activate-gift-card"></meta>
       </head>
       <body className="mx-auto">
         <Suspense>{children}</Suspense>

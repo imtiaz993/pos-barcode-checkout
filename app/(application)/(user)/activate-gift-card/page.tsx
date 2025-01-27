@@ -30,6 +30,10 @@ export default function Page() {
   };
 
   useEffect(() => {
+    window.open(window.location.href, "_blank");
+  }, []);
+
+  useEffect(() => {
     if (user) {
       if (phone_number === user.phoneNumber) {
         axios
