@@ -29,6 +29,7 @@ export default function Page() {
     }
   };
 
+
   useEffect(() => {
     if (user) {
       if (phone_number === user.phoneNumber) {
