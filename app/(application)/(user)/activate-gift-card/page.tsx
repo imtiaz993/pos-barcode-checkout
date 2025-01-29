@@ -29,10 +29,13 @@ export default function Page() {
     }
   };
 
-
   useEffect(() => {
     if (user) {
-      if (phone_number === user.phoneNumber) {
+      if (
+        phone_number
+          ? "+" + phone_number.replace(" ", "")
+          : "" === user.phoneNumber
+      ) {
         axios
           .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
             unique_code: gift_card,
