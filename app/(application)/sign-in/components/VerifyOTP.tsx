@@ -70,8 +70,36 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
     try {
       const auth = getAuth(app);
       await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
-    } catch (error) {
-      setError("Failed to send OTP. Please try again.");
+    } catch (error: any) {
+      console.log(error?.response?.data);
+
+      const firebaseError =
+        error?.response?.data?.error?.message || "UNKNOWN_ERROR";
+
+      switch (firebaseError) {
+        case "USER_DISABLED":
+          setError("Your account has been disabled. Please contact support.");
+          break;
+        case "INVALID_PHONE_NUMBER":
+        case "auth/invalid-phone-number":
+          setError("Invalid phone number. Please enter a valid one.");
+          break;
+        case "QUOTA_EXCEEDED":
+        case "auth/quota-exceeded":
+          setError("Too many requests. Please try again later.");
+          break;
+        case "TOO_MANY_ATTEMPTS_TRY_LATER":
+        case "auth/too-many-requests":
+          setError("Too many attempts. Please wait before trying again.");
+          break;
+        case "OPERATION_NOT_ALLOWED":
+        case "auth/operation-not-allowed":
+          setError("Phone sign-in is not enabled. Please contact support.");
+          break;
+        default:
+          // Fallback for other unknown error codes
+          setError("Failed to send OTP. Please try again.");
+      }
       console.error("Error during signInWithPhoneNumber", error);
     } finally {
       setLoading(false);
