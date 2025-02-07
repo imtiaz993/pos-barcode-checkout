@@ -78,14 +78,9 @@ export default function ProfilePage() {
         "Phone number must be in international format (e.g., +1234567890)"
       ),
   });
-
   const formik: any = useFormik({
     initialValues: {
-      name: userData?.user_metadata?.name
-        ? userData?.user_metadata?.name !== user.phone_number
-          ? userData?.user_metadata?.name
-          : ""
-        : "",
+      name: userData?.user_metadata?.name ? userData?.user_metadata?.name : "",
       phone: user?.phone_number || "",
     },
     enableReinitialize: true,
@@ -116,10 +111,6 @@ export default function ProfilePage() {
 
         // Update phone
         if (values.phone !== user?.phone_number) {
-          const verificationCode: any = window.prompt(
-            "Enter the verification code:"
-          );
-
           const response = await fetch("/api/me/update-profile", {
             method: "PATCH",
             headers: {
@@ -127,18 +118,13 @@ export default function ProfilePage() {
               Authorization: `Bearer ${accessToken}`,
             },
             body: JSON.stringify({
-              phone: values.phone,
+              phone_number: values.phone,
               userId: user?.sub,
             }),
           });
           if (response.ok) {
-            updateUserData({ ...user, phone_number: values.name });
+            updateUserData({ ...user, phone_number: values.phone });
           }
-
-          // const credential = PhoneAuthProvider.credential(
-          //   verificationId,
-          //   verificationCode
-          // );
         }
         toast.success("Profile updated successfully!");
       } catch (error: any) {
@@ -266,7 +252,9 @@ export default function ProfilePage() {
                   <PhoneInput
                     country={"us"}
                     value={formik.values.phone}
-                    onChange={(phone) => formik.setFieldValue("phone", phone)}
+                    onChange={(phone: string) =>
+                      formik.setFieldValue("phone", `+${phone}`)
+                    }
                     inputStyle={{
                       width: "100%",
                       borderRadius: "0.5rem",

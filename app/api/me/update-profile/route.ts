@@ -31,7 +31,7 @@ export async function PATCH(req: NextRequest) {
   try {
     // a) Parse JSON body
     const body = await req.json();
-    const { name, userId } = body;
+    const { name, userId, phone_number } = body;
 
     // b) Extract Bearer token from the Authorization header
     const authHeader = req.headers.get("authorization");
@@ -52,6 +52,18 @@ export async function PATCH(req: NextRequest) {
     // d) Obtain the Management API token (server to server)
     const mgmtApiToken = await getManagementApiToken();
 
+    const data: any = {};
+
+    // Condition for adding user_metadata
+    if (name) {
+      data.user_metadata = { name };
+    }
+
+    // Condition for adding phone_number
+    if (phone_number) {
+      data.phone_number = phone_number;
+    }
+
     // e) Send the PATCH request to Auth0 to update the user
     const patchRes = await fetch(
       `https://${
@@ -63,9 +75,7 @@ export async function PATCH(req: NextRequest) {
           "content-type": "application/json",
           authorization: `Bearer ${mgmtApiToken}`,
         },
-        body: JSON.stringify({
-          user_metadata: { name },
-        }),
+        body: JSON.stringify(data),
       }
     );
 
