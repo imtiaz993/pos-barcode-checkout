@@ -1,37 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useFormik } from "formik";
 import PhoneInput from "react-phone-input-2";
 import * as Yup from "yup";
-import {
-  getAuth,
-  signInWithPhoneNumber,
-  RecaptchaVerifier,
-} from "firebase/auth";
-import { app } from "@/app/firebase";
 
 import "react-phone-input-2/lib/style.css";
 
 const PhoneAuthentication = ({
-  setConfirmationResult,
   setPhone,
-  recaptchaVerifier,
   phone_number,
+  setStep,
+  webAuthRef,
 }: any) => {
   const [loading, setLoading] = useState(false);
-  const auth = getAuth(app);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      recaptchaVerifier.current = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-        }
-      );
-    }
-  }, [auth, recaptchaVerifier]);
 
   const formik: any = useFormik({
     initialValues: {
@@ -50,31 +31,28 @@ const PhoneAuthentication = ({
 
       setLoading(true);
       try {
-        const confirmation = await signInWithPhoneNumber(
-          auth,
-          values.phone,
-          recaptchaVerifier.current
-        );
-        setConfirmationResult(confirmation);
-      } catch (error: any) {
-        const firebaseError = error?.code || "UNKNOWN_ERROR";
+        const webAuth = webAuthRef.current;
+        if (!webAuth) return;
 
-        if (firebaseError === "auth/invalid-phone-number") {
-          formik.setFieldError(
-            "phone",
-            "Invalid phone number. Please enter a valid number."
-          );
-        } else if (firebaseError === "auth/too-many-requests") {
-          formik.setFieldError(
-            "phone",
-            "Too many requests. Please try again later."
-          );
-        } else {
-          formik.setFieldError(
-            "phone",
-            "Failed to send OTP. Please try again."
-          );
-        }
+        // Initiate the SMS passwordless flow by sending an OTP to the phone number.
+        webAuth.passwordlessStart(
+          {
+            connection: "sms", // Ensure this matches your SMS passwordless connection name in Auth0
+            send: "code", // Use 'code' to send an OTP (one-time code)
+            phoneNumber: values.phone, // Phone number in E.164 format (e.g., "+15551234567")
+          },
+          (err: any, res: any) => {
+            if (err) {
+              console.error("Error sending OTP:", err);
+              alert("Error sending OTP: " + (err.description || err.message));
+              return;
+            }
+            console.log("OTP sent successfully:", res);
+            alert("OTP sent! Please check your phone.");
+            setStep("otp");
+          }
+        );
+      } catch (error: any) {
         console.log("Error during signInWithPhoneNumber", error);
       } finally {
         setLoading(false);
