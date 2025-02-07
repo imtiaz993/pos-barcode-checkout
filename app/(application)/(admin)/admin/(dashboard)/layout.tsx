@@ -1,34 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { checkAuthState, logout } from "@/utils/firebaseAuth";
+import { useEffect, useRef, useState } from "react";
 import { IoMdMenu } from "react-icons/io";
 import Sidebar from "./sidebar";
-import { getAuth } from "firebase/auth";
-import { app } from "@/app/firebase";
 import Image from "next/image";
+import { getUserData, getUserToken } from "@/utils";
 
 const Layout = ({ children }: any) => {
-  const router = useRouter();
-
-  const auth = getAuth(app);
-  const user = auth.currentUser;
-
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const webAuthRef: any = useRef(null);
+
+  const user = getUserData();
+  const isLoggedIn = getUserToken();
+
   useEffect(() => {
     const handleAuth = async () => {
-      const isLoggedIn = await checkAuthState();
-      const token = await user?.getIdTokenResult();
-      console.log(isLoggedIn, !token?.claims?.admin);
+      //TODO: change admin as per Auth0
+      if (!isLoggedIn || (user && !user?.claims?.admin)) {
+        if (!user?.claims?.admin) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("idToken");
+          localStorage.removeItem("idTokenPayload");
 
-      if (!isLoggedIn || (user && !token?.claims?.admin)) {
-        if (!token?.claims?.admin) {
-          await logout();
+          webAuthRef.current.logout({
+            returnTo: "/sign-in", // Where to redirect after logout
+            clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+          });
         }
-        router.replace("/sign-in");
       }
 
       setCheckingAuth(false);
@@ -39,13 +39,27 @@ const Layout = ({ children }: any) => {
 
   const handleLogout = async () => {
     try {
-      await logout();
-      router.push("/admin/sign-in");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("idToken");
+      localStorage.removeItem("idTokenPayload");
+
+      webAuthRef.current.logout({
+        returnTo: "/admin/sign-in", // Where to redirect after logout
+        clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+      });
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
     }
   };
+
+  useEffect(() => {
+    const Auth0 = require("auth0-js");
+    webAuthRef.current = new Auth0.WebAuth({
+      domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
+      clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+    });
+  }, []);
 
   if (checkingAuth) {
     return null;

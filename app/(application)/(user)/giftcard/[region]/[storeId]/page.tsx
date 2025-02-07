@@ -7,19 +7,19 @@ import axios from "axios";
 import { toast } from "sonner";
 import PhoneInput from "react-phone-input-2";
 import Payment from "@/components/Payment";
-import { auth } from "@/app/firebase";
 
 import "react-phone-input-2/lib/style.css";
 import Loader from "@/components/loader";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getUserData } from "@/utils";
 
 export default function Page() {
   const router = useRouter();
   const { storeId, region }: any = useParams();
 
-  const user = auth.currentUser;
+  const user = getUserData();
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -107,7 +107,7 @@ export default function Page() {
         {
           amount: (Number(customAmount) || amount) * quantity,
           message,
-          purchaserPhone: user?.phoneNumber,
+          purchaserPhone: user?.phone_number,
           fromName,
           recipientName,
           recipientPhone,

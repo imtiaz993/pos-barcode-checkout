@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { auth } from "@/app/firebase";
 import Loader from "@/components/loader";
-import { logout } from "@/utils/firebaseAuth";
+import { getUserData } from "@/utils";
 
 export default function Page() {
   const router = useRouter();
@@ -17,12 +16,19 @@ export default function Page() {
   const searchParams = useSearchParams();
   const gift_card = searchParams.get("gift_card");
   const phone_number = searchParams.get("phone_number");
-  const user = auth.currentUser;
+  const user = getUserData();
+
+  const webAuthRef: any = useRef(null);
 
   const handleLogout = async () => {
     try {
-      await logout();
-      router.push("/sign-in");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("idToken");
+      localStorage.removeItem("idTokenPayload");
+      webAuthRef.current.logout({
+        returnTo: "/sign-in", // Where to redirect after logout
+        clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+      });
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
@@ -34,12 +40,12 @@ export default function Page() {
       if (
         phone_number
           ? "+" + phone_number.replace(" ", "")
-          : "" === user.phoneNumber
+          : "" === user.phone_number
       ) {
         axios
           .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
             unique_code: gift_card,
-            phone_number: user?.phoneNumber,
+            phone_number: user?.phone_number,
           })
           .then(() => {
             setActivating(false);
@@ -55,6 +61,14 @@ export default function Page() {
       }
     }
   }, [user]);
+
+  useEffect(() => {
+    const Auth0 = require("auth0-js");
+    webAuthRef.current = new Auth0.WebAuth({
+      domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
+      clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+    });
+  }, []);
 
   return (
     <>

@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { auth } from "@/app/firebase";
 import CartProducts from "./CartProducts";
 import Loader from "@/components/loader";
 import Payment from "@/components/Payment";
+import { getUserData } from "@/utils";
 
 const Cart = (props: any) => {
   const router = useRouter();
-  const user = auth.currentUser;
+  const user = getUserData();
   const [giftCardBalance, setGiftCardBalance] = useState(0);
   const [discountData, setDiscountData] = useState<any>(null);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -47,7 +47,7 @@ const Cart = (props: any) => {
           const res: any = await axios.post(
             "https://api.ecoboutiquemarket.com/giftcard/check-balance",
             {
-              phone_number: user?.phoneNumber,
+              phone_number: user?.phone_number,
             }
           );
           if (res.data.balance >= giftCardBalanceUsed) {
@@ -168,9 +168,9 @@ const Cart = (props: any) => {
               ? total.totalPrice
               : discountData[discountData.code_type].amount,
           store_id: storeId.split("s")[1],
-          phone_number: user?.phoneNumber,
+          phone_number: user?.phone_number,
           order_id: orderId,
-          user_id: user?.phoneNumber,
+          user_id: user?.phone_number,
         }
       );
     } catch (error: any) {
@@ -185,7 +185,7 @@ const Cart = (props: any) => {
         "https://api.ecoboutiquemarket.com/redeemGiftCard",
         {
           amount: giftCardBalanceUsed,
-          phone_number: user?.phoneNumber,
+          phone_number: user?.phone_number,
         }
       );
     } catch (error: any) {
@@ -239,7 +239,7 @@ const Cart = (props: any) => {
 
         status: "Completed",
         couponId: discountData?.code_type === "coupon" ? couponCode : "",
-        userPhone: user?.phoneNumber,
+        userPhone: user?.phone_number,
       }
     );
     return res;
@@ -279,7 +279,7 @@ const Cart = (props: any) => {
         const res: any = await axios.post(
           "https://api.ecoboutiquemarket.com/giftcard/check-balance",
           {
-            phone_number: user?.phoneNumber,
+            phone_number: user?.phone_number,
           }
         );
         setGiftCardBalance(res.data.balance);

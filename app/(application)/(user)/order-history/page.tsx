@@ -1,12 +1,11 @@
 "use client";
 import axios from "axios";
-import { getAuth } from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { app } from "@/app/firebase";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
+import { getUserData } from "@/utils";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -15,8 +14,7 @@ const Page = () => {
   const type = searchParams.get("type");
 
   const router = useRouter();
-  const auth = getAuth(app);
-  const user = auth.currentUser;
+  const user = getUserData();
 
   const [history, setHistory] = useState<any>();
   const [loading, setLoading] = useState(true);
@@ -24,7 +22,7 @@ const Page = () => {
   useEffect(() => {
     axios
       .post("https://api.ecoboutiquemarket.com/order/history", {
-        phone_number: user?.phoneNumber,
+        phone_number: user?.phone_number,
       })
       .then((res) => {
         setHistory(res.data.orders);

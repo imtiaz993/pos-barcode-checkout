@@ -6,13 +6,11 @@ import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
 import { IoMdClose, IoMdFunnel } from "react-icons/io";
-import { getAuth } from "firebase/auth";
-import { app } from "@/app/firebase";
 import Pagination from "react-js-pagination";
+import { getUserToken } from "@/utils";
 
 const Page = () => {
-  const auth = getAuth(app);
-  const user: any = auth.currentUser;
+  const token = getUserToken();
   const filterRef = useRef<HTMLDivElement | null>(null);
 
   const [orders, setOrders] = useState<any[]>([]);
@@ -37,7 +35,7 @@ const Page = () => {
         "https://www.adminapi.ecoboutiquemarket.com/orders/all",
         {
           headers: {
-            Authorization: `Bearer ${user?.accessToken}`,
+            Authorization: `Bearer ${token}`,
           },
           params: {
             page: page,
@@ -67,7 +65,7 @@ const Page = () => {
           order_type: type !== "all" ? type : undefined,
         },
         {
-          headers: { Authorization: `Bearer ${user?.accessToken}` },
+          headers: { Authorization: `Bearer ${token}` },
           params: { page, page_size: limit },
         }
       );

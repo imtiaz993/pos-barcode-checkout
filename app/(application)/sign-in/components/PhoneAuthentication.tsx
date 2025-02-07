@@ -27,9 +27,9 @@ const PhoneAuthentication = ({
         ),
     }),
     onSubmit: async (values) => {
+      setLoading(true);
       setPhone(values.phone);
 
-      setLoading(true);
       try {
         const webAuth = webAuthRef.current;
         if (!webAuth) return;
@@ -44,11 +44,9 @@ const PhoneAuthentication = ({
           (err: any, res: any) => {
             if (err) {
               console.error("Error sending OTP:", err);
-              alert("Error sending OTP: " + (err.description || err.message));
+              formik.setFieldError("phone", err.description || err.message);
               return;
             }
-            console.log("OTP sent successfully:", res);
-            alert("OTP sent! Please check your phone.");
             setStep("otp");
           }
         );

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const VerifyOTP = ({ phone, webAuthRef }: any) => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const storeId = searchParams.get("storeId");
   const region = searchParams.get("region");
@@ -66,6 +65,23 @@ const VerifyOTP = ({ phone, webAuthRef }: any) => {
     setError("");
     setLoading(true);
     try {
+      const webAuth = webAuthRef.current;
+      if (!webAuth) return;
+      webAuth.passwordlessStart(
+        {
+          connection: "sms", // Ensure this matches your SMS passwordless connection name in Auth0
+          send: "code", // Use 'code' to send an OTP (one-time code)
+          phoneNumber: phone, // Phone number in E.164 format (e.g., "+15551234567")
+        },
+        (err: any, res: any) => {
+          if (err) {
+            console.error("Error sending OTP:", err);
+            setError(err.description || err.message);
+            return;
+          }
+          console.log("OTP sent successfully:", res);
+        }
+      );
     } catch (error: any) {
       console.log(error?.response?.data);
     } finally {
@@ -92,19 +108,25 @@ const VerifyOTP = ({ phone, webAuthRef }: any) => {
 
         // Complete the passwordless login by verifying the OTP.
         // This call will redirect the browser to your callback URL with tokens in the URL hash.
+        const redirectQuery =
+          type === "/activate-gift-card"
+            ? `?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`
+            : `?type=${type}&region=${region}&storeId=${storeId}`;
+
         webAuth.passwordlessLogin(
           {
             connection: "sms",
             phoneNumber: phone,
             verificationCode: values.otp,
             responseType: "token id_token",
-            redirectUri: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
+            redirectUri:
+              process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL + redirectQuery,
             scope: "openid profile phone",
           },
           (err: any, authResult: any) => {
             if (err) {
               console.error("Error verifying OTP:", err);
-              alert("Error verifying OTP: " + (err.description || err.message));
+              setError(err.description || err.message);
               return;
             }
             // In many cases this callback will not be reached because the browser

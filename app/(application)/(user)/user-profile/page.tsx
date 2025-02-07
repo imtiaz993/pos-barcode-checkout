@@ -3,10 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
-import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
-import { app } from "@/app/firebase";
-import { logout } from "@/utils/firebaseAuth";
 import axios from "axios";
 import Link from "next/link";
 import PhoneInput from "react-phone-input-2";
@@ -14,6 +10,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import "react-phone-input-2/lib/style.css";
+import { getUserData, getUserToken, updateUserData } from "@/utils";
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -21,9 +18,11 @@ export default function ProfilePage() {
   const region = searchParams.get("region");
   const type = searchParams.get("type");
 
+  const webAuthRef: any = useRef(null);
+
   const router = useRouter();
-  const auth = getAuth(app);
-  const user = auth.currentUser;
+  const user = getUserData();
+  const accessToken = getUserToken();
 
   const [giftCardBalance, setGiftCardBalance] = useState<any>();
   const [giftCardBalanceLoading, setGiftCardBalanceLoading] =
@@ -32,7 +31,7 @@ export default function ProfilePage() {
   useEffect(() => {
     axios
       .post("https://api.ecoboutiquemarket.com/giftcard/check-balance", {
-        phone_number: user?.phoneNumber,
+        phone_number: user?.phone_number,
       })
       .then((res) => {
         setGiftCardBalance(res.data.balance);
@@ -46,20 +45,6 @@ export default function ProfilePage() {
       });
   }, []);
 
-  let recaptchaVerifier = useRef<any>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      recaptchaVerifier.current = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-        }
-      );
-    }
-  }, [auth]);
-
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     phone: Yup.string()
@@ -70,10 +55,10 @@ export default function ProfilePage() {
       ),
   });
 
-  const formik = useFormik({
+  const formik: any = useFormik({
     initialValues: {
-      name: user?.displayName || "",
-      phone: user?.phoneNumber || "",
+      name: user?.name ? (user?.name !== user.phone_number ? user?.name : "") : "",
+      phone: user?.phone_number || "",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -83,27 +68,49 @@ export default function ProfilePage() {
         }
 
         // Update name
-        if (values.name !== user.displayName) {
-          await updateProfile(user, { displayName: values.name });
+        if (values.name !== user?.name) {
+          const response = await fetch("/api/me/update-profile", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+              name: values.name,
+              userId: user?.sub,
+            }),
+          });
+          if (response.ok) {
+            updateUserData({ ...user, name: values.name });
+          }
         }
 
         // Update phone
-        if (values.phone !== user.phoneNumber) {
-          const phoneProvider = new PhoneAuthProvider(auth);
-          const verificationId = await phoneProvider.verifyPhoneNumber(
-            "+" + values.phone,
-            recaptchaVerifier.current
-          );
+        if (values.phone !== user?.phone_number) {
           const verificationCode: any = window.prompt(
             "Enter the verification code:"
           );
-          const credential = PhoneAuthProvider.credential(
-            verificationId,
-            verificationCode
-          );
-          await updatePhoneNumber(user, credential);
-        }
 
+          const response = await fetch("/api/me/update-profile", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+              phone: values.phone,
+              userId: user?.sub,
+            }),
+          });
+          if (response.ok) {
+            updateUserData({ ...user, phone_number: values.name });
+          }
+
+          // const credential = PhoneAuthProvider.credential(
+          //   verificationId,
+          //   verificationCode
+          // );
+        }
         toast.success("Profile updated successfully!");
       } catch (error: any) {
         console.error("Error updating profile:", error);
@@ -112,28 +119,29 @@ export default function ProfilePage() {
     },
   });
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        formik.setValues({
-          name: user?.displayName ?? "",
-          phone: user?.phoneNumber ?? "",
-        });
-      }
-    });
-
-    return () => unsubscribe(); // Cleanup the listener on unmount
-  }, [auth]);
-
   const handleLogout = async () => {
     try {
-      await logout();
-      router.push(`/sign-in?type=${type}&region=${region}&storeId=${storeId}`);
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("idToken");
+      localStorage.removeItem("idTokenPayload");
+
+      webAuthRef.current.logout({
+        returnTo: `http://localhost:3000/sign-in?type=${type}&region=${region}&storeId=${storeId}`, // Where to redirect after logout
+        clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+      });
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
     }
   };
+
+  useEffect(() => {
+    const Auth0 = require("auth0-js");
+    webAuthRef.current = new Auth0.WebAuth({
+      domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
+      clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+    });
+  }, []);
 
   return (
     <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 ">

@@ -15,8 +15,6 @@
     "@zxing/library": "^0.21.3",
     "auth0-js": "^9.28.0",
     "axios": "^1.6.8",
-    "firebase": "^11.0.2",
-    "firebase-admin": "^13.0.2",
     "formik": "^2.4.6",
     "next": "latest",
     "next-themes": "^0.3.0",
