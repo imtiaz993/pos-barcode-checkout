@@ -36,6 +36,10 @@ export default function Callback() {
         // Store tokens (for demonstration only—consider more secure storage in production)
         localStorage.setItem("accessToken", authResult.accessToken);
         localStorage.setItem("idToken", authResult.idToken);
+        localStorage.setItem(
+          "idTokenPayload",
+          JSON.stringify(authResult.idTokenPayload)
+        );
 
         console.log("User successfully logged in!", authResult);
         // Redirect to the home page or another protected page

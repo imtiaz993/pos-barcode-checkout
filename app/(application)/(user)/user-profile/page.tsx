@@ -11,6 +11,7 @@ import * as Yup from "yup";
 
 import "react-phone-input-2/lib/style.css";
 import { getUserData, getUserToken, updateUserData } from "@/utils";
+import Loader from "@/components/loader";
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -19,6 +20,8 @@ export default function ProfilePage() {
   const type = searchParams.get("type");
 
   const webAuthRef: any = useRef(null);
+  const [userData, setUserData] = useState<any>();
+  const [loading, setLoading] = useState(true);
 
   const router = useRouter();
   const user = getUserData();
@@ -29,6 +32,27 @@ export default function ProfilePage() {
     useState<any>(true);
 
   useEffect(() => {
+    axios
+      .patch(
+        "/api/me/get-profile",
+        { userId: user?.sub },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res: any) => {
+        setUserData(res.data.user);
+        setLoading(false);
+      })
+      .catch((error) => {
+        toast.error(error?.response?.data?.error);
+        console.error("Error fetching client secret:", error);
+        setLoading(false);
+      });
+
     axios
       .post("https://api.ecoboutiquemarket.com/giftcard/check-balance", {
         phone_number: user?.phone_number,
@@ -43,7 +67,7 @@ export default function ProfilePage() {
         toast.error(error?.response?.data?.message);
         console.error("Error fetching client secret:", error);
       });
-  }, []);
+  }, [accessToken]);
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -57,9 +81,14 @@ export default function ProfilePage() {
 
   const formik: any = useFormik({
     initialValues: {
-      name: user?.name ? (user?.name !== user.phone_number ? user?.name : "") : "",
+      name: userData?.user_metadata?.name
+        ? userData?.user_metadata?.name !== user.phone_number
+          ? userData?.user_metadata?.name
+          : ""
+        : "",
       phone: user?.phone_number || "",
     },
+    enableReinitialize: true,
     validationSchema,
     onSubmit: async (values) => {
       try {
@@ -68,7 +97,7 @@ export default function ProfilePage() {
         }
 
         // Update name
-        if (values.name !== user?.name) {
+        if (values.name !== userData?.user_metadata?.name) {
           const response = await fetch("/api/me/update-profile", {
             method: "PATCH",
             headers: {
@@ -144,125 +173,132 @@ export default function ProfilePage() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 ">
-      <div className="max-w-md mx-auto">
-        <div className="flex justify-between mb-2">
-          <p
-            className="cursor-pointer text-blue-600"
-            onClick={() => {
-              router.back();
-            }}
-          >
-            &larr; Back
-          </p>
+    <>
+      {loading && <Loader />}
+      <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 ">
+        <div className="max-w-md mx-auto">
+          <div className="flex justify-between mb-2">
+            <p
+              className="cursor-pointer text-blue-600"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              &larr; Back
+            </p>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="bg-blue-500 text-white py-2 px-3 text-sm rounded-lg hover:bg-blue-600 flex items-center"
-          >
-            <Image
-              priority={true}
-              src="/images/logout.svg"
-              width={0}
-              height={0}
-              sizes="100vw"
-              alt=""
-              className="w-4 cursor-pointer mr-1"
-            />
-            Logout
-          </button>
-        </div>
-
-        <form
-          onSubmit={formik.handleSubmit}
-          className="w-full max-w-md mx-auto"
-        >
-          <div className="bg-white">
-            <div className="flex items-center">
-              <h1 className="font-semibold my-4">
-                Gift Card Balance:{" "}
-                {giftCardBalanceLoading ? "Loading..." : `$${giftCardBalance}`}
-              </h1>
-              {!giftCardBalanceLoading && (
-                <p className="ml-3 text-blue-600 border-b border-b-blue-600 cursor-pointer text-sm">
-                  <Link
-                    href={`giftcard-history?type=${type}&region=${region}&storeId=${storeId}`}
-                  >
-                    View Transactions
-                  </Link>
-                </p>
-              )}
-            </div>
-
-            {/* View Order History Button */}
             <button
               type="button"
-              onClick={() =>
-                router.push(
-                  `/order-history?type=${type}&region=${region}&storeId=${storeId}`
-                )
-              }
-              className="w-full bg-gray-100 border border-gray-300 text-gray-700 py-1.5 text-sm rounded-lg hover:bg-gray-200 mb-6"
+              onClick={handleLogout}
+              className="bg-blue-500 text-white py-2 px-3 text-sm rounded-lg hover:bg-blue-600 flex items-center"
             >
-              View Order History
-            </button>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Name</label>
-              <input
-                type="text"
-                className={`w-full px-2 py-2 text-sm border rounded-lg mb-2 ${
-                  formik.touched.name && formik.errors.name
-                    ? "border-red-500"
-                    : ""
-                }`}
-                placeholder="Your name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                name="name"
+              <Image
+                priority={true}
+                src="/images/logout.svg"
+                width={0}
+                height={0}
+                sizes="100vw"
+                alt=""
+                className="w-4 cursor-pointer mr-1"
               />
-              {formik.touched.name && formik.errors.name && (
-                <p className="text-red-500 text-xs">{formik.errors.name}</p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Phone</label>
-              <div className="mb-2">
-                <PhoneInput
-                  country={"us"}
-                  value={formik.values.phone}
-                  onChange={(phone) => formik.setFieldValue("phone", phone)}
-                  inputStyle={{
-                    width: "100%",
-                    borderRadius: "0.5rem",
-                    borderColor:
-                      formik.touched.phone && formik.errors.phone
-                        ? "red"
-                        : "#d1d5db",
-                    padding: "0.5rem 3rem",
-                    fontSize: "0.875rem",
-                  }}
-                  dropdownStyle={{
-                    borderRadius: "0.5rem",
-                  }}
-                />
-                {formik.touched.phone && formik.errors.phone && (
-                  <p className="text-red-500 text-xs">{formik.errors.phone}</p>
-                )}
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 text-sm rounded-lg hover:bg-blue-600"
-            >
-              Update Profile
+              Logout
             </button>
           </div>
-        </form>
-        <div id="recaptcha-container"></div>
+
+          <form
+            onSubmit={formik.handleSubmit}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="bg-white">
+              <div className="flex items-center">
+                <h1 className="font-semibold my-4">
+                  Gift Card Balance:{" "}
+                  {giftCardBalanceLoading
+                    ? "Loading..."
+                    : `$${giftCardBalance}`}
+                </h1>
+                {!giftCardBalanceLoading && (
+                  <p className="ml-3 text-blue-600 border-b border-b-blue-600 cursor-pointer text-sm">
+                    <Link
+                      href={`giftcard-history?type=${type}&region=${region}&storeId=${storeId}`}
+                    >
+                      View Transactions
+                    </Link>
+                  </p>
+                )}
+              </div>
+
+              {/* View Order History Button */}
+              <button
+                type="button"
+                onClick={() =>
+                  router.push(
+                    `/order-history?type=${type}&region=${region}&storeId=${storeId}`
+                  )
+                }
+                className="w-full bg-gray-100 border border-gray-300 text-gray-700 py-1.5 text-sm rounded-lg hover:bg-gray-200 mb-6"
+              >
+                View Order History
+              </button>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Name</label>
+                <input
+                  type="text"
+                  className={`w-full px-2 py-2 text-sm border rounded-lg mb-2 ${
+                    formik.touched.name && formik.errors.name
+                      ? "border-red-500"
+                      : ""
+                  }`}
+                  placeholder="Your name"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  name="name"
+                />
+                {formik.touched.name && formik.errors.name && (
+                  <p className="text-red-500 text-xs">{formik.errors.name}</p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Phone</label>
+                <div className="mb-2">
+                  <PhoneInput
+                    country={"us"}
+                    value={formik.values.phone}
+                    onChange={(phone) => formik.setFieldValue("phone", phone)}
+                    inputStyle={{
+                      width: "100%",
+                      borderRadius: "0.5rem",
+                      borderColor:
+                        formik.touched.phone && formik.errors.phone
+                          ? "red"
+                          : "#d1d5db",
+                      padding: "0.5rem 3rem",
+                      fontSize: "0.875rem",
+                    }}
+                    dropdownStyle={{
+                      borderRadius: "0.5rem",
+                    }}
+                  />
+                  {formik.touched.phone && formik.errors.phone && (
+                    <p className="text-red-500 text-xs">
+                      {formik.errors.phone}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 text-sm rounded-lg hover:bg-blue-600"
+              >
+                Update Profile
+              </button>
+            </div>
+          </form>
+          <div id="recaptcha-container"></div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

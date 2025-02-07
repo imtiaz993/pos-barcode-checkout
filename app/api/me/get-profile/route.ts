@@ -62,9 +62,6 @@ export async function PATCH(req: NextRequest) {
           "content-type": "application/json",
           authorization: `Bearer ${mgmtApiToken}`,
         },
-        body: JSON.stringify({
-          user_metadata: { name },
-        }),
       }
     );
 
