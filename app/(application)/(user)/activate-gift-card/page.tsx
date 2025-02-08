@@ -26,7 +26,7 @@ export default function Page() {
       localStorage.removeItem("idToken");
       localStorage.removeItem("idTokenPayload");
       webAuthRef.current.logout({
-        returnTo: "/sign-in", // Where to redirect after logout
+        returnTo: `/sign-in?type=/activate-gift-card&phone_number=${phone_number}`, // Where to redirect after logout
         clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
       });
     } catch (error) {
