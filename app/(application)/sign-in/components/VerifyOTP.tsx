@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { auth } from "@/lib/auth";
+import { getAuth, signInWithPhoneNumber } from "firebase/auth";
+import { app } from "@/app/firebase";
 
-const VerifyOTP = ({ phone }: any) => {
+const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const storeId = searchParams.get("storeId");
   const region = searchParams.get("region");
@@ -66,23 +68,39 @@ const VerifyOTP = ({ phone }: any) => {
     setError("");
     setLoading(true);
     try {
-      auth.passwordlessStart(
-        {
-          connection: "sms", // Ensure this matches your SMS passwordless connection name in Auth0
-          send: "code", // Use 'code' to send an OTP (one-time code)
-          phoneNumber: phone, // Phone number in E.164 format (e.g., "+15551234567")
-        },
-        (err: any, res: any) => {
-          if (err) {
-            console.error("Error sending OTP:", err);
-            setError(err.description || err.message);
-            return;
-          }
-          console.log("OTP sent successfully:", res);
-        }
-      );
+      const auth = getAuth(app);
+      await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
     } catch (error: any) {
       console.log(error?.response?.data);
+
+      const firebaseError =
+        error?.response?.data?.error?.message || "UNKNOWN_ERROR";
+
+      switch (firebaseError) {
+        case "USER_DISABLED":
+          setError("Your account has been disabled. Please contact support.");
+          break;
+        case "INVALID_PHONE_NUMBER":
+        case "auth/invalid-phone-number":
+          setError("Invalid phone number. Please enter a valid one.");
+          break;
+        case "QUOTA_EXCEEDED":
+        case "auth/quota-exceeded":
+          setError("Too many requests. Please try again later.");
+          break;
+        case "TOO_MANY_ATTEMPTS_TRY_LATER":
+        case "auth/too-many-requests":
+          setError("Too many attempts. Please wait before trying again.");
+          break;
+        case "OPERATION_NOT_ALLOWED":
+        case "auth/operation-not-allowed":
+          setError("Phone sign-in is not enabled. Please contact support.");
+          break;
+        default:
+          // Fallback for other unknown error codes
+          setError("Failed to send OTP. Please try again.");
+      }
+      console.error("Error during signInWithPhoneNumber", error);
     } finally {
       setLoading(false);
     }
@@ -101,38 +119,24 @@ const VerifyOTP = ({ phone }: any) => {
       setError("");
       setLoading(true);
 
-      try {
-        // Complete the passwordless login by verifying the OTP.
-        // This call will redirect the browser to your callback URL with tokens in the URL hash.
-        const redirectQuery =
-          type === "/activate-gift-card"
-            ? `?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`
-            : `?type=${type}&region=${region}&storeId=${storeId}`;
+      if (!confirmationResult) {
+        setError("No OTP request found. Please start again.");
+        setLoading(false);
+        return;
+      }
 
-        auth.passwordlessLogin(
-          {
-            connection: "sms",
-            phoneNumber: phone,
-            verificationCode: values.otp,
-            responseType: "token id_token",
-            redirectUri:
-              process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL + redirectQuery,
-            scope: "openid profile phone",
-          },
-          (err: any, authResult: any) => {
-            if (err) {
-              console.error("Error verifying OTP:", err);
-              setError(err.description || err.message);
-              return;
-            }
-            // In many cases this callback will not be reached because the browser
-            // is redirected to the callback URL where tokens are processed.
-            if (authResult && authResult.accessToken && authResult.idToken) {
-              console.log("User logged in successfully", authResult);
-            }
-          }
-        );
+      try {
+        await confirmationResult.confirm(values.otp);
+        if (type == "/activate-gift-card") {
+          router.replace(
+            `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+          );
+        } else {
+          router.replace(`${type}/${region}/${storeId}`);
+        }
       } catch (error) {
+        setError("Invalid OTP. Please try again.");
+        console.error("Error during confirmationResult.confirm", error);
       } finally {
         setLoading(false);
       }

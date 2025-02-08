@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import Loader from "@/components/loader";
 import { toast } from "sonner";
+import { getAuth } from "firebase/auth";
+import { app } from "@/app/firebase";
 import {
   FaStore,
   FaRegCalendarAlt,
@@ -14,10 +16,10 @@ import {
   FaGift,
   FaShoppingCart,
 } from "react-icons/fa";
-import { getUserToken } from "@/lib/auth";
 
 const OrderDetail = () => {
-  const accessToken = getUserToken();
+  const auth = getAuth(app);
+  const user: any = auth.currentUser;
 
   const { orderId } = useParams();
   const router = useRouter();
@@ -29,7 +31,7 @@ const OrderDetail = () => {
     axios
       .get(`https://www.adminapi.ecoboutiquemarket.com/orders/${orderId}`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${user?.accessToken}`,
         },
       })
       .then((res) => {

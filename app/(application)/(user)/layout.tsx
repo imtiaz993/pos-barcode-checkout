@@ -7,15 +7,20 @@ import {
   usePathname,
   useSearchParams,
 } from "next/navigation";
+import { checkAuthState } from "@/utils/firebaseAuth";
 import Link from "next/link";
 import Image from "next/image";
-import { getUserData, getUserToken } from "@/lib/auth";
+import { getAuth } from "firebase/auth";
+import { app } from "@/app/firebase";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const urlParams = useParams();
+
+  const auth = getAuth(app);
+  const user = auth.currentUser;
 
   // Determine type based on pathname
   let pageType: any = pathname.includes("/checkout")
@@ -35,17 +40,16 @@ const Layout = ({ children }: any) => {
 
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  const user = getUserData();
-  const accessToken = getUserToken();
-
   useEffect(() => {
     const handleAuth = async () => {
-      if (user && accessToken) {
-        //TODO: change admin as per Auth0
-        if (user?.claims?.admin) {
+      const isLoggedIn = await checkAuthState();
+
+      if (user && isLoggedIn) {
+        const token = await user.getIdTokenResult();
+        if (token.claims.admin) {
           router.replace("/admin/order-history");
         }
-      } else if (!user && !accessToken) {
+      } else if (!user && !isLoggedIn) {
         if (type === "/activate-gift-card") {
           router.replace(
             `/sign-in?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`
@@ -56,10 +60,12 @@ const Layout = ({ children }: any) => {
           );
         }
       }
+
       setCheckingAuth(false);
     };
+
     handleAuth();
-  }, [type, region, storeId, gift_card, , phone_number]);
+  }, [type, region, storeId, gift_card, , phone_number, user]);
 
   if (checkingAuth) {
     return null;

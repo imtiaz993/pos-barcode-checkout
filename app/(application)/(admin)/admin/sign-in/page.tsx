@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { app } from "@/app/firebase";
 import { useRouter } from "next/navigation";
-import { getUserData, getUserToken } from "@/lib/auth";
+import { checkAuthState } from "@/utils/firebaseAuth";
 
 const EmailAuthentication = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const auth = getAuth(app);
+  const user = auth.currentUser;
 
   const [checkingAuth, setCheckingAuth] = useState(true);
 
@@ -26,54 +30,52 @@ const EmailAuthentication = () => {
     }),
     onSubmit: async (values) => {
       setLoading(true);
-      // try {
-      //   const data: any = await signInWithEmailAndPassword(
-      //     auth,
-      //     values.email,
-      //     values.password
-      //   );
-      //   try {
-      //     const response: any = await fetch("/api/set-admin", {
-      //       method: "POST",
-      //       headers: { "Content-Type": "application/json" },
-      //       body: JSON.stringify({ uid: data.user.uid }),
-      //     });
+      try {
+        const data: any = await signInWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+        try {
+          const response: any = await fetch("/api/set-admin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ uid: data.user.uid }),
+          });
 
-      //     const res = await response.json();
-      //     if (response.ok) {
-      //       console.log(res.message);
-      //     } else {
-      //       console.error(res.error);
-      //     }
-      //     await data.user.getIdToken(true); // Refresh token
+          const res = await response.json();
+          if (response.ok) {
+            console.log(res.message);
+          } else {
+            console.error(res.error);
+          }
+          await data.user.getIdToken(true); // Refresh token
 
-      //     // Get updated user claims
-      //     const tokenResult = await data.user.getIdTokenResult();
-      //     const claims = tokenResult.claims;
-      //     if (claims.admin) {
-      //       localStorage.setItem("idTokenPayload", JSON.stringify(data.user));
-      //       router.replace("/admin/order-history");
-      //     }
-      //   } catch (error) {
-      //     console.error("Error calling API:", error);
-      //   }
-      // } catch (error) {
-      //   formik.setFieldError("email", "Invalid email or password");
-      //   console.error("Error during signInWithEmailAndPassword", error);
-      // } finally {
-      //   setLoading(false);
-      // }
+          // Get updated user claims
+          const tokenResult = await data.user.getIdTokenResult();
+          const claims = tokenResult.claims;
+          if (claims.admin) {
+            localStorage.setItem("user", JSON.stringify(data.user));
+            router.replace("/admin/order-history");
+          }
+        } catch (error) {
+          console.error("Error calling API:", error);
+        }
+      } catch (error) {
+        formik.setFieldError("email", "Invalid email or password");
+        console.error("Error during signInWithEmailAndPassword", error);
+      } finally {
+        setLoading(false);
+      }
     },
   });
 
-  const user = getUserData();
-  const accessToken = getUserToken();
-
   useEffect(() => {
     const handleAuth = async () => {
-      if (user && accessToken) {
-        //TODO: change admin as per Auth0
-        if (user?.claims?.admin) {
+      const isLoggedIn = await checkAuthState();
+      if (user && isLoggedIn) {
+        const token = await user.getIdTokenResult();
+        if (token.claims.admin) {
           router.replace("/admin/order-history");
         }
         return;

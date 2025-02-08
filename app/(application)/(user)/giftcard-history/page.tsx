@@ -1,15 +1,17 @@
 "use client";
 import axios from "axios";
+import { getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { app } from "@/app/firebase";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
-import { getUserData } from "@/lib/auth";
 
 const Page = () => {
   const router = useRouter();
-  const user = getUserData();
+  const auth = getAuth(app);
+  const user = auth.currentUser;
 
   const [history, setHistory] = useState<any>();
   const [loading, setLoading] = useState(true);
@@ -17,7 +19,7 @@ const Page = () => {
   useEffect(() => {
     axios
       .post("https://api.ecoboutiquemarket.com/giftcard/transaction-history", {
-        phone_number: user?.phone_number,
+        phone_number: user?.phoneNumber,
       })
       .then((res) => {
         setHistory(res.data.transactions);

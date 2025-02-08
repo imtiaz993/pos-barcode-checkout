@@ -8,7 +8,7 @@ import {
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "@/components/loader";
-import { getUserData } from "@/lib/auth";
+import { auth } from "../app/firebase";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -188,7 +188,7 @@ const Payment = ({
   onCancel,
   onPaymentCreatedIntent = () => {},
 }: any) => {
-  const user = getUserData();
+  const user = auth.currentUser;
 
   const [clientSecret, setClientSecret] = useState("");
   const [savedPaymentMethods, setSavedPaymentMethods] = useState("");
@@ -197,7 +197,7 @@ const Payment = ({
     axios
       .post("/api/create-payment-intent", {
         price: Math.round(Number(price) * 100),
-        phone: user?.phone_number,
+        phone: user?.phoneNumber,
       })
       .then((response) => {
         setClientSecret(response.data.clientSecret);

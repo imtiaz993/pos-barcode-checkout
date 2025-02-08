@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { checkAuthState } from "@/utils/firebaseAuth";
 import PhoneAuthentication from "./components/PhoneAuthentication";
 import VerifyOTP from "./components/VerifyOTP";
-import { getUserData, getUserToken } from "@/lib/auth";
+import { getAuth } from "firebase/auth";
+import { app } from "@/app/firebase";
 
 const PhoneAuth = () => {
   const router = useRouter();
@@ -15,18 +17,20 @@ const PhoneAuth = () => {
   const gift_card = searchParams.get("gift_card");
   const phone_number = searchParams.get("phone_number");
 
-  const user = getUserData();
-  const accessToken = getUserToken();
+  const auth = getAuth(app);
+  const user = auth.currentUser;
 
+  let recaptchaVerifier = useRef<any>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [step, setStep] = useState("phone");
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
     const handleAuth = async () => {
-      if (user && accessToken) {
-        //TODO: change admin as per Auth0
-        if (user?.claims?.admin) {
+      const isLoggedIn = await checkAuthState();
+      if (user && isLoggedIn) {
+        const token = await user.getIdTokenResult();
+        if (token.claims.admin) {
           router.replace("/admin/order-history");
         } else {
           if (type == "/activate-gift-card") {
@@ -53,15 +57,21 @@ const PhoneAuth = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      {step === "phone" ? (
+      {!confirmationResult ? (
         <PhoneAuthentication
+          setConfirmationResult={setConfirmationResult}
           setPhone={setPhone}
+          recaptchaVerifier={recaptchaVerifier}
           phone_number={phone_number}
-          setStep={setStep}
         />
       ) : (
-        <VerifyOTP phone={phone} />
+        <VerifyOTP
+          confirmationResult={confirmationResult}
+          phone={phone}
+          recaptchaVerifier={recaptchaVerifier}
+        />
       )}
+      <div id="recaptcha-container"></div>
     </div>
   );
 };

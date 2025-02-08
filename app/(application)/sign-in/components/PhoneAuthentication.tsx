@@ -1,14 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useFormik } from "formik";
 import PhoneInput from "react-phone-input-2";
 import * as Yup from "yup";
+import {
+  getAuth,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+} from "firebase/auth";
+import { app } from "@/app/firebase";
 
 import "react-phone-input-2/lib/style.css";
-import { auth } from "@/lib/auth";
 
-const PhoneAuthentication = ({ setPhone, phone_number, setStep }: any) => {
+const PhoneAuthentication = ({
+  setConfirmationResult,
+  setPhone,
+  recaptchaVerifier,
+  phone_number,
+}: any) => {
   const [loading, setLoading] = useState(false);
+  const auth = getAuth(app);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      recaptchaVerifier.current = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+        }
+      );
+    }
+  }, [auth, recaptchaVerifier]);
 
   const formik: any = useFormik({
     initialValues: {
@@ -23,27 +46,35 @@ const PhoneAuthentication = ({ setPhone, phone_number, setStep }: any) => {
         ),
     }),
     onSubmit: async (values) => {
-      setLoading(true);
       setPhone(values.phone);
 
+      setLoading(true);
       try {
-        // Initiate the SMS passwordless flow by sending an OTP to the phone number.
-        auth.passwordlessStart(
-          {
-            connection: "sms", // Ensure this matches your SMS passwordless connection name in Auth0
-            send: "code", // Use 'code' to send an OTP (one-time code)
-            phoneNumber: values.phone, // Phone number in E.164 format (e.g., "+15551234567")
-          },
-          (err: any, res: any) => {
-            if (err) {
-              console.error("Error sending OTP:", err);
-              formik.setFieldError("phone", err.description || err.message);
-              return;
-            }
-            setStep("otp");
-          }
+        const confirmation = await signInWithPhoneNumber(
+          auth,
+          values.phone,
+          recaptchaVerifier.current
         );
+        setConfirmationResult(confirmation);
       } catch (error: any) {
+        const firebaseError = error?.code || "UNKNOWN_ERROR";
+
+        if (firebaseError === "auth/invalid-phone-number") {
+          formik.setFieldError(
+            "phone",
+            "Invalid phone number. Please enter a valid number."
+          );
+        } else if (firebaseError === "auth/too-many-requests") {
+          formik.setFieldError(
+            "phone",
+            "Too many requests. Please try again later."
+          );
+        } else {
+          formik.setFieldError(
+            "phone",
+            "Failed to send OTP. Please try again."
+          );
+        }
         console.log("Error during signInWithPhoneNumber", error);
       } finally {
         setLoading(false);

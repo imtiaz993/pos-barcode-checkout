@@ -2,23 +2,29 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
+import { auth } from "@/app/firebase";
 import Loader from "@/components/loader";
-import { getUserData, logout } from "@/lib/auth";
+import { logout } from "@/utils/firebaseAuth";
 
 export default function Page() {
+  const router = useRouter();
+
   const [activating, setActivating] = useState(true);
   const [error, setError] = useState("");
   const searchParams = useSearchParams();
   const gift_card = searchParams.get("gift_card");
   const phone_number = searchParams.get("phone_number");
-  const user = getUserData();
+  const user = auth.currentUser;
 
   const handleLogout = async () => {
     try {
-      logout(`/sign-in?type=/activate-gift-card&phone_number=${phone_number}`);
+      await logout();
+      router.push(
+        `/sign-in?type=/activate-gift-card&phone_number=${phone_number}`
+      );
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
@@ -30,12 +36,12 @@ export default function Page() {
       if (
         phone_number
           ? "+" + phone_number.replace(" ", "")
-          : "" === user.phone_number
+          : "" === user.phoneNumber
       ) {
         axios
           .post("https://api.ecoboutiquemarket.com/giftcard/activate", {
             unique_code: gift_card,
-            phone_number: user?.phone_number,
+            phone_number: user?.phoneNumber,
           })
           .then(() => {
             setActivating(false);

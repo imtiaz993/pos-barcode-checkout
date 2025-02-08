@@ -1,25 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { checkAuthState, logout } from "@/utils/firebaseAuth";
 import { IoMdMenu } from "react-icons/io";
 import Sidebar from "./sidebar";
+import { getAuth } from "firebase/auth";
+import { app } from "@/app/firebase";
 import Image from "next/image";
-import { getUserData, getUserToken, logout } from "@/lib/auth";
 
 const Layout = ({ children }: any) => {
+  const router = useRouter();
+
+  const auth = getAuth(app);
+  const user = auth.currentUser;
+
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const user = getUserData();
-  const accessToken = getUserToken();
-
   useEffect(() => {
     const handleAuth = async () => {
-      //TODO: change admin as per Auth0
-      if (!accessToken || (user && !user?.claims?.admin)) {
-        if (!user?.claims?.admin) {
-          logout("/sign-in");
+      const isLoggedIn = await checkAuthState();
+      const token = await user?.getIdTokenResult();
+      console.log(isLoggedIn, !token?.claims?.admin);
+
+      if (!isLoggedIn || (user && !token?.claims?.admin)) {
+        if (!token?.claims?.admin) {
+          await logout();
         }
+        router.replace("/sign-in");
       }
 
       setCheckingAuth(false);
@@ -30,7 +39,8 @@ const Layout = ({ children }: any) => {
 
   const handleLogout = async () => {
     try {
-      logout("/admin/sign-in");
+      await logout();
+      router.push("/admin/sign-in");
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
