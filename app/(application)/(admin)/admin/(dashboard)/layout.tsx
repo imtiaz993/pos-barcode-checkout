@@ -11,12 +11,12 @@ const Layout = ({ children }: any) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const user = getUserData();
-  const isLoggedIn = getUserToken();
+  const accessToken = getUserToken();
 
   useEffect(() => {
     const handleAuth = async () => {
       //TODO: change admin as per Auth0
-      if (!isLoggedIn || (user && !user?.claims?.admin)) {
+      if (!accessToken || (user && !user?.claims?.admin)) {
         if (!user?.claims?.admin) {
           logout("/sign-in");
         }

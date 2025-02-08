@@ -16,7 +16,7 @@ const PhoneAuth = () => {
   const phone_number = searchParams.get("phone_number");
 
   const user = getUserData();
-  const isLoggedIn = getUserToken();
+  const accessToken = getUserToken();
 
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [step, setStep] = useState("phone");
@@ -24,7 +24,7 @@ const PhoneAuth = () => {
 
   useEffect(() => {
     const handleAuth = async () => {
-      if (user && isLoggedIn) {
+      if (user && accessToken) {
         //TODO: change admin as per Auth0
         if (user?.claims?.admin) {
           router.replace("/admin/order-history");

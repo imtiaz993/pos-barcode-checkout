@@ -10,7 +10,7 @@ import Pagination from "react-js-pagination";
 import { getUserToken } from "@/lib/auth";
 
 const Page = () => {
-  const token = getUserToken();
+  const accessToken = getUserToken();
   const filterRef = useRef<HTMLDivElement | null>(null);
 
   const [orders, setOrders] = useState<any[]>([]);
@@ -35,7 +35,7 @@ const Page = () => {
         "https://www.adminapi.ecoboutiquemarket.com/orders/all",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
           params: {
             page: page,
@@ -65,7 +65,7 @@ const Page = () => {
           order_type: type !== "all" ? type : undefined,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${accessToken}` },
           params: { page, page_size: limit },
         }
       );

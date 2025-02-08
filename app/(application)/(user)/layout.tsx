@@ -36,16 +36,16 @@ const Layout = ({ children }: any) => {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   const user = getUserData();
-  const isLoggedIn = getUserToken();
+  const accessToken = getUserToken();
 
   useEffect(() => {
     const handleAuth = async () => {
-      if (user && isLoggedIn) {
+      if (user && accessToken) {
         //TODO: change admin as per Auth0
         if (user?.claims?.admin) {
           router.replace("/admin/order-history");
         }
-      } else if (!user && !isLoggedIn) {
+      } else if (!user && !accessToken) {
         if (type === "/activate-gift-card") {
           router.replace(
             `/sign-in?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`

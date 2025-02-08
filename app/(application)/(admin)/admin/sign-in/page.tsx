@@ -67,11 +67,11 @@ const EmailAuthentication = () => {
   });
 
   const user = getUserData();
-  const isLoggedIn = getUserToken();
+  const accessToken = getUserToken();
 
   useEffect(() => {
     const handleAuth = async () => {
-      if (user && isLoggedIn) {
+      if (user && accessToken) {
         //TODO: change admin as per Auth0
         if (user?.claims?.admin) {
           router.replace("/admin/order-history");

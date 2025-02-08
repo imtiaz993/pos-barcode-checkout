@@ -17,7 +17,7 @@ import {
 import { getUserToken } from "@/lib/auth";
 
 const OrderDetail = () => {
-  const token = getUserToken();
+  const accessToken = getUserToken();
 
   const { orderId } = useParams();
   const router = useRouter();
@@ -29,7 +29,7 @@ const OrderDetail = () => {
     axios
       .get(`https://www.adminapi.ecoboutiquemarket.com/orders/${orderId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {

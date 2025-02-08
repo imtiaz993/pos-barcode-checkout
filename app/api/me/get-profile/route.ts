@@ -1,37 +1,13 @@
-// app/api/me/update-profile/route.ts
+// app/api/me/get-profile/route.ts
+import { getManagementApiToken } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
-
-// 1) Helper to get a Management API token
-async function getManagementApiToken() {
-  const res = await fetch(
-    `https://${process.env.NEXT_PUBLIC_AUTH0_DOMAIN}/oauth/token`,
-    {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        client_id: process.env.AUTH0_MGMT_CLIENT_ID,
-        client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
-        audience: `https://${process.env.NEXT_PUBLIC_AUTH0_DOMAIN}/api/v2/`,
-        grant_type: "client_credentials",
-      }),
-    }
-  );
-
-  if (!res.ok) {
-    console.error("Failed to fetch Management API token", res);
-    throw new Error("Could not get Management API token");
-  }
-
-  const data = await res.json();
-  return data.access_token as string;
-}
 
 // 2) The PATCH request handler
 export async function PATCH(req: NextRequest) {
   try {
     // a) Parse JSON body
     const body = await req.json();
-    const { name, userId } = body;
+    const { userId } = body;
 
     // b) Extract Bearer token from the Authorization header
     const authHeader = req.headers.get("authorization");
