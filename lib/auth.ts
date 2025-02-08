@@ -78,19 +78,3 @@ export const getUserToken = () => {
   }
   return token;
 };
-
-const getUserTokenAccess = () => {
-  return new Promise((resolve, reject) => {
-    auth.checkSession(
-      {
-        audience: "https://api.ecoboutiquemarket.com/auth0",
-        scope:
-          "read:users update:users read:users_app_metadata update:users_app_metadata create:users_app_metadata",
-      },
-      (err: any, authResult: any) => {
-        if (err) return reject(err);
-        resolve(authResult.accessToken);
-      }
-    );
-  });
-};
