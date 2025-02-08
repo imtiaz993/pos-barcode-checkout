@@ -13,7 +13,7 @@ import Loader from "@/components/loader";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { getUserData } from "@/utils";
+import { getUserData } from "@/lib/auth";
 
 export default function Page() {
   const router = useRouter();

@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
-import { getUserData } from "@/utils";
+import { getUserData, logout } from "@/lib/auth";
 
 export default function Page() {
-  const router = useRouter();
-
   const [activating, setActivating] = useState(true);
   const [error, setError] = useState("");
   const searchParams = useSearchParams();
@@ -18,17 +16,9 @@ export default function Page() {
   const phone_number = searchParams.get("phone_number");
   const user = getUserData();
 
-  const webAuthRef: any = useRef(null);
-
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("idToken");
-      localStorage.removeItem("idTokenPayload");
-      webAuthRef.current.logout({
-        returnTo: `/sign-in?type=/activate-gift-card&phone_number=${phone_number}`, // Where to redirect after logout
-        clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
-      });
+      logout(`/sign-in?type=/activate-gift-card&phone_number=${phone_number}`);
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
@@ -61,14 +51,6 @@ export default function Page() {
       }
     }
   }, [user]);
-
-  useEffect(() => {
-    const Auth0 = require("auth0-js");
-    webAuthRef.current = new Auth0.WebAuth({
-      domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
-      clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
-    });
-  }, []);
 
   return (
     <>

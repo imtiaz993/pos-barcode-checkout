@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import CartProducts from "./CartProducts";
 import Loader from "@/components/loader";
 import Payment from "@/components/Payment";
-import { getUserData } from "@/utils";
+import { getUserData } from "@/lib/auth";
 
 const Cart = (props: any) => {
   const router = useRouter();

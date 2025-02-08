@@ -10,7 +10,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import "react-phone-input-2/lib/style.css";
-import { getUserData, getUserToken, updateUserData } from "@/utils";
+import { getUserData, getUserToken, logout, updateUserData } from "@/lib/auth";
 import Loader from "@/components/loader";
 
 export default function ProfilePage() {
@@ -19,7 +19,6 @@ export default function ProfilePage() {
   const region = searchParams.get("region");
   const type = searchParams.get("type");
 
-  const webAuthRef: any = useRef(null);
   const [userData, setUserData] = useState<any>();
   const [loading, setLoading] = useState(true);
 
@@ -104,9 +103,6 @@ export default function ProfilePage() {
               userId: user?.sub,
             }),
           });
-          if (response.ok) {
-            updateUserData({ ...user, name: values.name });
-          }
         }
 
         // Update phone
@@ -136,27 +132,14 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("idToken");
-      localStorage.removeItem("idTokenPayload");
-
-      webAuthRef.current.logout({
-        returnTo: `http://localhost:3000/sign-in?type=${type}&region=${region}&storeId=${storeId}`, // Where to redirect after logout
-        clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
-      });
+      logout(
+        `http://localhost:3000/sign-in?type=${type}&region=${region}&storeId=${storeId}`
+      );
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
     }
   };
-
-  useEffect(() => {
-    const Auth0 = require("auth0-js");
-    webAuthRef.current = new Auth0.WebAuth({
-      domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
-      clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
-    });
-  }, []);
 
   return (
     <>

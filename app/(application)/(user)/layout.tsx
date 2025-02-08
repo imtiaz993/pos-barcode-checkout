@@ -9,7 +9,7 @@ import {
 } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getUserData, getUserToken } from "@/utils";
+import { getUserData, getUserToken } from "@/lib/auth";
 
 const Layout = ({ children }: any) => {
   const router = useRouter();

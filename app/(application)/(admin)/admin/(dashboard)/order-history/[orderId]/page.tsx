@@ -14,7 +14,7 @@ import {
   FaGift,
   FaShoppingCart,
 } from "react-icons/fa";
-import { getUserToken } from "@/utils";
+import { getUserToken } from "@/lib/auth";
 
 const OrderDetail = () => {
   const token = getUserToken();

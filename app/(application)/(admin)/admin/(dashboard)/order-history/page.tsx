@@ -7,7 +7,7 @@ import Loader from "@/components/loader";
 import Link from "next/link";
 import { IoMdClose, IoMdFunnel } from "react-icons/io";
 import Pagination from "react-js-pagination";
-import { getUserToken } from "@/utils";
+import { getUserToken } from "@/lib/auth";
 
 const Page = () => {
   const token = getUserToken();

@@ -8,7 +8,7 @@ import {
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "@/components/loader";
-import { getUserData } from "@/utils";
+import { getUserData } from "@/lib/auth";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""

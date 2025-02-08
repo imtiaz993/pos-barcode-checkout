@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
-import { getUserData } from "@/utils";
+import { getUserData } from "@/lib/auth";
 
 const Page = () => {
   const searchParams = useSearchParams();

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
-import { getUserData, getUserToken } from "@/utils";
+import { getUserData, getUserToken } from "@/lib/auth";
 
 const EmailAuthentication = () => {
   const router = useRouter();

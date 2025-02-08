@@ -5,13 +5,9 @@ import PhoneInput from "react-phone-input-2";
 import * as Yup from "yup";
 
 import "react-phone-input-2/lib/style.css";
+import { auth } from "@/lib/auth";
 
-const PhoneAuthentication = ({
-  setPhone,
-  phone_number,
-  setStep,
-  webAuthRef,
-}: any) => {
+const PhoneAuthentication = ({ setPhone, phone_number, setStep }: any) => {
   const [loading, setLoading] = useState(false);
 
   const formik: any = useFormik({
@@ -31,11 +27,8 @@ const PhoneAuthentication = ({
       setPhone(values.phone);
 
       try {
-        const webAuth = webAuthRef.current;
-        if (!webAuth) return;
-
         // Initiate the SMS passwordless flow by sending an OTP to the phone number.
-        webAuth.passwordlessStart(
+        auth.passwordlessStart(
           {
             connection: "sms", // Ensure this matches your SMS passwordless connection name in Auth0
             send: "code", // Use 'code' to send an OTP (one-time code)

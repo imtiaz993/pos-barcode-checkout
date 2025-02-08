@@ -3,8 +3,9 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { auth } from "@/lib/auth";
 
-const VerifyOTP = ({ phone, webAuthRef }: any) => {
+const VerifyOTP = ({ phone }: any) => {
   const searchParams = useSearchParams();
   const storeId = searchParams.get("storeId");
   const region = searchParams.get("region");
@@ -65,9 +66,7 @@ const VerifyOTP = ({ phone, webAuthRef }: any) => {
     setError("");
     setLoading(true);
     try {
-      const webAuth = webAuthRef.current;
-      if (!webAuth) return;
-      webAuth.passwordlessStart(
+      auth.passwordlessStart(
         {
           connection: "sms", // Ensure this matches your SMS passwordless connection name in Auth0
           send: "code", // Use 'code' to send an OTP (one-time code)
@@ -103,9 +102,6 @@ const VerifyOTP = ({ phone, webAuthRef }: any) => {
       setLoading(true);
 
       try {
-        const webAuth = webAuthRef.current;
-        if (!webAuth) return;
-
         // Complete the passwordless login by verifying the OTP.
         // This call will redirect the browser to your callback URL with tokens in the URL hash.
         const redirectQuery =
@@ -113,7 +109,7 @@ const VerifyOTP = ({ phone, webAuthRef }: any) => {
             ? `?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`
             : `?type=${type}&region=${region}&storeId=${storeId}`;
 
-        webAuth.passwordlessLogin(
+        auth.passwordlessLogin(
           {
             connection: "sms",
             phoneNumber: phone,

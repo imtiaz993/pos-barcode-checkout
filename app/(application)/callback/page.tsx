@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { auth } from "@/lib/auth";
 
 export default function Callback() {
   const router = useRouter();
@@ -14,26 +15,14 @@ export default function Callback() {
   const phone_number = searchParams.get("phone_number");
 
   useEffect(() => {
-    const Auth0 = require("auth0-js");
-    const webAuth = new Auth0.WebAuth({
-      domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
-      clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
-      responseType: "token id_token",
-      redirectUri: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
-      scope: "openid profile phone",
-    });
-
-    webAuth.parseHash((err: any, authResult: any) => {
+    auth.parseHash((err: any, authResult: any) => {
       if (err) {
         console.error("Error parsing hash:", err);
         return;
       }
-      console.log(authResult);
 
       if (authResult && authResult.accessToken && authResult.idToken) {
-        // Optionally clear the URL hash
         window.location.hash = "";
-        // Store tokens (for demonstration only—consider more secure storage in production)
         localStorage.setItem("accessToken", authResult.accessToken);
         localStorage.setItem("idToken", authResult.idToken);
         localStorage.setItem(
@@ -41,8 +30,6 @@ export default function Callback() {
           JSON.stringify(authResult.idTokenPayload)
         );
 
-        console.log("User successfully logged in!", authResult);
-        // Redirect to the home page or another protected page
         if (type == "/activate-gift-card") {
           router.replace(
             `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
