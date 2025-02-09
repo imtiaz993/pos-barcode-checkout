@@ -4,7 +4,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app, db } from "@/app/firebase";
+import { supported } from "@github/webauthn-json";
+import { startRegistration } from "@simplewebauthn/browser";
+import { getRegistrationOptions, verifyRegistration } from "@/lib/register";
+import { toast } from "sonner";
+import { binaryToBase64url, clean } from "@/lib/auth";
+import { addDoc, collection } from "firebase/firestore";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
@@ -18,8 +24,18 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [resendOtpEnabled, setResendOtpEnabled] = useState(false);
   const [timer, setTimer] = useState(59);
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      const available =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      setIsAvailable(available && supported());
+    };
+    checkAvailability();
+  }, []);
 
   useEffect(() => {
     const savedTime = localStorage.getItem("otpResendTime");
@@ -127,12 +143,42 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
       try {
         await confirmationResult.confirm(values.otp);
-        if (type == "/activate-gift-card") {
-          router.replace(
-            `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
-          );
-        } else {
-          router.replace(`${type}/${region}/${storeId}`);
+        const creationOptionsJSON = await getRegistrationOptions(phone);
+
+        const registrationResponse = await startRegistration(
+          creationOptionsJSON
+        );
+
+        const verificationResponse: any = await verifyRegistration(
+          registrationResponse,
+          creationOptionsJSON.challenge
+        );
+
+        try {
+          const userData = {
+            phone: phone_number,
+            externalID: await clean(
+              await binaryToBase64url(
+                verificationResponse.registrationInfo.credentialID
+              )
+            ),
+            publicKey: Buffer.from(
+              verificationResponse.registrationInfo.credentialPublicKey
+            ).toString("base64"),
+          };
+
+          const docRef = await addDoc(collection(db, "users"), userData);
+
+          if (type == "/activate-gift-card") {
+            router.replace(
+              `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+            );
+          } else {
+            router.replace(`${type}/${region}/${storeId}`);
+          }
+        } catch (err) {
+          const registerError = err as Error;
+          toast.error(registerError.message);
         }
       } catch (error) {
         setError("Invalid OTP. Please try again.");

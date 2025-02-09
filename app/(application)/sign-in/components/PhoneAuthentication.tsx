@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useFormik } from "formik";
 import PhoneInput from "react-phone-input-2";
@@ -8,9 +9,17 @@ import {
   signInWithPhoneNumber,
   RecaptchaVerifier,
 } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app, db } from "@/app/firebase";
+import { supported } from "@github/webauthn-json";
+import { startAuthentication } from "@simplewebauthn/browser";
+import {
+  getAuthenticationOptionsJSON,
+  verifyAuthenticationStep,
+} from "@/lib/login";
 
 import "react-phone-input-2/lib/style.css";
+import { toast } from "sonner";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const PhoneAuthentication = ({
   setConfirmationResult,
@@ -18,7 +27,15 @@ const PhoneAuthentication = ({
   recaptchaVerifier,
   phone_number,
 }: any) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("storeId");
+  const region = searchParams.get("region");
+  const type = searchParams.get("type");
+  const gift_card = searchParams.get("gift_card");
+
   const [loading, setLoading] = useState(false);
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const auth = getAuth(app);
 
   useEffect(() => {
@@ -32,6 +49,15 @@ const PhoneAuthentication = ({
       );
     }
   }, [auth, recaptchaVerifier]);
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      const available =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      setIsAvailable(available && supported());
+    };
+    checkAvailability();
+  }, []);
 
   const formik: any = useFormik({
     initialValues: {
@@ -55,6 +81,52 @@ const PhoneAuthentication = ({
           values.phone,
           recaptchaVerifier.current
         );
+        try {
+          const authenticationOptionsJSON: any =
+            await getAuthenticationOptionsJSON(phone_number);
+          const { challenge }: any = authenticationOptionsJSON;
+
+          const authenticationResponse = await startAuthentication(
+            authenticationOptionsJSON
+          );
+
+          try {
+            const querySnapshot: any = await getDocs(
+              query(collection(db, "users"), where("phone", "==", phone_number))
+            );
+
+            if (!querySnapshot.empty) {
+              const data = querySnapshot.docs[0].data();
+
+              const verification = await verifyAuthenticationStep(
+                data,
+                challenge,
+                authenticationResponse
+              );
+              if (!verification.verified || phone_number !== data.phone) {
+                throw new Error("Login verification failed");
+              }
+            }
+
+            if (type == "/activate-gift-card") {
+              router.replace(
+                `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+              );
+            } else {
+              router.replace(`${type}/${region}/${storeId}`);
+            }
+          } catch (err) {
+            const loginError = err as Error;
+            console.log(loginError);
+
+            toast.error(loginError.message);
+          }
+        } catch (err) {
+          const loginError = err as Error;
+          console.log(loginError);
+          toast.error(loginError.message);
+        }
+
         setConfirmationResult(confirmation);
       } catch (error: any) {
         const firebaseError = error?.code || "UNKNOWN_ERROR";
