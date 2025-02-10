@@ -113,14 +113,6 @@ const PhoneAuthentication = ({
               values.phone,
               recaptchaVerifier.current
             );
-            if (type == "/activate-gift-card") {
-              router.replace(
-                `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
-              );
-            } else {
-              router.replace(`${type}/${region}/${storeId}`);
-            }
-
             setConfirmationResult(confirmation);
           } catch (error: any) {
             const firebaseError = error?.code || "UNKNOWN_ERROR";
