@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import admin from "../../../utils/firebaseAdmin";
 
-export async function POST(request) {
+export async function POST(request: any) {
   try {
     const { uid } = await request.json(); // Receive UID from the request body
 

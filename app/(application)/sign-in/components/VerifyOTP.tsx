@@ -174,7 +174,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
               `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
             );
           } else {
-            router.replace(`${type}/${region}/${storeId}`);
+            router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
           }
         } catch (err) {
           const registerError = err as Error;

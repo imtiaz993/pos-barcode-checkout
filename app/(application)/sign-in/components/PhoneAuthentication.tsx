@@ -8,6 +8,7 @@ import {
   getAuth,
   signInWithPhoneNumber,
   RecaptchaVerifier,
+  signInWithCustomToken,
 } from "firebase/auth";
 import { app, db } from "@/app/firebase";
 import { supported } from "@github/webauthn-json";
@@ -20,6 +21,7 @@ import {
 import "react-phone-input-2/lib/style.css";
 import { toast } from "sonner";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import axios from "axios";
 
 const PhoneAuthentication = ({
   setConfirmationResult,
@@ -49,6 +51,34 @@ const PhoneAuthentication = ({
       );
     }
   }, [auth, recaptchaVerifier]);
+
+  const loginUserWithCustomToken = async (phone: any) => {
+    try {
+      const data: any = await axios.post("/api/generate-custom-token", {
+        phone: phone,
+      });
+
+      if (data) {
+        signInWithCustomToken(auth, data.data.firebaseToken)
+          .then(() => {
+            if (type == "/activate-gift-card") {
+              router.replace(
+                `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+              );
+            } else {
+              router.replace(
+                `${type != "null" ? +"/" : ""}${region}/${storeId}`
+              );
+            }
+          })
+          .catch((error: any) => {
+            console.error("Login error:", error.message);
+          });
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -98,13 +128,7 @@ const PhoneAuthentication = ({
           if (!verification.verified || values.phone !== data.phone) {
             throw new Error("Login verification failed");
           } else {
-            if (type == "/activate-gift-card") {
-              router.replace(
-                `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
-              );
-            } else {
-              router.replace(`${type}/${region}/${storeId}`);
-            }
+            loginUserWithCustomToken(values.phone);
           }
         } else {
           try {
