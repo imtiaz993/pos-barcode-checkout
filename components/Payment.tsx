@@ -106,9 +106,6 @@ const PaymentForm = ({
                         setPaymentMethod(method.id);
                       }}
                       key={index}
-                      // onClick={(e) => {
-                      //
-                      // }}
                       className="flex items-center p-3 border rounded-lg mb-2 cursor-pointer text-sm"
                     >
                       <input
