@@ -1,6 +1,7 @@
 "use client";
 
 import Loader from "@/components/loader";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 const Page = () => {
@@ -9,14 +10,8 @@ const Page = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/getUsers");
-      const data = await response.json();
-
-      if (response.ok) {
-        setUsers(data.users);
-      } else {
-        console.error("Failed to fetch users:", data.error);
-      }
+      const data: any = await axios.get("/api/getUsers");
+      setUsers(data.data.users);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
