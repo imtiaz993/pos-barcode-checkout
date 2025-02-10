@@ -18,7 +18,7 @@ export const getRegistrationOptions = async (phone: string) => {
   const registrationOptionsParameters: any = {
     challenge,
     rpName: "next-webauthn",
-    rpID: "localhost",
+    rpID: process.env.RPID ?? "localhost",
     userID: uuidv4(),
     userName: phone,
     userDisplayName: phone,

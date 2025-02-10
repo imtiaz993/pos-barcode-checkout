@@ -18,7 +18,7 @@ const generateAuthenticationOptionsStep = async (usersCredentials: any) => {
       },
     ],
     userVerification: "required",
-    rpID: "localhost",
+    rpID: process.env.RPID ?? "localhost",
   };
   const authenticationOptionsJSON = await generateAuthenticationOptions(
     loginOptionsParameters
