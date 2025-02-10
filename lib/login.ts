@@ -51,8 +51,8 @@ export const verifyAuthenticationStep = async (
     const opts = {
       response: authenticationResponse,
       expectedChallenge: challenge,
-      expectedOrigin: "http://localhost:3000",
-      expectedRPID: "localhost",
+      expectedOrigin: process.env.VERCEL_URL ?? "http://localhost:3000",
+      expectedRPID: process.env.RPID ?? "localhost",
       authenticator: dbAuthenticator,
       requireUserVerification: true,
     };
@@ -71,9 +71,6 @@ export const verifyAuthenticationStep = async (
     //   authenticationInfo.newCounter
     // );
   }
-
-  //clear stored challenge
-  // await clearCookies();
 
   return verification;
 };

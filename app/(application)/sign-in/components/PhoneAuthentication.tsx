@@ -76,38 +76,28 @@ const PhoneAuthentication = ({
 
       setLoading(true);
       try {
-        const confirmation = await signInWithPhoneNumber(
-          auth,
-          values.phone,
-          recaptchaVerifier.current
+        const querySnapshot: any = await getDocs(
+          query(collection(db, "users"), where("phone", "==", values.phone))
         );
-        try {
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data();
           const authenticationOptionsJSON: any =
-            await getAuthenticationOptionsJSON(phone_number);
+            await getAuthenticationOptionsJSON(values.phone);
           const { challenge }: any = authenticationOptionsJSON;
 
           const authenticationResponse = await startAuthentication(
             authenticationOptionsJSON
           );
 
-          try {
-            const querySnapshot: any = await getDocs(
-              query(collection(db, "users"), where("phone", "==", phone_number))
-            );
+          const verification = await verifyAuthenticationStep(
+            data,
+            challenge,
+            authenticationResponse
+          );
 
-            if (!querySnapshot.empty) {
-              const data = querySnapshot.docs[0].data();
-
-              const verification = await verifyAuthenticationStep(
-                data,
-                challenge,
-                authenticationResponse
-              );
-              if (!verification.verified || phone_number !== data.phone) {
-                throw new Error("Login verification failed");
-              }
-            }
-
+          if (!verification.verified || values.phone !== data.phone) {
+            throw new Error("Login verification failed");
+          } else {
             if (type == "/activate-gift-card") {
               router.replace(
                 `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
@@ -115,39 +105,49 @@ const PhoneAuthentication = ({
             } else {
               router.replace(`${type}/${region}/${storeId}`);
             }
-          } catch (err) {
-            const loginError = err as Error;
-            console.log(loginError);
-
-            toast.error(loginError.message);
           }
-        } catch (err) {
-          const loginError = err as Error;
-          console.log(loginError);
-          toast.error(loginError.message);
-        }
-
-        setConfirmationResult(confirmation);
-      } catch (error: any) {
-        const firebaseError = error?.code || "UNKNOWN_ERROR";
-
-        if (firebaseError === "auth/invalid-phone-number") {
-          formik.setFieldError(
-            "phone",
-            "Invalid phone number. Please enter a valid number."
-          );
-        } else if (firebaseError === "auth/too-many-requests") {
-          formik.setFieldError(
-            "phone",
-            "Too many requests. Please try again later."
-          );
         } else {
-          formik.setFieldError(
-            "phone",
-            "Failed to send OTP. Please try again."
-          );
+          try {
+            const confirmation = await signInWithPhoneNumber(
+              auth,
+              values.phone,
+              recaptchaVerifier.current
+            );
+            if (type == "/activate-gift-card") {
+              router.replace(
+                `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+              );
+            } else {
+              router.replace(`${type}/${region}/${storeId}`);
+            }
+
+            setConfirmationResult(confirmation);
+          } catch (error: any) {
+            const firebaseError = error?.code || "UNKNOWN_ERROR";
+
+            if (firebaseError === "auth/invalid-phone-number") {
+              formik.setFieldError(
+                "phone",
+                "Invalid phone number. Please enter a valid number."
+              );
+            } else if (firebaseError === "auth/too-many-requests") {
+              formik.setFieldError(
+                "phone",
+                "Too many requests. Please try again later."
+              );
+            } else {
+              formik.setFieldError(
+                "phone",
+                "Failed to send OTP. Please try again."
+              );
+            }
+            console.log("Error during signInWithPhoneNumber", error);
+          }
         }
-        console.log("Error during signInWithPhoneNumber", error);
+      } catch (err) {
+        const loginError = err as Error;
+        console.log(loginError);
+        toast.error(loginError.message);
       } finally {
         setLoading(false);
       }
