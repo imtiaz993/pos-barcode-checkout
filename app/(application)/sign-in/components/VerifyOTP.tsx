@@ -142,7 +142,9 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       }
 
       try {
-        await confirmationResult.confirm(values.otp);
+        const res = await confirmationResult.confirm(values.otp);
+        console.log(res, "TEST");
+
         const creationOptionsJSON = await getRegistrationOptions(phone);
 
         const registrationResponse = await startRegistration(
@@ -177,6 +179,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
             router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
           }
         } catch (err) {
+          console.log(err, "TEST");
           const registerError = err as Error;
           toast.error(registerError.message);
         }
