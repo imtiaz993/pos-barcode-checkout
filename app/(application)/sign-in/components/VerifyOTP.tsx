@@ -158,7 +158,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
         try {
           const userData = {
-            phone: phone_number,
+            phone: phone,
             externalID: await clean(
               await binaryToBase64url(
                 verificationResponse.registrationInfo.credentialID
