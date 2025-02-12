@@ -185,7 +185,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
         }
       } catch (error) {
         setError("Invalid OTP. Please try again.");
-        console.error("Error during confirmationResult.confirm", error);
+        console.log("Error during confirmationResult.confirm", error);
       } finally {
         setLoading(false);
       }
