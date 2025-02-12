@@ -18,7 +18,7 @@ const generateAuthenticationOptionsStep = async (usersCredentials: any) => {
       },
     ],
     userVerification: "required",
-    rpID: process.env.RPID ?? "localhost",
+    rpID: process.env.RPID,
   };
   const authenticationOptionsJSON = await generateAuthenticationOptions(
     loginOptionsParameters
@@ -51,8 +51,8 @@ export const verifyAuthenticationStep = async (
     const opts = {
       response: authenticationResponse,
       expectedChallenge: challenge,
-      expectedOrigin: process.env.VERCEL_URL ?? "http://localhost:3000",
-      expectedRPID: process.env.RPID ?? "localhost",
+      expectedOrigin: process.env.VERCEL_URL || "",
+      expectedRPID: process.env.RPID || "",
       authenticator: dbAuthenticator,
       requireUserVerification: true,
     };

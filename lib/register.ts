@@ -7,18 +7,13 @@ import {
 } from "@simplewebauthn/server";
 import { generateChallenge } from "@/lib/auth";
 
-const HOST_SETTINGS = {
-  expectedOrigin: process.env.VERCEL_URL ?? "http://localhost:3000",
-  expectedRPID: process.env.RPID ?? "localhost",
-};
-
 export const getRegistrationOptions = async (phone: string) => {
   const challenge: string = await generateChallenge();
 
   const registrationOptionsParameters: any = {
     challenge,
     rpName: "next-webauthn",
-    rpID: process.env.RPID ?? "localhost",
+    rpID: process.env.RPID,
     userID: uuidv4(),
     userName: phone,
     userDisplayName: phone,
@@ -49,7 +44,8 @@ export const verifyRegistration = async (
       response: credential,
       expectedChallenge: challenge,
       requireUserVerification: true,
-      ...HOST_SETTINGS,
+      expectedOrigin: process.env.VERCEL_URL || "",
+      expectedRPID: process.env.RPID,
     });
   } catch (error) {
     console.error(error);
