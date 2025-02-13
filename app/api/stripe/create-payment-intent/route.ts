@@ -3,7 +3,7 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
-async function fetchCustomerByPhone(phone:any) {
+async function fetchCustomerByPhone(phone: any) {
   try {
     const customers = await stripe.customers.search({
       query: `name:'${phone}'`,
@@ -22,10 +22,9 @@ export async function POST(req: NextRequest) {
     const { price, phone } = body;
 
     let searchedCustomer = await fetchCustomerByPhone(phone);
-    
 
     if (!searchedCustomer) {
-      const newCustomer = await stripe.customers.create({ name:phone });
+      const newCustomer = await stripe.customers.create({ name: phone });
       searchedCustomer = newCustomer;
     }
 
