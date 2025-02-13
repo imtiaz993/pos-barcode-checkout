@@ -8,10 +8,7 @@ import {
 import { generateChallenge } from "@/lib/auth";
 
 export const getRegistrationOptions = async (phone: string) => {
-  console.log("T1", process.env.RPID, uuidv4(), phone);
   const challenge: string = await generateChallenge();
-  console.log("T2", challenge);
-
   const registrationOptionsParameters: any = {
     challenge,
     rpName: "next-webauthn",
@@ -36,10 +33,13 @@ export const verifyRegistration = async (
   credential: any,
   challenge: string
 ) => {
+  console.log("T1",credential);
   let verification: any;
   if (credential == null) {
     throw new Error("Invalid Credentials");
   }
+
+  console.log("T2",verification);
 
   try {
     verification = await verifyRegistrationResponse({
@@ -49,8 +49,9 @@ export const verifyRegistration = async (
       expectedOrigin: process.env.VERCEL_URL || "",
       expectedRPID: process.env.RPID,
     });
+    console.log("T3",verification);
   } catch (error) {
-    console.error(error);
+    console.log("T4",error);
     throw error;
   }
 
