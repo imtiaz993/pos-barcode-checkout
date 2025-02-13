@@ -22,7 +22,6 @@ const Layout = ({ children }: any) => {
     const handleAuth = async () => {
       const isLoggedIn = await checkAuthState();
       const token = await user?.getIdTokenResult();
-      console.log(isLoggedIn, !token?.claims?.admin);
 
       if (!isLoggedIn || (user && !token?.claims?.admin)) {
         if (!token?.claims?.admin) {

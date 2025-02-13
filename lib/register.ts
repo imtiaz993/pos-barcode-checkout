@@ -33,13 +33,10 @@ export const verifyRegistration = async (
   credential: any,
   challenge: string
 ) => {
-  console.log("T1", credential);
   let verification: any;
   if (credential == null) {
     throw new Error("Invalid Credentials");
   }
-
-  console.log("T2", verification);
 
   try {
     verification = await verifyRegistrationResponse({
@@ -49,9 +46,7 @@ export const verifyRegistration = async (
       expectedOrigin: process.env.VERCEL_APP_URL || "",
       expectedRPID: process.env.RPID,
     });
-    console.log("T3", verification);
   } catch (error) {
-    console.log("T4", error);
     throw error;
   }
 

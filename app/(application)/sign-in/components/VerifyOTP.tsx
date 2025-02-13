@@ -11,6 +11,7 @@ import { getRegistrationOptions, verifyRegistration } from "@/lib/register";
 import { toast } from "sonner";
 import { binaryToBase64url, clean } from "@/lib/auth";
 import { addDoc, collection } from "firebase/firestore";
+import axios from "axios";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
@@ -87,7 +88,6 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       const auth = getAuth(app);
       await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
     } catch (error: any) {
-      console.log(error?.response?.data);
 
       const firebaseError =
         error?.response?.data?.error?.message || "UNKNOWN_ERROR";
@@ -142,61 +142,34 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       }
 
       try {
-        const res = await confirmationResult.confirm(values.otp);
-        console.log(res, "TEST");
-
-        const response = await fetch("/api/webauthn/registration-options", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to get registration options");
-        }
-        const creationOptionsJSON = await response.json();
-        console.log("creationOptionsJSON:", creationOptionsJSON);
-
-        // 3. Start registration process (client side)
-        const registrationResponse = await startRegistration(
-          creationOptionsJSON
-        );
-        console.log("registrationResponse:", registrationResponse);
-
-        // 4. Send credential and challenge to our verify endpoint
-        const verifyResponse = await fetch(
-          "/api/webauthn/verify-registration",
+        await confirmationResult.confirm(values.otp);
+        const { data: registrationOptions } = await axios.post(
+          "/api/webauthn/registration-options",
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              credential: registrationResponse,
-              challenge: creationOptionsJSON.challenge,
-            }),
+            phone,
           }
         );
 
-        if (!verifyResponse.ok) {
-          throw new Error("Verification failed");
-        }
-        const verificationResult = await verifyResponse.json();
-        console.log("verificationResult:", verificationResult);
+        const registrationResponse = await startRegistration(
+          registrationOptions
+        );
 
-        // 5. If verified, handle success (e.g., redirect or show success message)
-        if (verificationResult) {
-          alert("Registration successful!");
-        } else {
-          alert("Registration verification failed!");
-        }
+        const { data: verifyResponse } = await axios.post(
+          "/api/webauthn/verify-registration",
+          {
+            credential: registrationResponse,
+            challenge: registrationOptions.challenge,
+          }
+        );
 
         try {
           const userData = {
             phone: phone,
-            externalID: verificationResult.credentialID,
-            publicKey: verificationResult.credentialPublicKey,
+            externalID: verifyResponse.credentialID,
+            publicKey: verifyResponse.credentialPublicKey,
           };
 
-          const docRef = await addDoc(collection(db, "users"), userData);
+          await addDoc(collection(db, "users"), userData);
 
           if (type == "/activate-gift-card") {
             router.replace(
@@ -206,7 +179,6 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
             router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
           }
         } catch (err) {
-          console.log(err, "TEST");
           const registerError = err as Error;
           toast.error(registerError.message);
         }
