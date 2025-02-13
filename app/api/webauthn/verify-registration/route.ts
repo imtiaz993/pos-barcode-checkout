@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       response: credential,
       expectedChallenge: challenge,
       requireUserVerification: true,
-      expectedOrigin: process.env.VERCEL_URL || "", // or your actual origin
+      expectedOrigin: process.env.VERCEL_APP_URL || "", // or your actual origin
       expectedRPID: process.env.RPID, // e.g. "yourdomain.com"
     });
 

@@ -46,7 +46,7 @@ export const verifyRegistration = async (
       response: credential,
       expectedChallenge: challenge,
       requireUserVerification: true,
-      expectedOrigin: process.env.VERCEL_URL || "",
+      expectedOrigin: process.env.VERCEL_APP_URL || "",
       expectedRPID: process.env.RPID,
     });
     console.log("T3", verification);

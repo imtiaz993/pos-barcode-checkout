@@ -51,7 +51,7 @@ export const verifyAuthenticationStep = async (
     const opts = {
       response: authenticationResponse,
       expectedChallenge: challenge,
-      expectedOrigin: process.env.VERCEL_URL || "",
+      expectedOrigin: process.env.VERCEL_APP_URL || "",
       expectedRPID: process.env.RPID || "",
       authenticator: dbAuthenticator,
       requireUserVerification: true,
