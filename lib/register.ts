@@ -8,9 +8,9 @@ import {
 import { generateChallenge } from "@/lib/auth";
 
 export const getRegistrationOptions = async (phone: string) => {
+  console.log("T1", process.env.RPID, uuidv4(), phone);
   const challenge: string = await generateChallenge();
-  console.log(challenge,process.env.RPID,uuidv4(),phone);
-  
+  console.log("T2", challenge);
 
   const registrationOptionsParameters: any = {
     challenge,
