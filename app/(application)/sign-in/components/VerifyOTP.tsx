@@ -150,48 +150,50 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ phone }),
         });
-  
+
         if (!response.ok) {
           throw new Error("Failed to get registration options");
         }
         const creationOptionsJSON = await response.json();
         console.log("creationOptionsJSON:", creationOptionsJSON);
-  
+
         // 3. Start registration process (client side)
-        const registrationResponse = await startRegistration(creationOptionsJSON);
+        const registrationResponse = await startRegistration(
+          creationOptionsJSON
+        );
         console.log("registrationResponse:", registrationResponse);
-  
+
         // 4. Send credential and challenge to our verify endpoint
-        const verifyResponse = await fetch("/api/webauthn/verify-registration", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            credential: registrationResponse,
-            challenge: creationOptionsJSON.challenge,
-          }),
-        });
-  
+        const verifyResponse = await fetch(
+          "/api/webauthn/verify-registration",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              credential: registrationResponse,
+              challenge: creationOptionsJSON.challenge,
+            }),
+          }
+        );
+
         if (!verifyResponse.ok) {
           throw new Error("Verification failed");
         }
         const verificationResult = await verifyResponse.json();
         console.log("verificationResult:", verificationResult);
-  
+
         // 5. If verified, handle success (e.g., redirect or show success message)
         if (verificationResult) {
           alert("Registration successful!");
         } else {
           alert("Registration verification failed!");
         }
-        
 
         try {
           const userData = {
             phone: phone,
             externalID: await clean(
-              await binaryToBase64url(
-                verificationResult.credentialID
-              )
+              await binaryToBase64url(verificationResult.credentialID)
             ),
             publicKey: Buffer.from(
               verificationResult.credentialPublicKey
