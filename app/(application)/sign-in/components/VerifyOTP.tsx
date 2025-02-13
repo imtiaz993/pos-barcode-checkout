@@ -146,15 +146,21 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
         console.log(res, "TEST");
 
         const creationOptionsJSON = await getRegistrationOptions(phone);
+        console.log(creationOptionsJSON);
+        
 
         const registrationResponse = await startRegistration(
           creationOptionsJSON
         );
+        console.log(registrationResponse);
+        
 
         const verificationResponse: any = await verifyRegistration(
           registrationResponse,
           creationOptionsJSON.challenge
         );
+        console.log(verificationResponse);
+        
 
         try {
           const userData = {
