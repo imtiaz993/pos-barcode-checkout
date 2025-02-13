@@ -192,12 +192,8 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
         try {
           const userData = {
             phone: phone,
-            externalID: await clean(
-              await binaryToBase64url(verificationResult.credentialID)
-            ),
-            publicKey: Buffer.from(
-              verificationResult.credentialPublicKey
-            ).toString("base64"),
+            externalID: verificationResult.credentialID,
+            publicKey: verificationResult.credentialPublicKey,
           };
 
           const docRef = await addDoc(collection(db, "users"), userData);
