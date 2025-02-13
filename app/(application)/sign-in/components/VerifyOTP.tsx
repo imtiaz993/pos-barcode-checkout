@@ -7,9 +7,7 @@ import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 import { app, db } from "@/app/firebase";
 import { supported } from "@github/webauthn-json";
 import { startRegistration } from "@simplewebauthn/browser";
-import { getRegistrationOptions, verifyRegistration } from "@/lib/register";
 import { toast } from "sonner";
-import { binaryToBase64url, clean } from "@/lib/auth";
 import { addDoc, collection } from "firebase/firestore";
 import axios from "axios";
 
@@ -88,7 +86,6 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       const auth = getAuth(app);
       await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
     } catch (error: any) {
-
       const firebaseError =
         error?.response?.data?.error?.message || "UNKNOWN_ERROR";
 

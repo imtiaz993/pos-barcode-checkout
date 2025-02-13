@@ -38,7 +38,7 @@ const EmailAuthentication = () => {
           values.password
         );
         try {
-          await axios.post("/api/set-admin", {
+          await axios.post("/api/firebase/set-admin", {
             uid: data.user.uid,
           });
 

@@ -10,7 +10,7 @@ const Page = () => {
 
   const fetchUsers = async () => {
     try {
-      const data: any = await axios.get("/api/getAdmins");
+      const data: any = await axios.get("/api/firebase/getAdmins");
       setAdmins(data.data.admins);
     } catch (error) {
       console.error("Error fetching users:", error);

@@ -54,7 +54,7 @@ const PhoneAuthentication = ({
 
   const loginUserWithCustomToken = async (phone: any) => {
     try {
-      const data: any = await axios.post("/api/generate-custom-token", {
+      const data: any = await axios.post("/api/firebase/generate-custom-token", {
         phone: phone,
       });
 
@@ -110,22 +110,34 @@ const PhoneAuthentication = ({
           query(collection(db, "users"), where("phone", "==", values.phone))
         );
         if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data();
-          const authenticationOptionsJSON: any =
-            await getAuthenticationOptionsJSON(values.phone);
-          const { challenge }: any = authenticationOptionsJSON;
+          const userCredential = querySnapshot.docs[0].data();
+
+          const { data } = await axios.post(
+            "/api/webauthn/authentication-options",
+            {
+              phone: values.phone,
+            }
+          );
+
+          const { challenge }: any = data.authenticationOptions;
 
           const authenticationResponse = await startAuthentication(
-            authenticationOptionsJSON
+            data.authenticationOptions
           );
 
-          const verification = await verifyAuthenticationStep(
-            data,
-            challenge,
-            authenticationResponse
+          const { data: verification } = await axios.post(
+            "/api/webauthn/verify-authentication",
+            {
+              userCredential,
+              challenge,
+              authenticationResponse,
+            }
           );
 
-          if (!verification.verified || values.phone !== data.phone) {
+          if (
+            !verification.verification.verified ||
+            values.phone !== userCredential.phone
+          ) {
             throw new Error("Login verification failed");
           } else {
             loginUserWithCustomToken(values.phone);
@@ -139,24 +151,10 @@ const PhoneAuthentication = ({
             );
             setConfirmationResult(confirmation);
           } catch (error: any) {
-            const firebaseError = error?.code || "UNKNOWN_ERROR";
-
-            if (firebaseError === "auth/invalid-phone-number") {
-              formik.setFieldError(
-                "phone",
-                "Invalid phone number. Please enter a valid number."
-              );
-            } else if (firebaseError === "auth/too-many-requests") {
-              formik.setFieldError(
-                "phone",
-                "Too many requests. Please try again later."
-              );
-            } else {
-              formik.setFieldError(
-                "phone",
-                "Failed to send OTP. Please try again."
-              );
-            }
+            formik.setFieldError(
+              "phone",
+              "Failed to send OTP. Please try again."
+            );
             console.log("Error during signInWithPhoneNumber", error);
           }
         }

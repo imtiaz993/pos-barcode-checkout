@@ -8,7 +8,7 @@ import {
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "@/components/loader";
-import { auth } from "../app/firebase";
+import { auth } from "@/app/firebase";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -192,7 +192,7 @@ const Payment = ({
 
   useEffect(() => {
     axios
-      .post("/api/create-payment-intent", {
+      .post("/api/stripe/create-payment-intent", {
         price: Math.round(Number(price) * 100),
         phone: user?.phoneNumber,
       })

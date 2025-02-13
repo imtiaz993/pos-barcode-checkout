@@ -4,7 +4,6 @@ import { binaryToBase64url, clean } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Extract credential & challenge from the request body
     const { credential, challenge } = await request.json();
 
     if (!credential) {
@@ -14,12 +13,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Ideally, retrieve the stored challenge from a DB or session:
-    //    const storedChallenge = await db.session.find({ phone });
-    //    Then compare with what's sent from the client. In this example,
-    //    we trust `challenge` from the client, but that’s less secure.
-
-    // 3. Verify the registration response
     const verification: any = await verifyRegistrationResponse({
       response: credential,
       expectedChallenge: challenge,
@@ -28,7 +21,6 @@ export async function POST(request: NextRequest) {
       expectedRPID: process.env.RPID, // e.g. "yourdomain.com"
     });
 
-    // 4. Check the verification result
     if (!verification.verified) {
       return NextResponse.json(
         { error: "Registration verification failed" },
@@ -36,10 +28,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If successful, you may save the credential info to your DB here
-    // e.g. db.userCredential.create({ data: { ... }});
-
-    // 5. Return the verification result to the client
     const credentialID = await clean(
       await binaryToBase64url(verification.registrationInfo.credentialID)
     );

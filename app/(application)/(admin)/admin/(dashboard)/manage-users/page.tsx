@@ -10,7 +10,7 @@ const Page = () => {
 
   const fetchUsers = async () => {
     try {
-      const data: any = await axios.get("/api/getUsers");
+      const data: any = await axios.get("/api/firebase/getUsers");
       setUsers(data.data.users);
     } catch (error) {
       console.error("Error fetching users:", error);

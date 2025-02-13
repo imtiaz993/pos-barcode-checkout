@@ -25,6 +25,22 @@ const generateAuthenticationOptionsStep = async (usersCredentials: any) => {
   );
   return authenticationOptionsJSON;
 };
+export const getAuthenticationOptionsJSON = async (phone: string) => {
+  const querySnapshot: any = await getDocs(
+    query(collection(db, "users"), where("phone", "==", phone))
+  );
+
+  if (!querySnapshot.empty) {
+    const data = querySnapshot.docs[0].data();
+    const authenticationOptionsJSON = await generateAuthenticationOptionsStep(
+      data
+    );
+    return authenticationOptionsJSON;
+  } else {
+    return null;
+  }
+};
+
 
 export const verifyAuthenticationStep = async (
   userCredential: any,
@@ -75,18 +91,3 @@ export const verifyAuthenticationStep = async (
   return verification;
 };
 
-export const getAuthenticationOptionsJSON = async (phone: string) => {
-  const querySnapshot: any = await getDocs(
-    query(collection(db, "users"), where("phone", "==", phone))
-  );
-
-  if (!querySnapshot.empty) {
-    const data = querySnapshot.docs[0].data();
-    const authenticationOptionsJSON = await generateAuthenticationOptionsStep(
-      data
-    );
-    return authenticationOptionsJSON;
-  } else {
-    return null;
-  }
-};
