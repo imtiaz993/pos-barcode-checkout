@@ -3,7 +3,7 @@ import admin from "@/utils/firebaseAdmin";
 
 export async function POST(request: any) {
   try {
-    const { phone } = await request.json(); // Receive UID from the request body
+    const { phone } = await request.json();
 
     if (!phone) {
       return NextResponse.json({ error: "Phone is required" }, { status: 400 });
@@ -13,12 +13,10 @@ export async function POST(request: any) {
 
     const listUsers = await auth.listUsers();
 
-    // Filter users who are authenticated by password
     const user: any = listUsers.users.find((user) => {
       return user.phoneNumber == phone;
     });
 
-    // Generate custom token
     const firebaseToken = await auth.createCustomToken(user.uid);
 
     return NextResponse.json({

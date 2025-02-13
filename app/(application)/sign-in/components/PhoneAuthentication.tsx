@@ -13,10 +13,6 @@ import {
 import { app, db } from "@/app/firebase";
 import { supported } from "@github/webauthn-json";
 import { startAuthentication } from "@simplewebauthn/browser";
-import {
-  getAuthenticationOptionsJSON,
-  verifyAuthenticationStep,
-} from "@/lib/login";
 
 import "react-phone-input-2/lib/style.css";
 import { toast } from "sonner";
@@ -54,9 +50,12 @@ const PhoneAuthentication = ({
 
   const loginUserWithCustomToken = async (phone: any) => {
     try {
-      const data: any = await axios.post("/api/firebase/generate-custom-token", {
-        phone: phone,
-      });
+      const data: any = await axios.post(
+        "/api/firebase/generate-custom-token",
+        {
+          phone: phone,
+        }
+      );
 
       if (data) {
         signInWithCustomToken(auth, data.data.firebaseToken)

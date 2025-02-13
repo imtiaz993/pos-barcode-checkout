@@ -9,7 +9,7 @@ async function fetchCustomerByPhone(phone:any) {
       query: `name:'${phone}'`,
     });
 
-    return customers.data.length > 0 ? customers.data[0] : null; // Return the first matching customer or null
+    return customers.data.length > 0 ? customers.data[0] : null;
   } catch (error) {
     console.error("Error fetching customer by phone:", error);
     throw error;
@@ -21,17 +21,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { price, phone } = body;
 
-    // Search for a customer by phone
     let searchedCustomer = await fetchCustomerByPhone(phone);
     
 
-    // If no customer exists, create one
     if (!searchedCustomer) {
       const newCustomer = await stripe.customers.create({ name:phone });
-      searchedCustomer = newCustomer; // Set the new customer as the searchedCustomer
+      searchedCustomer = newCustomer;
     }
 
-    // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: price,
       currency: "usd",
@@ -39,7 +36,6 @@ export async function POST(req: NextRequest) {
       setup_future_usage: "off_session",
     });
 
-    // Fetch saved payment methods
     const paymentMethods = await stripe.paymentMethods.list({
       customer: searchedCustomer.id,
       type: "card",

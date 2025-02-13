@@ -5,10 +5,8 @@ export async function GET() {
   try {
     const auth = admin.auth();
 
-    // Fetch all users
     const listUsers = await auth.listUsers();
 
-    // Filter users who are authenticated by password
     const phoneAuthUsers = listUsers.users.filter((user) => {
       return user.providerData.some(
         (provider) => provider.providerId === "password"
