@@ -10,6 +10,7 @@ import { startRegistration } from "@simplewebauthn/browser";
 import { toast } from "sonner";
 import { addDoc, collection } from "firebase/firestore";
 import axios from "axios";
+import Footer from "@/components/Footer";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
@@ -189,7 +190,8 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   });
 
   return (
-    <div className="flex items-center justify-center min-h-dvh">
+    <div className="flex flex-col items-center justify-between min-h-dvh">
+      <div></div>
       <div className="rounded-lg shadow-sm border p-6 pt-0 w-full mx-auto max-w-md">
         <div className="flex justify-center">
           <Image
@@ -258,6 +260,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

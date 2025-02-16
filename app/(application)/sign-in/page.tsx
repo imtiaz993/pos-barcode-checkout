@@ -7,6 +7,7 @@ import PhoneAuthentication from "./components/PhoneAuthentication";
 import VerifyOTP from "./components/VerifyOTP";
 import { getAuth } from "firebase/auth";
 import { app } from "@/app/firebase";
+import Footer from "@/components/Footer";
 
 const PhoneAuth = () => {
   const router = useRouter();

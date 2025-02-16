@@ -47,7 +47,7 @@ const OrderDetail = () => {
 
   if (!orderDetails) {
     return (
-      <div className="min-h-[calc(100dvh-41px-16px)] flex items-center justify-center">
+      <div className="min-h-[calc(100dvh-41px-16px-24px)] flex items-center justify-center">
         <p className="text-gray-500 text-lg">Order not found</p>
       </div>
     );

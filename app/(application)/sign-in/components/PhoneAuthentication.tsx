@@ -18,6 +18,7 @@ import "react-phone-input-2/lib/style.css";
 import { toast } from "sonner";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import axios from "axios";
+import Footer from "@/components/Footer";
 
 const PhoneAuthentication = ({
   setConfirmationResult,
@@ -168,7 +169,8 @@ const PhoneAuthentication = ({
   });
 
   return (
-    <div className="flex items-center justify-center min-h-dvh">
+    <div className="flex flex-col items-center justify-between min-h-dvh">
+      <div></div>
       <div className="rounded-lg shadow-sm border p-6 pt-0 w-full mx-auto max-w-md">
         <div className="flex justify-center">
           <Image
@@ -229,6 +231,7 @@ const PhoneAuthentication = ({
           </button>
         </form>
       </div>
+      <Footer />
     </div>
   );
 };

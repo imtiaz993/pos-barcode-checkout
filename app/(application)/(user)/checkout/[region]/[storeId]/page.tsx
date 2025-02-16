@@ -131,7 +131,7 @@ const POS = () => {
 
       <div className="px-4 py-2">
         {productFetching && <Loader />}
-        <div className="min-h-[calc(100dvh-82px-16px)] flex flex-col justify-between w-11/12 mx-auto max-w-md">
+        <div className="min-h-[calc(100dvh-62px-16px-24px)] flex flex-col justify-between w-11/12 mx-auto max-w-md">
           <div></div>
           <div>
             <BarcodeScanner onScan={handleDetected} openCart={openCart} />
