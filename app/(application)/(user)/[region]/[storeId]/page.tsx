@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 const Page = () => {
   const { region, storeId }: any = useParams();
   return (
-    <div className="flex items-center justify-center min-h-[calc(100dvh-41px-16px-24px)]">
+    <div className="flex items-center justify-center min-h-[calc(100dvh-41px-16px-32px)]">
       <div className="rounded-lg p-6 pt-0 w-full max-w-md mx-auto">
         <div className="flex justify-center">
           <Image

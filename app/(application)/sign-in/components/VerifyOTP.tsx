@@ -141,26 +141,26 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
       try {
         await confirmationResult.confirm(values.otp);
-        const { data: registrationOptions } = await axios.post(
-          "/api/webauthn/registration-options",
-          {
-            phone,
-          }
-        );
+        if (isAvailable) {
+          const { data: registrationOptions } = await axios.post(
+            "/api/webauthn/registration-options",
+            {
+              phone,
+            }
+          );
 
-        const registrationResponse = await startRegistration(
-          registrationOptions
-        );
+          const registrationResponse = await startRegistration(
+            registrationOptions
+          );
 
-        const { data: verifyResponse } = await axios.post(
-          "/api/webauthn/verify-registration",
-          {
-            credential: registrationResponse,
-            challenge: registrationOptions.challenge,
-          }
-        );
+          const { data: verifyResponse } = await axios.post(
+            "/api/webauthn/verify-registration",
+            {
+              credential: registrationResponse,
+              challenge: registrationOptions.challenge,
+            }
+          );
 
-        try {
           const userData = {
             phone: phone,
             externalID: verifyResponse.credentialID,
@@ -168,23 +168,18 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
           };
 
           await addDoc(collection(db, "users"), userData);
-
-          if (type == "/activate-gift-card") {
-            router.replace(
-              `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
-            );
-          } else {
-            router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
-          }
-        } catch (err) {
-          const registerError = err as Error;
-          toast.error(registerError.message);
+        }
+        if (type == "/activate-gift-card") {
+          router.replace(
+            `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+          );
+        } else {
+          router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
         }
       } catch (error) {
+        setLoading(false);
         setError("Invalid OTP. Please try again.");
         console.log("Error during confirmationResult.confirm", error);
-      } finally {
-        setLoading(false);
       }
     },
   });

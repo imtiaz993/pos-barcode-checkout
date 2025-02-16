@@ -41,36 +41,36 @@ const Layout = ({ children }: any) => {
 
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  // useEffect(() => {
-  //   const handleAuth = async () => {
-  //     const isLoggedIn = await checkAuthState();
+  useEffect(() => {
+    const handleAuth = async () => {
+      const isLoggedIn = await checkAuthState();
 
-  //     if (user && isLoggedIn) {
-  //       const token = await user.getIdTokenResult();
-  //       if (token.claims.admin) {
-  //         router.replace("/admin/order-history");
-  //       }
-  //     } else if (!user && !isLoggedIn) {
-  //       if (type === "/activate-gift-card") {
-  //         router.replace(
-  //           `/sign-in?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`
-  //         );
-  //       } else {
-  //         router.replace(
-  //           `/sign-in?type=${type}&region=${region}&storeId=${storeId}`
-  //         );
-  //       }
-  //     }
+      if (user && isLoggedIn) {
+        const token = await user.getIdTokenResult();
+        if (token.claims.admin) {
+          router.replace("/admin/order-history");
+        }
+      } else if (!user && !isLoggedIn) {
+        if (type === "/activate-gift-card") {
+          router.replace(
+            `/sign-in?type=${type}&gift_card=${gift_card}&phone_number=${phone_number}`
+          );
+        } else {
+          router.replace(
+            `/sign-in?type=${type}&region=${region}&storeId=${storeId}`
+          );
+        }
+      }
 
-  //     setCheckingAuth(false);
-  //   };
+      setCheckingAuth(false);
+    };
 
-  //   handleAuth();
-  // }, [type, region, storeId, gift_card, , phone_number, user]);
+    handleAuth();
+  }, [type, region, storeId, gift_card, , phone_number, user]);
 
-  // if (checkingAuth) {
-  //   return null;
-  // }
+  if (checkingAuth) {
+    return null;
+  }
 
   return (
     <div className="pb-4 max-w-md mx-auto">

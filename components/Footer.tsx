@@ -3,7 +3,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="text-xs text-center py-1">
+    <div className="text-xs text-center py-2">
       © 2024 Eco Boutique Market.{" "}
       <a
         target="_blank"

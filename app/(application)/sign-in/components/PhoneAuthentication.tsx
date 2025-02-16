@@ -35,6 +35,7 @@ const PhoneAuthentication = ({
 
   const [loading, setLoading] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [isPassKeySaved, setIsPassKeySaved] = useState<boolean | null>(null);
   const auth = getAuth(app);
 
   useEffect(() => {
@@ -109,7 +110,8 @@ const PhoneAuthentication = ({
         const querySnapshot: any = await getDocs(
           query(collection(db, "users"), where("phone", "==", values.phone))
         );
-        if (!querySnapshot.empty) {
+        if (!querySnapshot.empty && isAvailable) {
+          setIsPassKeySaved(true);
           const userCredential = querySnapshot.docs[0].data();
 
           const { data } = await axios.post(
@@ -138,6 +140,7 @@ const PhoneAuthentication = ({
             !verification.verification.verified ||
             values.phone !== userCredential.phone
           ) {
+            setLoading(false);
             throw new Error("Login verification failed");
           } else {
             loginUserWithCustomToken(values.phone);
@@ -151,6 +154,7 @@ const PhoneAuthentication = ({
             );
             setConfirmationResult(confirmation);
           } catch (error: any) {
+            setLoading(false);
             formik.setFieldError(
               "phone",
               "Failed to send OTP. Please try again."
@@ -159,11 +163,10 @@ const PhoneAuthentication = ({
           }
         }
       } catch (err) {
+        setLoading(false);
         const loginError = err as Error;
         console.log(loginError);
         toast.error(loginError.message);
-      } finally {
-        setLoading(false);
       }
     },
   });
@@ -227,7 +230,11 @@ const PhoneAuthentication = ({
             }`}
             disabled={loading}
           >
-            {loading ? "Sending OTP..." : "Continue"}
+            {loading
+              ? isPassKeySaved
+                ? "Logging In"
+                : "Sending OTP"
+              : "Continue"}
           </button>
         </form>
       </div>
