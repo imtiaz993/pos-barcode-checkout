@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FaComments, FaHistory, FaTimes } from "react-icons/fa";
+import { data } from "./data";
 
 export default function Page() {
   const DeepChat = dynamic(
@@ -18,29 +19,10 @@ export default function Page() {
   const storeId = searchParams.get("storeId");
   const region = searchParams.get("region");
   const type = searchParams.get("type");
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const history = [
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "ai", text: "I am doing very well!" },
-    { role: "user", text: "Hey, how are you today?" },
-    { role: "ai", text: "I am doing very wells!" },
-  ];
+  const currentChat = searchParams.get("id");
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <div className="min-h-dvh max-h-dvh bg-gray-50 flex justify-between">
@@ -67,7 +49,7 @@ export default function Page() {
           } md:block`}
         >
           <div className="flex flex-col h-full bg-gray-100 w-full md:w-64">
-            <div className="p-4 border-b border-gray-700 font-bold flex justify-between items-center">
+            <div className="p-4 border-b border-gray-700 font-semibold flex justify-between items-center">
               <span className="flex items-center">
                 <FaHistory className="mr-2" />
                 Chat History
@@ -80,16 +62,16 @@ export default function Page() {
               </button>
             </div>
             <ul className="flex-1 overflow-auto">
-              {history.map((chat, index) => (
+              {data.map((chat, index) => (
                 <Link
                   key={index}
-                  href={`/assistance?id=${index}&type=${type}&region=${region}&storeId=${storeId}`}
+                  href={`/assistance?id=${chat.id}&type=${type}&region=${region}&storeId=${storeId}`}
                   replace={true}
                   className="block px-4 py-2 hover:bg-gray-200"
                 >
                   <div className="flex items-center gap-2">
                     <FaComments className="text-blue-400" />
-                    <span className="truncate">{chat.text}</span>
+                    <span className="truncate">{chat.chats[0].text}</span>
                   </div>
                 </Link>
               ))}
@@ -106,20 +88,29 @@ export default function Page() {
             https://deepchat.dev/docs/interceptors */}
 
         <DeepChat
-          introMessage={{ text: "Ecoboutique AI Assistance" }}
+          // introMessage={{ text: "Ecoboutique AI Assistance" }}
+          attachmentContainerStyle={{ backgroundColor: "#b2e1ff57" }}
+          inputAreaStyle={{ backgroundColor: "#f2f2f2" }}
+          textInput={{
+            styles: {
+              container: { maxHeight: "80px" },
+            },
+            placeholder: { text: "Type a message to get assistance" },
+          }}
           connect={{ url: "/api/custom/files" }}
           displayLoadingBubble={true}
           textToSpeech={true}
           speechToText={true}
-          audio={true}
           dragAndDrop={true}
-          images={true}
-          gifs={true}
-          camera={true}
-          microphone={true}
-          mixedFiles={true}
-          history={history}
-          textInput={{ placeholder: { text: "Type a message!" } }}
+          images={{ button: { position: "dropup-menu" } }}
+          gifs={{ button: { position: "dropup-menu" } }}
+          camera={{ button: { position: "dropup-menu" } }}
+          audio={{ button: { position: "dropup-menu" } }}
+          mixedFiles={{ button: { position: "inside-left" } }}
+          microphone={{ button: { position: "outside-right" } }}
+          history={
+            data.find((chat: any) => chat.id == currentChat)?.chats || []
+          }
           validateInput={(_?: string, files?: File[]) => {
             return !!files && files.length > 0;
           }}
