@@ -3,7 +3,18 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { FaComments, FaHistory, FaTimes } from "react-icons/fa";
+import {
+  FaComments,
+  FaHistory,
+  FaPen,
+  FaTimes,
+  FaChalkboardTeacher,
+  FaShippingFast,
+  FaHeadset,
+  FaBoxOpen,
+  FaUndoAlt,
+  FaTags,
+} from "react-icons/fa";
 import { data } from "./data";
 
 export default function Page() {
@@ -24,6 +35,30 @@ export default function Page() {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const buttonStyle = {
+    padding: "12px 14px",
+    borderRadius: "25px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#333",
+    backgroundColor: "#fff",
+    border: "1px solid #e5e7eb",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    whiteSpace: "noWrap",
+  };
+
+  const buttons = [
+    { label: "Find a Tutor", icon: <FaChalkboardTeacher />, color: "#10b981" },
+    { label: "Track My Order", icon: <FaShippingFast />, color: "#3b82f6" },
+    { label: "Customer Support", icon: <FaHeadset />, color: "#f59e0b" },
+    { label: "Check Delivery Status", icon: <FaBoxOpen />, color: "#6366f1" },
+    { label: "Refund Inquiry", icon: <FaUndoAlt />, color: "#ef4444" },
+    { label: "Browse Deals", icon: <FaTags />, color: "#14b8a6" },
+  ];
+
   return (
     <div className="min-h-dvh max-h-dvh bg-gray-50 flex justify-between">
       <div>
@@ -35,12 +70,25 @@ export default function Page() {
             >
               &larr; Back
             </button>
-            <button
-              className="text-black p-2 rounded-full md:hidden"
-              onClick={() => setIsDrawerOpen(true)}
-            >
-              <FaHistory />
-            </button>
+            <div>
+              <button
+                className="text-black p-2 rounded-full md:hidden"
+                onClick={() => {
+                  router.push(
+                    `/assistance?type=${type}&region=${region}&storeId=${storeId}`
+                  );
+                }}
+              >
+                <FaPen />
+              </button>
+
+              <button
+                className="text-black p-2 rounded-full md:hidden"
+                onClick={() => setIsDrawerOpen(true)}
+              >
+                <FaHistory />
+              </button>
+            </div>
           </div>
         )}
         <div
@@ -55,6 +103,17 @@ export default function Page() {
                 Chat History
               </span>
               <button
+                className="text-black p-2 rounded-full hidden md:block"
+                onClick={() =>
+                  router.push(
+                    `/assistance?type=${type}&region=${region}&storeId=${storeId}`
+                  )
+                }
+              >
+                <FaPen />
+              </button>
+
+              <button
                 onClick={() => setIsDrawerOpen(false)}
                 className="text-gray-400 md:hidden"
               >
@@ -67,6 +126,9 @@ export default function Page() {
                   key={index}
                   href={`/assistance?id=${chat.id}&type=${type}&region=${region}&storeId=${storeId}`}
                   replace={true}
+                  onClick={() => {
+                    setIsDrawerOpen(false);
+                  }}
                   className="block px-4 py-2 hover:bg-gray-200"
                 >
                   <div className="flex items-center gap-2">
@@ -88,7 +150,9 @@ export default function Page() {
             https://deepchat.dev/docs/interceptors */}
 
         <DeepChat
-          // introMessage={{ text: "Ecoboutique AI Assistance" }}
+          // introMessage={{
+          //   text: currentChat ? "" : "Hi I am your assistant, ask me anything!",
+          // }}
           attachmentContainerStyle={{ backgroundColor: "#b2e1ff57" }}
           inputAreaStyle={{ backgroundColor: "#f2f2f2" }}
           textInput={{
@@ -97,16 +161,50 @@ export default function Page() {
             },
             placeholder: { text: "Type a message to get assistance" },
           }}
+          messageStyles={{
+            loading: {
+              message: {
+                styles: {
+                  bubble: { backgroundColor: "#6decff", color: "white" },
+                },
+              },
+              history: {
+                small: {
+                  styles: {
+                    outerContainer: { marginBottom: "60px" },
+                    bubble: {
+                      color: "#6decff",
+                      border: "11px solid",
+                      height: "80px",
+                      width: "80px",
+                    },
+                  },
+                },
+              },
+            },
+          }}
           connect={{ url: "/api/custom/files" }}
+          avatars={{
+            ai: {
+              src: "https://app.ecoboutiquemarket.com/images/logo.png",
+              styles: { avatar: { width: "50px", height: "50px" } },
+            },
+          }}
+          // avatars={true}
+          // avatars={{
+          //   default: {styles: {avatar: {height: "30px", width: "30px"}, container: {marginTop: "8px"}}},
+          //   ai: {src: "path-to-file.svg", styles: {avatar: {marginLeft: "-3px"}}},
+          //   bob: {src: "path-to-file.png", styles: {avatar: {borderRadius: "15px"}}}
+          // }}
           displayLoadingBubble={true}
-          textToSpeech={true}
-          speechToText={true}
+          // textToSpeech={true}
+          speechToText={{ webSpeech: { language: "en-US" } }}
           dragAndDrop={true}
           images={{ button: { position: "dropup-menu" } }}
           gifs={{ button: { position: "dropup-menu" } }}
           camera={{ button: { position: "dropup-menu" } }}
           audio={{ button: { position: "dropup-menu" } }}
-          mixedFiles={{ button: { position: "inside-left" } }}
+          mixedFiles={{ button: { position: "dropup-menu" } }}
           microphone={{ button: { position: "outside-right" } }}
           history={
             data.find((chat: any) => chat.id == currentChat)?.chats || []
@@ -123,7 +221,47 @@ export default function Page() {
             console.log(response);
             return response;
           }}
-        />
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
+            }}
+          >
+            <h1
+              style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                color: "#1f2937",
+                marginBottom: "24px",
+              }}
+            >
+              What can I help you with?
+            </h1>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                flexWrap: "wrap",
+                gap: "10px",
+                maxWidth: "500px",
+                width: "100%",
+              }}
+            >
+              {buttons.map((btn, index) => (
+                <button key={index} style={buttonStyle}>
+                  <span style={{ color: btn.color, fontSize: "16px" }}>
+                    {btn.icon}
+                  </span>
+                  {btn.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </DeepChat>
       </div>
     </div>
   );
