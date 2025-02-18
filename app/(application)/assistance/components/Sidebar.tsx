@@ -1,10 +1,10 @@
 "use client";
-import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { FaComments, FaHistory, FaPen, FaTimes, FaTasks } from "react-icons/fa";
 import { IoMdMenu } from "react-icons/io";
-import { data } from "./data";
+import { chatData, taskData } from "./data";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -13,10 +13,10 @@ const Sidebar = () => {
   const region = searchParams.get("region");
   const type = searchParams.get("type");
 
+  const mode: any = searchParams.get("mode");
   const currentChat: any = searchParams.get("id");
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [mode, setMode] = useState("chat");
 
   return (
     <div>
@@ -33,7 +33,7 @@ const Sidebar = () => {
               className="text-black rounded-full md:hidden"
               onClick={() => {
                 router.push(
-                  `/assistance?type=${type}&region=${region}&storeId=${storeId}`
+                  `/assistance?mode=${mode}&type=${type}&region=${region}&storeId=${storeId}`
                 );
               }}
             >
@@ -50,11 +50,11 @@ const Sidebar = () => {
         </div>
       )}
       <div
-        className={`w-full md:w-64 fixed inset-0 md:inset-auto bg-black bg-opacity-50 z-20 flex ${
+        className={`w-full md:w-64 fixed inset-0 md:inset-auto bg-black bg-opacity-50 md:bg-transparent z-20 flex ${
           isDrawerOpen ? "block" : "hidden"
         } md:block`}
       >
-        <div className="flex flex-col h-full bg-gray-100 w-full md:w-64">
+        <div className="flex flex-col h-full w-full md:w-64">
           <div className="px-4 md:px-2 py-2 border-b border-gray-700 font-semibold flex justify-between items-center">
             <button
               onClick={() => router.back()}
@@ -66,7 +66,7 @@ const Sidebar = () => {
               className="text-black p-2 rounded-full hidden md:block"
               onClick={() =>
                 router.push(
-                  `/assistance?type=${type}&region=${region}&storeId=${storeId}`
+                  `/assistance?mode=${mode}&type=${type}&region=${region}&storeId=${storeId}`
                 )
               }
             >
@@ -83,20 +83,24 @@ const Sidebar = () => {
           <div className="p-1 pb-2 grid grid-cols-2">
             <div
               className={`flex items-center justify-center gap-1.5 px-4 md:px-2 py-1 cursor-pointer rounded-l ${
-                mode === "chat" ? "bg-blue-600 text-white" : "bg-gray-300"
+                mode === "chats" ? "bg-blue-600 text-white" : "bg-gray-200"
               } `}
               onClick={() => {
-                setMode("chat");
+                router.replace(
+                  `/assistance?mode=${"chats"}&type=${type}&region=${region}&storeId=${storeId}`
+                );
               }}
             >
               <FaHistory className="text-xs" /> Chats
             </div>
             <div
               className={`flex items-center justify-center gap-1.5 px-4 md:px-2 py-1 cursor-pointer rounded-r ${
-                mode === "task" ? "bg-blue-600 text-white" : "bg-gray-300"
+                mode === "tasks" ? "bg-blue-600 text-white" : "bg-gray-200"
               }`}
               onClick={() => {
-                setMode("task");
+                router.replace(
+                  `/assistance?mode=${"tasks"}&type=${type}&region=${region}&storeId=${storeId}`
+                );
               }}
             >
               <FaTasks className="text-xs" />
@@ -104,21 +108,21 @@ const Sidebar = () => {
             </div>
           </div>
           <ul className="flex-1 overflow-auto">
-            {data.map((chat, index) => (
+            {(mode === "chats" ? chatData : taskData).map((chat, index) => (
               <Link
                 key={index}
-                href={`/assistance?id=${chat.id}&type=${type}&region=${region}&storeId=${storeId}`}
+                href={`/assistance?id=${chat.id}&mode=${mode}&type=${type}&region=${region}&storeId=${storeId}`}
                 replace={true}
                 onClick={() => {
                   setIsDrawerOpen(false);
                 }}
                 className={`block px-4 md:px-2 py-2  ${
-                  chat.id == currentChat ? "bg-gray-300" : "hover:bg-gray-200"
+                  chat.id == currentChat ? "bg-gray-200" : "hover:bg-gray-100"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <FaComments className="text-blue-400" />
-                  <span className="truncate">{chat.chats[0].text}</span>
+                  <span className="truncate w-[calc(100%-20px)]">{chat.chats[0].text}</span>
                 </div>
               </Link>
             ))}

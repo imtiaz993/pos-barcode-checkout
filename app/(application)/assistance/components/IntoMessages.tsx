@@ -1,13 +1,17 @@
 import {
-  FaChalkboardTeacher,
   FaShippingFast,
   FaHeadset,
   FaBoxOpen,
   FaUndoAlt,
   FaTags,
+  FaClipboardList,
+  FaTasks,
+  FaCalendarCheck,
+  FaUsersCog,
+  FaToolbox,
 } from "react-icons/fa";
 
-const IntoMessages = () => {
+const IntoMessages = ({ mode }: any) => {
   const buttonStyle = {
     padding: "12px 14px",
     borderRadius: "25px",
@@ -20,17 +24,37 @@ const IntoMessages = () => {
     display: "flex",
     alignItems: "center",
     gap: "10px",
-    whiteSpace: "noWrap",
+    whiteSpace: "nowrap",
+    transition: "background-color 0.3s ease",
   };
 
-  const buttons = [
-    { label: "Find a Tutor", icon: <FaChalkboardTeacher />, color: "#10b981" },
+  // Chat Mode Buttons (E-commerce Inquiry)
+  const chatButtons = [
     { label: "Track My Order", icon: <FaShippingFast />, color: "#3b82f6" },
     { label: "Customer Support", icon: <FaHeadset />, color: "#f59e0b" },
     { label: "Check Delivery Status", icon: <FaBoxOpen />, color: "#6366f1" },
     { label: "Refund Inquiry", icon: <FaUndoAlt />, color: "#ef4444" },
     { label: "Browse Deals", icon: <FaTags />, color: "#14b8a6" },
   ];
+
+  // Task Assignment Buttons
+  const taskButtons = [
+    {
+      label: "Create a To-Do List",
+      icon: <FaClipboardList />,
+      color: "#3b82f6",
+    },
+    { label: "Assign a Task", icon: <FaTasks />, color: "#10b981" },
+    {
+      label: "Schedule a Meeting",
+      icon: <FaCalendarCheck />,
+      color: "#f59e0b",
+    },
+    { label: "Manage Team", icon: <FaUsersCog />, color: "#6366f1" },
+    { label: "Request a Service", icon: <FaToolbox />, color: "#ef4444" },
+  ];
+
+  const buttons = mode === "chats" ? chatButtons : taskButtons;
 
   return (
     <div>
@@ -51,20 +75,31 @@ const IntoMessages = () => {
             marginBottom: "24px",
           }}
         >
-          What can I help you with?
+          {mode === "chats"
+            ? "How can I assist you today?"
+            : "What task would you like to assign?"}
         </h1>
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             flexWrap: "wrap",
-            gap: "10px",
+            gap: "12px",
             maxWidth: "500px",
             width: "100%",
           }}
         >
           {buttons.map((btn, index) => (
-            <button key={index} style={buttonStyle}>
+            <button
+              key={index}
+              style={buttonStyle}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = "#f3f4f6")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "#fff")
+              }
+            >
               <span style={{ color: btn.color, fontSize: "16px" }}>
                 {btn.icon}
               </span>

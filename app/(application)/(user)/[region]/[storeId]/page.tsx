@@ -22,7 +22,7 @@ const Page = () => {
       description: "Buy a special gift for your loved ones.",
     },
     {
-      href: `/assistance?type=&region=${region}&storeId=${storeId}`,
+      href: `/assistance?mode=chats&type=&region=${region}&storeId=${storeId}`,
       icon: <FaHandsHelping className="text-blue-600 text-2xl" />,
       title: "Assistance",
       description: "Get help and support for your needs.",

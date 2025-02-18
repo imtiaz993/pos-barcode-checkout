@@ -25,7 +25,7 @@
 // },
 // ];
 
-export const data = [
+export const chatData = [
   {
     id: 1,
     chats: [
@@ -95,6 +95,68 @@ export const data = [
         role: "ai",
         text: "It's about a thief who enters people's dreams to steal secrets from their subconscious.",
       },
+    ],
+  },
+];
+
+export const taskData = [
+  {
+    id: 1,
+    chats: [
+      {
+        text: "I need to complete a project report by tomorrow.",
+        role: "user",
+      },
+      {
+        text: "Got it! I've added 'Complete project report by tomorrow' to your tasks.",
+        role: "ai",
+      },
+      { text: "Can you set a reminder for 5 PM?", role: "user" },
+      { text: "Reminder set for 5 PM. Anything else to add?", role: "ai" },
+    ],
+  },
+  {
+    id: 2,
+    chats: [
+      {
+        text: "Assign a task to John to finish the website design.",
+        role: "user",
+      },
+      {
+        text: "Task assigned to John: 'Finish website design'. Deadline or priority to set?",
+        role: "ai",
+      },
+      { text: "Set the deadline for Friday with high priority.", role: "user" },
+      {
+        text: "Deadline set for Friday with high priority. Task updated.",
+        role: "ai",
+      },
+    ],
+  },
+  {
+    id: 3,
+    chats: [
+      { text: "Plan a team outing for next weekend.", role: "user" },
+      {
+        text: "Task added: 'Plan a team outing for next weekend'. Need a checklist for this?",
+        role: "ai",
+      },
+      {
+        text: "Yes, please add a checklist for location, budget, and invites.",
+        role: "user",
+      },
+      { text: "Checklist added: Location, Budget, Invites.", role: "ai" },
+    ],
+  },
+  {
+    id: 4,
+    chats: [
+      { text: "Create a shopping list, please.", role: "user" },
+      { text: "Sure! What items should I add?", role: "ai" },
+      { text: "Milk, eggs, and bread.", role: "user" },
+      { text: "Shopping list created with: Milk, Eggs, Bread.", role: "ai" },
+      { text: "Can you add butter to the list?", role: "user" },
+      { text: "Butter added to your shopping list.", role: "ai" },
     ],
   },
 ];

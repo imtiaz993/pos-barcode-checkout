@@ -1,8 +1,8 @@
 "use client";
 import dynamic from "next/dynamic";
-import { data } from "./data";
-import IntoMessages from "./IntoMessages";
 import { useSearchParams } from "next/navigation";
+import { chatData, taskData } from "./data";
+import IntoMessages from "./IntoMessages";
 
 const ChatModule = () => {
   const DeepChat = dynamic(
@@ -13,6 +13,7 @@ const ChatModule = () => {
   );
 
   const searchParams = useSearchParams();
+  const mode: any = searchParams.get("mode");
   const currentChat: any = searchParams.get("id");
 
   return (
@@ -80,7 +81,11 @@ const ChatModule = () => {
         mixedFiles={{ button: { position: "dropup-menu" } }}
         microphone={{ button: { position: "outside-right" } }}
         //@ts-ignore
-        history={data.find((chat: any) => chat.id == currentChat)?.chats || []}
+        history={
+          (mode === "chats" ? chatData : taskData).find(
+            (chat: any) => chat.id == currentChat
+          )?.chats || []
+        }
         validateInput={(_?: string, files?: File[]) => {
           return !!files && files.length > 0;
         }}
@@ -94,7 +99,7 @@ const ChatModule = () => {
           return response;
         }}
       >
-        <IntoMessages />
+        <IntoMessages mode={mode} />
       </DeepChat>
     </div>
   );
