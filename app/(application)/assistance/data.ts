@@ -26,23 +26,23 @@
 // ];
 
 export const data = [
-  // {
-  //   id: 1,
-  //   chats: [
-  //     { text: "Show me a modern city", role: "user" },
-  //     {
-  //       files: [
-  //         {
-  //           src: "https://images.pexels.com/photos/302769/pexels-photo-302769.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  //           type: "image",
-  //         },
-  //       ],
-  //       role: "ai",
-  //     },
-  //     { text: "Whats on your mind?", role: "user" },
-  //     { text: "Peace and tranquility", role: "ai" },
-  //   ],
-  // },
+  {
+    id: 1,
+    chats: [
+      { text: "Show me a modern city", role: "user" },
+      {
+        files: [
+          {
+            src: "https://images.pexels.com/photos/302769/pexels-photo-302769.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            type: "image",
+          },
+        ],
+        role: "ai",
+      },
+      { text: "Whats on your mind?", role: "user" },
+      { text: "Peace and tranquility", role: "ai" },
+    ],
+  },
   {
     id: 2,
     chats: [

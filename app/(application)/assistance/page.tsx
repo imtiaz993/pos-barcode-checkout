@@ -206,6 +206,7 @@ export default function Page() {
           audio={{ button: { position: "dropup-menu" } }}
           mixedFiles={{ button: { position: "dropup-menu" } }}
           microphone={{ button: { position: "outside-right" } }}
+          //@ts-ignore
           history={
             data.find((chat: any) => chat.id == currentChat)?.chats || []
           }
