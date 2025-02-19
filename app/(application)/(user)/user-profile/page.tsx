@@ -5,8 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
 import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app, db } from "@/app/firebase";
 import { logout } from "@/utils/firebaseAuth";
+import { supported } from "@github/webauthn-json";
 import axios from "axios";
 import Link from "next/link";
 import PhoneInput from "react-phone-input-2";
@@ -14,6 +15,15 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import "react-phone-input-2/lib/style.css";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
+import { startRegistration } from "@simplewebauthn/browser";
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -26,8 +36,62 @@ export default function ProfilePage() {
   const user = auth.currentUser;
 
   const [giftCardBalance, setGiftCardBalance] = useState<any>();
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [passKeySaved, setPassKeySaved] = useState<any>();
   const [giftCardBalanceLoading, setGiftCardBalanceLoading] =
     useState<any>(true);
+
+  const enrollPasskey = async () => {
+    try {
+      const { data: registrationOptions } = await axios.post(
+        "/api/webauthn/registration-options",
+        {
+          phone: user?.phoneNumber,
+        }
+      );
+
+      const registrationResponse = await startRegistration(registrationOptions);
+
+      const { data: verifyResponse } = await axios.post(
+        "/api/webauthn/verify-registration",
+        {
+          credential: registrationResponse,
+          challenge: registrationOptions.challenge,
+        }
+      );
+      const userData: any = {
+        phone: user?.phoneNumber,
+        externalID: verifyResponse.credentialID,
+        publicKey: verifyResponse.credentialPublicKey,
+      };
+
+      await setDoc(doc(db, "users", userData.phone), userData, { merge: true });
+      toast.success("Passkey enrolled successfully!");
+      getPasskeyInfo();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getPasskeyInfo = async () => {
+    const querySnapshot: any = await getDocs(
+      query(collection(db, "users"), where("phone", "==", user?.phoneNumber))
+    );
+    if (!querySnapshot.empty) {
+      setPassKeySaved(true);
+    } else {
+      setPassKeySaved(false);
+    }
+  };
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      const available =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      setIsAvailable(available && supported());
+    };
+    checkAvailability();
+  }, []);
 
   useEffect(() => {
     axios
@@ -44,6 +108,7 @@ export default function ProfilePage() {
         toast.error(error?.response?.data?.message);
         console.error("Error fetching client secret:", error);
       });
+    getPasskeyInfo();
   }, []);
 
   let recaptchaVerifier = useRef<any>(null);
@@ -171,6 +236,19 @@ export default function ProfilePage() {
           className="w-full max-w-md mx-auto"
         >
           <div className="bg-white">
+            {isAvailable && passKeySaved == false && (
+              <div className="flex items-center">
+                <h1 className="font-semibold my-4">Biometrics Login: </h1>
+                <button
+                  type="button"
+                  onClick={enrollPasskey}
+                  className="ml-4 w-fit bg-blue-500 text-white py-1.5 px-4 text-sm rounded-lg hover:bg-blue-600"
+                >
+                  Enroll Now
+                </button>
+              </div>
+            )}
+
             <div className="flex items-center">
               <h1 className="font-semibold my-4">
                 Gift Card Balance:{" "}

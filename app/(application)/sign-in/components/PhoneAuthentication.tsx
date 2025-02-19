@@ -34,8 +34,9 @@ const PhoneAuthentication = ({
   const gift_card = searchParams.get("gift_card");
 
   const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [isPassKeySaved, setIsPassKeySaved] = useState<boolean | null>(null);
+  const [isPassKeySaved, setIsPassKeySaved] = useState<boolean | null>(true);
   const auth = getAuth(app);
 
   useEffect(() => {
@@ -104,12 +105,12 @@ const PhoneAuthentication = ({
     }),
     onSubmit: async (values) => {
       setPhone(values.phone);
-
-      setLoading(true);
+      setDisabled(true);
       try {
         const querySnapshot: any = await getDocs(
           query(collection(db, "users"), where("phone", "==", values.phone))
         );
+        setLoading(true);
         if (!querySnapshot.empty && isAvailable) {
           setIsPassKeySaved(true);
           const userCredential = querySnapshot.docs[0].data();
@@ -141,11 +142,13 @@ const PhoneAuthentication = ({
             values.phone !== userCredential.phone
           ) {
             setLoading(false);
+            setDisabled(false);
             throw new Error("Login verification failed");
           } else {
             loginUserWithCustomToken(values.phone);
           }
         } else {
+          setIsPassKeySaved(false);
           try {
             const confirmation = await signInWithPhoneNumber(
               auth,
@@ -155,15 +158,58 @@ const PhoneAuthentication = ({
             setConfirmationResult(confirmation);
           } catch (error: any) {
             setLoading(false);
-            formik.setFieldError(
-              "phone",
-              "Failed to send OTP. Please try again."
-            );
-            console.log("Error during signInWithPhoneNumber", error);
+            setDisabled(false);
+            const firebaseError =
+              error?.response?.data?.error?.message || "UNKNOWN_ERROR";
+            switch (firebaseError) {
+              case "USER_DISABLED":
+                formik.setFieldError(
+                  "phone",
+                  "Your account has been disabled. Please contact support."
+                );
+                break;
+              case "INVALID_PHONE_NUMBER":
+              case "auth/invalid-phone-number":
+                formik.setFieldError(
+                  "phone",
+                  "Invalid phone number. Please enter a valid one."
+                );
+                break;
+              case "QUOTA_EXCEEDED":
+              case "auth/quota-exceeded":
+                formik.setFieldError(
+                  "phone",
+                  "Too many requests. Please try again later."
+                );
+                break;
+              case "TOO_MANY_ATTEMPTS_TRY_LATER":
+              case "auth/too-many-requests":
+                formik.setFieldError(
+                  "phone",
+                  "Too many attempts. Please wait before trying again."
+                );
+                break;
+              case "OPERATION_NOT_ALLOWED":
+              case "auth/operation-not-allowed":
+                formik.setFieldError(
+                  "phone",
+                  "Phone sign-in is not enabled. Please contact support."
+                );
+                break;
+              default:
+                // Fallback for other unknown error codes
+                formik.setFieldError(
+                  "phone",
+                  "Failed to send OTP. Please try again."
+                );
+
+                console.log("Error during signInWithPhoneNumber", error);
+            }
           }
         }
       } catch (err) {
         setLoading(false);
+        setDisabled(false);
         const loginError = err as Error;
         console.log(loginError);
         toast.error(loginError.message);
@@ -226,14 +272,14 @@ const PhoneAuthentication = ({
           <button
             type="submit"
             className={`mt-6 w-full bg-blue-600 text-white py-2 text-sm rounded-lg hover:bg-blue-700 transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              disabled ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={disabled}
           >
             {loading
               ? isPassKeySaved
-                ? "Logging In"
-                : "Sending OTP"
+                ? "Logging In ..."
+                : "Sending OTP ..."
               : "Continue"}
           </button>
         </form>

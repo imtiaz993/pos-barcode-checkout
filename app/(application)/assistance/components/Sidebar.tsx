@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { FaComments, FaHistory, FaPen, FaTimes, FaTasks } from "react-icons/fa";
 import { IoMdMenu } from "react-icons/io";
 import { chatData, taskData } from "./data";
+import { MdOutlineAddTask } from "react-icons/md";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -121,8 +122,14 @@ const Sidebar = () => {
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <FaComments className="text-blue-400" />
-                  <span className="truncate w-[calc(100%-20px)]">{chat.chats[0].text}</span>
+                  {mode == "chats" ? (
+                    <FaComments className="text-blue-400" />
+                  ) : (
+                    <MdOutlineAddTask className="text-blue-400" />
+                  )}
+                  <span className="truncate w-[calc(100%-20px)]">
+                    {chat.chats[0].text}
+                  </span>
                 </div>
               </Link>
             ))}

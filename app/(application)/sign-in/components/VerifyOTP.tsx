@@ -7,8 +7,7 @@ import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 import { app, db } from "@/app/firebase";
 import { supported } from "@github/webauthn-json";
 import { startRegistration } from "@simplewebauthn/browser";
-import { toast } from "sonner";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import axios from "axios";
 import Footer from "@/components/Footer";
 
@@ -142,32 +141,35 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       try {
         await confirmationResult.confirm(values.otp);
         if (isAvailable) {
-          const { data: registrationOptions } = await axios.post(
-            "/api/webauthn/registration-options",
-            {
-              phone,
-            }
-          );
+          try {
+            const { data: registrationOptions } = await axios.post(
+              "/api/webauthn/registration-options",
+              {
+                phone,
+              }
+            );
 
-          const registrationResponse = await startRegistration(
-            registrationOptions
-          );
+            const registrationResponse = await startRegistration(
+              registrationOptions
+            );
 
-          const { data: verifyResponse } = await axios.post(
-            "/api/webauthn/verify-registration",
-            {
-              credential: registrationResponse,
-              challenge: registrationOptions.challenge,
-            }
-          );
+            const { data: verifyResponse } = await axios.post(
+              "/api/webauthn/verify-registration",
+              {
+                credential: registrationResponse,
+                challenge: registrationOptions.challenge,
+              }
+            );
+            const userData = {
+              phone: phone,
+              externalID: verifyResponse.credentialID,
+              publicKey: verifyResponse.credentialPublicKey,
+            };
 
-          const userData = {
-            phone: phone,
-            externalID: verifyResponse.credentialID,
-            publicKey: verifyResponse.credentialPublicKey,
-          };
-
-          await addDoc(collection(db, "users"), userData);
+            await setDoc(doc(db, "users", phone), userData, { merge: true });
+          } catch (error) {
+            console.log(error);
+          }
         }
         if (type == "/activate-gift-card") {
           router.replace(
