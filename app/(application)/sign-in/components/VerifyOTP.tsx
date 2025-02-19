@@ -7,7 +7,14 @@ import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 import { app, db } from "@/app/firebase";
 import { supported } from "@github/webauthn-json";
 import { startRegistration } from "@simplewebauthn/browser";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import axios from "axios";
 import Footer from "@/components/Footer";
 
@@ -23,9 +30,21 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [passKeySaved, setPassKeySaved] = useState<boolean | null>(null);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [resendOtpEnabled, setResendOtpEnabled] = useState(false);
   const [timer, setTimer] = useState(59);
+
+  const getPasskeyInfo = async () => {
+    const querySnapshot: any = await getDocs(
+      query(collection(db, "users"), where("phone", "==", phone))
+    );
+    if (!querySnapshot.empty) {
+      setPassKeySaved(true);
+    } else {
+      setPassKeySaved(false);
+    }
+  };
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -34,6 +53,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       setIsAvailable(available && supported());
     };
     checkAvailability();
+    getPasskeyInfo();
   }, []);
 
   useEffect(() => {
@@ -140,7 +160,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
       try {
         await confirmationResult.confirm(values.otp);
-        if (isAvailable) {
+        if (!passKeySaved && isAvailable) {
           try {
             const { data: registrationOptions } = await axios.post(
               "/api/webauthn/registration-options",

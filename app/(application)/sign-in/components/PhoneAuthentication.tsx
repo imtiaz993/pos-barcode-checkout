@@ -91,6 +91,108 @@ const PhoneAuthentication = ({
     checkAvailability();
   }, []);
 
+  const loginWithOTP = async (values: any) => {
+    setIsPassKeySaved(false);
+    try {
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        values.phone,
+        recaptchaVerifier.current
+      );
+      setConfirmationResult(confirmation);
+    } catch (error: any) {
+      setLoading(false);
+      setDisabled(false);
+      const firebaseError =
+        error?.response?.data?.error?.message || "UNKNOWN_ERROR";
+      switch (firebaseError) {
+        case "USER_DISABLED":
+          formik.setFieldError(
+            "phone",
+            "Your account has been disabled. Please contact support."
+          );
+          break;
+        case "INVALID_PHONE_NUMBER":
+        case "auth/invalid-phone-number":
+          formik.setFieldError(
+            "phone",
+            "Invalid phone number. Please enter a valid one."
+          );
+          break;
+        case "QUOTA_EXCEEDED":
+        case "auth/quota-exceeded":
+          formik.setFieldError(
+            "phone",
+            "Too many requests. Please try again later."
+          );
+          break;
+        case "TOO_MANY_ATTEMPTS_TRY_LATER":
+        case "auth/too-many-requests":
+          formik.setFieldError(
+            "phone",
+            "Too many attempts. Please wait before trying again."
+          );
+          break;
+        case "OPERATION_NOT_ALLOWED":
+        case "auth/operation-not-allowed":
+          formik.setFieldError(
+            "phone",
+            "Phone sign-in is not enabled. Please contact support."
+          );
+          break;
+        default:
+          // Fallback for other unknown error codes
+          formik.setFieldError(
+            "phone",
+            "Failed to send OTP. Please try again."
+          );
+
+          console.log("Error during signInWithPhoneNumber", error);
+      }
+    }
+  };
+  const loginWithPasskey = async (values: any, querySnapshot: any) => {
+    try {
+      setIsPassKeySaved(true);
+      const userCredential = querySnapshot.docs[0].data();
+
+      const { data } = await axios.post(
+        "/api/webauthn/authentication-options",
+        {
+          phone: values.phone,
+        }
+      );
+
+      const { challenge }: any = data.authenticationOptions;
+
+      const authenticationResponse = await startAuthentication(
+        data.authenticationOptions
+      );
+
+      const { data: verification } = await axios.post(
+        "/api/webauthn/verify-authentication",
+        {
+          userCredential,
+          challenge,
+          authenticationResponse,
+        }
+      );
+
+      if (
+        !verification.verification.verified ||
+        values.phone !== userCredential.phone
+      ) {
+        setLoading(false);
+        setDisabled(false);
+        throw new Error("Login verification failed");
+      } else {
+        loginUserWithCustomToken(values.phone);
+      }
+    } catch (error) {
+      loginWithOTP(values);
+    }
+  };
+
   const formik: any = useFormik({
     initialValues: {
       phone: phone_number ? "+" + phone_number.replace(" ", "") : "",
@@ -112,100 +214,9 @@ const PhoneAuthentication = ({
         );
         setLoading(true);
         if (!querySnapshot.empty && isAvailable) {
-          setIsPassKeySaved(true);
-          const userCredential = querySnapshot.docs[0].data();
-
-          const { data } = await axios.post(
-            "/api/webauthn/authentication-options",
-            {
-              phone: values.phone,
-            }
-          );
-
-          const { challenge }: any = data.authenticationOptions;
-
-          const authenticationResponse = await startAuthentication(
-            data.authenticationOptions
-          );
-
-          const { data: verification } = await axios.post(
-            "/api/webauthn/verify-authentication",
-            {
-              userCredential,
-              challenge,
-              authenticationResponse,
-            }
-          );
-
-          if (
-            !verification.verification.verified ||
-            values.phone !== userCredential.phone
-          ) {
-            setLoading(false);
-            setDisabled(false);
-            throw new Error("Login verification failed");
-          } else {
-            loginUserWithCustomToken(values.phone);
-          }
+          loginWithPasskey(values, querySnapshot);
         } else {
-          setIsPassKeySaved(false);
-          try {
-            const confirmation = await signInWithPhoneNumber(
-              auth,
-              values.phone,
-              recaptchaVerifier.current
-            );
-            setConfirmationResult(confirmation);
-          } catch (error: any) {
-            setLoading(false);
-            setDisabled(false);
-            const firebaseError =
-              error?.response?.data?.error?.message || "UNKNOWN_ERROR";
-            switch (firebaseError) {
-              case "USER_DISABLED":
-                formik.setFieldError(
-                  "phone",
-                  "Your account has been disabled. Please contact support."
-                );
-                break;
-              case "INVALID_PHONE_NUMBER":
-              case "auth/invalid-phone-number":
-                formik.setFieldError(
-                  "phone",
-                  "Invalid phone number. Please enter a valid one."
-                );
-                break;
-              case "QUOTA_EXCEEDED":
-              case "auth/quota-exceeded":
-                formik.setFieldError(
-                  "phone",
-                  "Too many requests. Please try again later."
-                );
-                break;
-              case "TOO_MANY_ATTEMPTS_TRY_LATER":
-              case "auth/too-many-requests":
-                formik.setFieldError(
-                  "phone",
-                  "Too many attempts. Please wait before trying again."
-                );
-                break;
-              case "OPERATION_NOT_ALLOWED":
-              case "auth/operation-not-allowed":
-                formik.setFieldError(
-                  "phone",
-                  "Phone sign-in is not enabled. Please contact support."
-                );
-                break;
-              default:
-                // Fallback for other unknown error codes
-                formik.setFieldError(
-                  "phone",
-                  "Failed to send OTP. Please try again."
-                );
-
-                console.log("Error during signInWithPhoneNumber", error);
-            }
-          }
+          loginWithOTP(values);
         }
       } catch (err) {
         setLoading(false);
