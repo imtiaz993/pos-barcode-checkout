@@ -22,7 +22,9 @@ export default function Page() {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push("/sign-in");
+      router.push(
+        `/sign-in?type=/activate-gift-card&phone_number=${phone_number}`
+      );
     } catch (error) {
       alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
