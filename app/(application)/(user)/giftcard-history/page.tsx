@@ -35,7 +35,7 @@ const Page = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 max-w-md ">
+      <div className="min-h-[calc(100dvh-41px-16px-32px)] mx-auto px-4 py-2 max-w-md ">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between mb-2">
             <p

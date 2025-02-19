@@ -1,6 +1,7 @@
 // firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-5qUkrJgIym7bP_Q6wnji7ow5Z_7rLF0",
@@ -9,10 +10,11 @@ const firebaseConfig = {
   storageBucket: "ecoboutique-cd84f.firebasestorage.app",
   messagingSenderId: "287443279040",
   appId: "1:287443279040:web:07d881f304aab2e16a6125",
-  measurementId: "G-2PPEGWLX01"
+  measurementId: "G-2PPEGWLX01",
 };
 
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { auth, app };
+export { auth, app, db };

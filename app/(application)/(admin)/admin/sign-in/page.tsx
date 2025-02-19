@@ -8,6 +8,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "@/app/firebase";
 import { useRouter } from "next/navigation";
 import { checkAuthState } from "@/utils/firebaseAuth";
+import axios from "axios";
 
 const EmailAuthentication = () => {
   const router = useRouter();
@@ -37,18 +38,10 @@ const EmailAuthentication = () => {
           values.password
         );
         try {
-          const response: any = await fetch("/api/set-admin", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ uid: data.user.uid }),
+          await axios.post("/api/firebase/set-admin", {
+            uid: data.user.uid,
           });
 
-          const res = await response.json();
-          if (response.ok) {
-            console.log(res.message);
-          } else {
-            console.error(res.error);
-          }
           await data.user.getIdToken(true); // Refresh token
 
           // Get updated user claims

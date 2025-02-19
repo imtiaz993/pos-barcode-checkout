@@ -7,6 +7,7 @@ import PhoneAuthentication from "./components/PhoneAuthentication";
 import VerifyOTP from "./components/VerifyOTP";
 import { getAuth } from "firebase/auth";
 import { app } from "@/app/firebase";
+import Footer from "@/components/Footer";
 
 const PhoneAuth = () => {
   const router = useRouter();
@@ -38,7 +39,9 @@ const PhoneAuth = () => {
               `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
             );
           } else {
-            router.replace(`${type}/${region}/${storeId}`);
+            router.replace(
+              `${type != "null" ? +"/" : ""}/${region}/${storeId}`
+            );
           }
         }
         return;

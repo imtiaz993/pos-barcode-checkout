@@ -5,8 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
 import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app, db } from "@/app/firebase";
 import { logout } from "@/utils/firebaseAuth";
+import { supported } from "@github/webauthn-json";
 import axios from "axios";
 import Link from "next/link";
 import PhoneInput from "react-phone-input-2";
@@ -14,6 +15,16 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import "react-phone-input-2/lib/style.css";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
+import { startRegistration } from "@simplewebauthn/browser";
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -25,9 +36,88 @@ export default function ProfilePage() {
   const auth = getAuth(app);
   const user = auth.currentUser;
 
+  const [removing, setRemoving] = useState<boolean>(false);
+  const [enrolling, setEnrolling] = useState<boolean>(false);
   const [giftCardBalance, setGiftCardBalance] = useState<any>();
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [passKeySaved, setPassKeySaved] = useState<any>(null);
   const [giftCardBalanceLoading, setGiftCardBalanceLoading] =
     useState<any>(true);
+
+  const enrollPasskey = async () => {
+    setRemoving(false);
+    setEnrolling(true);
+    try {
+      const { data: registrationOptions } = await axios.post(
+        "/api/webauthn/registration-options",
+        {
+          phone: user?.phoneNumber,
+        }
+      );
+
+      const registrationResponse = await startRegistration(registrationOptions);
+
+      const { data: verifyResponse } = await axios.post(
+        "/api/webauthn/verify-registration",
+        {
+          credential: registrationResponse,
+          challenge: registrationOptions.challenge,
+        }
+      );
+      const userData: any = {
+        phone: user?.phoneNumber,
+        externalID: verifyResponse.credentialID,
+        publicKey: verifyResponse.credentialPublicKey,
+      };
+
+      await setDoc(doc(db, "users", userData.phone), userData, { merge: true });
+      toast.success("Passkey enrolled successfully!");
+
+      getPasskeyInfo(() => {
+        setEnrolling(false);
+      });
+    } catch (error) {
+      setEnrolling(false);
+      console.log(error);
+    }
+  };
+
+  const deletePasskey = async () => {
+    try {
+      const phone: any = user?.phoneNumber;
+      await deleteDoc(doc(db, "users", phone));
+      toast.success("Passkey removed successfully!");
+      getPasskeyInfo(() => {
+        setRemoving(true);
+      });
+    } catch (error) {
+      setRemoving(false);
+      console.log(error);
+    }
+  };
+
+  const getPasskeyInfo = async (onSuccess?: any) => {
+    const querySnapshot: any = await getDocs(
+      query(collection(db, "users"), where("phone", "==", user?.phoneNumber))
+    );
+    if (onSuccess) {
+      onSuccess();
+    }
+    if (!querySnapshot.empty) {
+      setPassKeySaved(true);
+    } else {
+      setPassKeySaved(false);
+    }
+  };
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      const available =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      setIsAvailable(available && supported());
+    };
+    checkAvailability();
+  }, []);
 
   useEffect(() => {
     axios
@@ -44,6 +134,7 @@ export default function ProfilePage() {
         toast.error(error?.response?.data?.message);
         console.error("Error fetching client secret:", error);
       });
+    getPasskeyInfo();
   }, []);
 
   let recaptchaVerifier = useRef<any>(null);
@@ -136,7 +227,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-[calc(100dvh-41px-16px)] mx-auto px-4 py-2 ">
+    <div className="min-h-[calc(100dvh-41px-16px-32px)] mx-auto px-4 py-2 ">
       <div className="max-w-md mx-auto">
         <div className="flex justify-between mb-2">
           <p
@@ -171,6 +262,39 @@ export default function ProfilePage() {
           className="w-full max-w-md mx-auto"
         >
           <div className="bg-white">
+            {passKeySaved !== null && (
+              <div className="flex items-center">
+                <h1 className="font-semibold my-4">Biometric Login: </h1>
+                {passKeySaved == false &&
+                  (isAvailable ? (
+                    <button
+                      type="button"
+                      onClick={enrollPasskey}
+                      disabled={enrolling}
+                      className={`ml-4 w-fit bg-blue-500 text-white py-1.5 px-4 text-sm rounded-lg hover:bg-blue-600  ${
+                        enrolling ? "cursor-not-allowed opacity-50" : ""
+                      }`}
+                    >
+                      {enrolling ? "Enrolling" : "Enroll Now"}
+                    </button>
+                  ) : (
+                    "Not Available"
+                  ))}
+                {passKeySaved == true && (
+                  <button
+                    type="button"
+                    onClick={deletePasskey}
+                    disabled={removing}
+                    className={`ml-4 w-fit bg-red-500 text-white py-1.5 px-4 text-sm rounded-lg hover:bg-red-600 ${
+                      removing ? "cursor-not-allowed opacity-50" : ""
+                    }`}
+                  >
+                    {removing ? "Removing" : "Remove"}
+                  </button>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center">
               <h1 className="font-semibold my-4">
                 Gift Card Balance:{" "}

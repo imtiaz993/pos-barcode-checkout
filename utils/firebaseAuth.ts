@@ -1,5 +1,5 @@
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { app } from "../app/firebase";
+import { app } from "@/app/firebase";
 
 const auth = getAuth(app);
 

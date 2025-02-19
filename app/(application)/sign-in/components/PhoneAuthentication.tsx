@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useFormik } from "formik";
 import PhoneInput from "react-phone-input-2";
@@ -7,10 +8,17 @@ import {
   getAuth,
   signInWithPhoneNumber,
   RecaptchaVerifier,
+  signInWithCustomToken,
 } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app, db } from "@/app/firebase";
+import { supported } from "@github/webauthn-json";
+import { startAuthentication } from "@simplewebauthn/browser";
 
 import "react-phone-input-2/lib/style.css";
+import { toast } from "sonner";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import axios from "axios";
+import Footer from "@/components/Footer";
 
 const PhoneAuthentication = ({
   setConfirmationResult,
@@ -18,7 +26,17 @@ const PhoneAuthentication = ({
   recaptchaVerifier,
   phone_number,
 }: any) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("storeId");
+  const region = searchParams.get("region");
+  const type = searchParams.get("type");
+  const gift_card = searchParams.get("gift_card");
+
   const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [isPassKeySaved, setIsPassKeySaved] = useState<boolean | null>(true);
   const auth = getAuth(app);
 
   useEffect(() => {
@@ -32,6 +50,148 @@ const PhoneAuthentication = ({
       );
     }
   }, [auth, recaptchaVerifier]);
+
+  const loginUserWithCustomToken = async (phone: any) => {
+    try {
+      const data: any = await axios.post(
+        "/api/firebase/generate-custom-token",
+        {
+          phone: phone,
+        }
+      );
+
+      if (data) {
+        signInWithCustomToken(auth, data.data.firebaseToken)
+          .then(() => {
+            if (type == "/activate-gift-card") {
+              router.replace(
+                `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
+              );
+            } else {
+              router.replace(
+                `${type != "null" ? +"/" : ""}${region}/${storeId}`
+              );
+            }
+          })
+          .catch((error: any) => {
+            console.error("Login error:", error.message);
+          });
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      const available =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      setIsAvailable(available && supported());
+    };
+    checkAvailability();
+  }, []);
+
+  const loginWithOTP = async (values: any) => {
+    setIsPassKeySaved(false);
+    try {
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        values.phone,
+        recaptchaVerifier.current
+      );
+      setConfirmationResult(confirmation);
+    } catch (error: any) {
+      setLoading(false);
+      setDisabled(false);
+      const firebaseError =
+        error?.response?.data?.error?.message || "UNKNOWN_ERROR";
+      switch (firebaseError) {
+        case "USER_DISABLED":
+          formik.setFieldError(
+            "phone",
+            "Your account has been disabled. Please contact support."
+          );
+          break;
+        case "INVALID_PHONE_NUMBER":
+        case "auth/invalid-phone-number":
+          formik.setFieldError(
+            "phone",
+            "Invalid phone number. Please enter a valid one."
+          );
+          break;
+        case "QUOTA_EXCEEDED":
+        case "auth/quota-exceeded":
+          formik.setFieldError(
+            "phone",
+            "Too many requests. Please try again later."
+          );
+          break;
+        case "TOO_MANY_ATTEMPTS_TRY_LATER":
+        case "auth/too-many-requests":
+          formik.setFieldError(
+            "phone",
+            "Too many attempts. Please wait before trying again."
+          );
+          break;
+        case "OPERATION_NOT_ALLOWED":
+        case "auth/operation-not-allowed":
+          formik.setFieldError(
+            "phone",
+            "Phone sign-in is not enabled. Please contact support."
+          );
+          break;
+        default:
+          // Fallback for other unknown error codes
+          formik.setFieldError(
+            "phone",
+            "Failed to send OTP. Please try again."
+          );
+
+          console.log("Error during signInWithPhoneNumber", error);
+      }
+    }
+  };
+  const loginWithPasskey = async (values: any, querySnapshot: any) => {
+    try {
+      setIsPassKeySaved(true);
+      const userCredential = querySnapshot.docs[0].data();
+
+      const { data } = await axios.post(
+        "/api/webauthn/authentication-options",
+        {
+          phone: values.phone,
+        }
+      );
+
+      const { challenge }: any = data.authenticationOptions;
+
+      const authenticationResponse = await startAuthentication(
+        data.authenticationOptions
+      );
+
+      const { data: verification } = await axios.post(
+        "/api/webauthn/verify-authentication",
+        {
+          userCredential,
+          challenge,
+          authenticationResponse,
+        }
+      );
+
+      if (
+        !verification.verification.verified ||
+        values.phone !== userCredential.phone
+      ) {
+        setLoading(false);
+        setDisabled(false);
+        throw new Error("Login verification failed");
+      } else {
+        loginUserWithCustomToken(values.phone);
+      }
+    } catch (error) {
+      loginWithOTP(values);
+    }
+  };
 
   const formik: any = useFormik({
     initialValues: {
@@ -47,43 +207,30 @@ const PhoneAuthentication = ({
     }),
     onSubmit: async (values) => {
       setPhone(values.phone);
-
-      setLoading(true);
+      setDisabled(true);
       try {
-        const confirmation = await signInWithPhoneNumber(
-          auth,
-          values.phone,
-          recaptchaVerifier.current
+        const querySnapshot: any = await getDocs(
+          query(collection(db, "users"), where("phone", "==", values.phone))
         );
-        setConfirmationResult(confirmation);
-      } catch (error: any) {
-        const firebaseError = error?.code || "UNKNOWN_ERROR";
-
-        if (firebaseError === "auth/invalid-phone-number") {
-          formik.setFieldError(
-            "phone",
-            "Invalid phone number. Please enter a valid number."
-          );
-        } else if (firebaseError === "auth/too-many-requests") {
-          formik.setFieldError(
-            "phone",
-            "Too many requests. Please try again later."
-          );
+        setLoading(true);
+        if (!querySnapshot.empty && isAvailable) {
+          loginWithPasskey(values, querySnapshot);
         } else {
-          formik.setFieldError(
-            "phone",
-            "Failed to send OTP. Please try again."
-          );
+          loginWithOTP(values);
         }
-        console.log("Error during signInWithPhoneNumber", error);
-      } finally {
+      } catch (err) {
         setLoading(false);
+        setDisabled(false);
+        const loginError = err as Error;
+        console.log(loginError);
+        toast.error(loginError.message);
       }
     },
   });
 
   return (
-    <div className="flex items-center justify-center min-h-dvh">
+    <div className="flex flex-col items-center justify-between min-h-dvh">
+      <div></div>
       <div className="rounded-lg shadow-sm border p-6 pt-0 w-full mx-auto max-w-md">
         <div className="flex justify-center">
           <Image
@@ -136,14 +283,19 @@ const PhoneAuthentication = ({
           <button
             type="submit"
             className={`mt-6 w-full bg-blue-600 text-white py-2 text-sm rounded-lg hover:bg-blue-700 transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              disabled ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={disabled}
           >
-            {loading ? "Sending OTP..." : "Continue"}
+            {loading
+              ? isPassKeySaved
+                ? "Logging In ..."
+                : "Sending OTP ..."
+              : "Continue"}
           </button>
         </form>
       </div>
+      <Footer />
     </div>
   );
 };

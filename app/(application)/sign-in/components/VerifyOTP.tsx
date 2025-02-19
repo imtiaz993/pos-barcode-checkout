@@ -4,7 +4,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app, db } from "@/app/firebase";
+import { supported } from "@github/webauthn-json";
+import { startRegistration } from "@simplewebauthn/browser";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
+import axios from "axios";
+import Footer from "@/components/Footer";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
@@ -18,8 +30,31 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [passKeySaved, setPassKeySaved] = useState<boolean | null>(null);
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [resendOtpEnabled, setResendOtpEnabled] = useState(false);
   const [timer, setTimer] = useState(59);
+
+  const getPasskeyInfo = async () => {
+    const querySnapshot: any = await getDocs(
+      query(collection(db, "users"), where("phone", "==", phone))
+    );
+    if (!querySnapshot.empty) {
+      setPassKeySaved(true);
+    } else {
+      setPassKeySaved(false);
+    }
+  };
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      const available =
+        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      setIsAvailable(available && supported());
+    };
+    checkAvailability();
+    getPasskeyInfo();
+  }, []);
 
   useEffect(() => {
     const savedTime = localStorage.getItem("otpResendTime");
@@ -71,8 +106,6 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       const auth = getAuth(app);
       await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
     } catch (error: any) {
-      console.log(error?.response?.data);
-
       const firebaseError =
         error?.response?.data?.error?.message || "UNKNOWN_ERROR";
 
@@ -127,24 +160,55 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
       try {
         await confirmationResult.confirm(values.otp);
+        if (!passKeySaved && isAvailable) {
+          try {
+            const { data: registrationOptions } = await axios.post(
+              "/api/webauthn/registration-options",
+              {
+                phone,
+              }
+            );
+
+            const registrationResponse = await startRegistration(
+              registrationOptions
+            );
+
+            const { data: verifyResponse } = await axios.post(
+              "/api/webauthn/verify-registration",
+              {
+                credential: registrationResponse,
+                challenge: registrationOptions.challenge,
+              }
+            );
+            const userData = {
+              phone: phone,
+              externalID: verifyResponse.credentialID,
+              publicKey: verifyResponse.credentialPublicKey,
+            };
+
+            await setDoc(doc(db, "users", phone), userData, { merge: true });
+          } catch (error) {
+            console.log(error);
+          }
+        }
         if (type == "/activate-gift-card") {
           router.replace(
             `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
           );
         } else {
-          router.replace(`${type}/${region}/${storeId}`);
+          router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
         }
       } catch (error) {
-        setError("Invalid OTP. Please try again.");
-        console.error("Error during confirmationResult.confirm", error);
-      } finally {
         setLoading(false);
+        setError("Invalid OTP. Please try again.");
+        console.log("Error during confirmationResult.confirm", error);
       }
     },
   });
 
   return (
-    <div className="flex items-center justify-center min-h-dvh">
+    <div className="flex flex-col items-center justify-between min-h-dvh">
+      <div></div>
       <div className="rounded-lg shadow-sm border p-6 pt-0 w-full mx-auto max-w-md">
         <div className="flex justify-center">
           <Image
@@ -213,6 +277,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import admin from "../../../utils/firebaseAdmin";
+import admin from "@/utils/firebaseAdmin";
 
-export async function POST(request) {
+export async function POST(request: any) {
   try {
-    const { uid } = await request.json(); // Receive UID from the request body
+    const { uid } = await request.json();
 
     if (!uid) {
       return NextResponse.json({ error: "UID is required" }, { status: 400 });
     }
 
-    // Assign the admin role
     await admin.auth().setCustomUserClaims(uid, { admin: true });
 
     return NextResponse.json({

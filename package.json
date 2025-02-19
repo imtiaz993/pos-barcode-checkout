@@ -9,11 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@github/webauthn-json": "^2.1.1",
+    "@simplewebauthn/browser": "^9.0.1",
+    "@simplewebauthn/server": "^9.0.1",
+    "@simplewebauthn/types": "^9.0.1",
     "@stripe/react-stripe-js": "^3.1.1",
     "@stripe/stripe-js": "^3.5.0",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "axios": "^1.6.8",
+    "deep-chat-react": "^2.1.1",
     "firebase": "^11.0.2",
     "firebase-admin": "^13.0.2",
     "formik": "^2.4.6",
