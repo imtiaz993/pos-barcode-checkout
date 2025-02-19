@@ -1,3 +1,4 @@
+import { useSearchParams } from "next/navigation";
 import {
   FaShippingFast,
   FaHeadset,
@@ -11,7 +12,10 @@ import {
   FaToolbox,
 } from "react-icons/fa";
 
-const IntoMessages = ({ mode }: any) => {
+const IntoMessages = ({ chatElementRef }: any) => {
+  const searchParams = useSearchParams();
+  const mode: any = searchParams.get("mode");
+
   const buttonStyle = {
     padding: "12px 14px",
     borderRadius: "25px",
@@ -57,55 +61,57 @@ const IntoMessages = ({ mode }: any) => {
   const buttons = mode === "chats" ? chatButtons : taskButtons;
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "20px",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "24px",
-            fontWeight: "bold",
-            color: "#1f2937",
-            marginBottom: "24px",
-          }}
-        >
-          {mode === "chats"
-            ? "How can I assist you today?"
-            : "What task would you like to assign?"}
-        </h1>
+    <div className="fixed top-0 right-0 left-64 bottom-16">
+      <div className="absolute inset-0 flex items-center justify-center">
         <div
           style={{
             display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             justifyContent: "center",
-            flexWrap: "wrap",
-            gap: "12px",
-            maxWidth: "500px",
-            width: "100%",
+            padding: "20px",
           }}
         >
-          {buttons.map((btn, index) => (
-            <button
-              key={index}
-              style={buttonStyle}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#f3f4f6")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#fff")
-              }
-            >
-              <span style={{ color: btn.color, fontSize: "16px" }}>
-                {btn.icon}
-              </span>
-              {btn.label}
-            </button>
-          ))}
+          <h1
+            style={{
+              fontSize: "24px",
+              fontWeight: "bold",
+              color: "#1f2937",
+              marginBottom: "24px",
+            }}
+          >
+            {mode === "chats"
+              ? "How can I assist you today?"
+              : "What task would you like to assign?"}
+          </h1>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              gap: "12px",
+              maxWidth: "500px",
+              width: "100%",
+            }}
+          >
+            {buttons.map((btn, index) => (
+              <button
+                key={index}
+                style={buttonStyle}
+                onClick={() => {
+                  chatElementRef.current.addMessage({
+                    text: btn.label,
+                    role: "user",
+                  });
+                }}
+              >
+                <span style={{ color: btn.color, fontSize: "16px" }}>
+                  {btn.icon}
+                </span>
+                {btn.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

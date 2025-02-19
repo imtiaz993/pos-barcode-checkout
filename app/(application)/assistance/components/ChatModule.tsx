@@ -2,9 +2,8 @@
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { chatData, taskData } from "./data";
-import IntoMessages from "./IntoMessages";
 
-const ChatModule = () => {
+const ChatModule = ({ chatElementRef }: any) => {
   const DeepChat = dynamic(
     () => import("deep-chat-react").then((mod) => mod.DeepChat),
     {
@@ -24,6 +23,7 @@ const ChatModule = () => {
     responseInterceptor and the incoming message using responseInterceptor:
     https://deepchat.dev/docs/interceptors */}
       <DeepChat
+        ref={chatElementRef}
         // introMessage={{
         //   text: currentChat ? "" : "Hi I am your assistant, ask me anything!",
         // }}
@@ -98,9 +98,7 @@ const ChatModule = () => {
           console.log(response);
           return response;
         }}
-      >
-        <IntoMessages mode={mode} />
-      </DeepChat>
+      ></DeepChat>
     </div>
   );
 };
