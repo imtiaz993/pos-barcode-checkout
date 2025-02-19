@@ -132,7 +132,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
             `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
           );
         } else {
-          router.replace(`${type}/${region}/${storeId}`);
+          router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
         }
       } catch (error) {
         setError("Invalid OTP. Please try again.");
