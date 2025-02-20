@@ -128,7 +128,7 @@ const Sidebar = () => {
                     <MdOutlineAddTask className="text-blue-400" />
                   )}
                   <span className="truncate w-[calc(100%-20px)]">
-                    {chat.chats[0].text}
+                    {chat.chats[0]?.text}
                   </span>
                 </div>
               </Link>

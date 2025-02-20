@@ -59,7 +59,7 @@ const ChatModule = ({ chatElementRef }: any) => {
             },
           },
         }}
-        connect={{ url: "/api/custom/files" }}
+        connect={{ url: "/api/server" }}
         avatars={{
           ai: {
             src: "https://app.ecoboutiquemarket.com/images/logo.png",
@@ -88,10 +88,10 @@ const ChatModule = ({ chatElementRef }: any) => {
             (chat: any) => chat.id == currentChat
           )?.chats || []
         }
-        validateInput={(_?: string, files?: File[]) => {
-          return !!files && files.length > 0;
+        validateInput={(text?: string, files?: File[]) => {
+          return (!!files && files.length > 0) || !!text;
         }}
-        requestBodyLimits={{ maxMessages: -1 }}
+        requestBodyLimits={{ maxMessages: 1 }}
         requestInterceptor={(details: any) => {
           console.log(details);
           return details;
