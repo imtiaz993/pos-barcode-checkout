@@ -2,6 +2,8 @@
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { chatData, taskData } from "./data";
+import IntoMessages from "./IntoMessages";
+import { useRef } from "react";
 
 const ChatModule = ({ chatElementRef }: any) => {
   const DeepChat = dynamic(
@@ -98,7 +100,9 @@ const ChatModule = ({ chatElementRef }: any) => {
           console.log(response);
           return response;
         }}
-      ></DeepChat>
+      >
+        <IntoMessages />
+      </DeepChat>
     </div>
   );
 };

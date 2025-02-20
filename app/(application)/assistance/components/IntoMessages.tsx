@@ -1,18 +1,8 @@
 import { useSearchParams } from "next/navigation";
-import {
-  FaShippingFast,
-  FaHeadset,
-  FaBoxOpen,
-  FaUndoAlt,
-  FaTags,
-  FaClipboardList,
-  FaTasks,
-  FaCalendarCheck,
-  FaUsersCog,
-  FaToolbox,
-} from "react-icons/fa";
+import { chatButtons, taskButtons } from "./predefinedButtons";
+import React from "react";
 
-const IntoMessages = ({ chatElementRef }: any) => {
+const IntoMessages = () => {
   const searchParams = useSearchParams();
   const mode: any = searchParams.get("mode");
 
@@ -32,37 +22,11 @@ const IntoMessages = ({ chatElementRef }: any) => {
     transition: "background-color 0.3s ease",
   };
 
-  // Chat Mode Buttons (E-commerce Inquiry)
-  const chatButtons = [
-    { label: "Track My Order", icon: <FaShippingFast />, color: "#3b82f6" },
-    { label: "Customer Support", icon: <FaHeadset />, color: "#f59e0b" },
-    { label: "Check Delivery Status", icon: <FaBoxOpen />, color: "#6366f1" },
-    { label: "Refund Inquiry", icon: <FaUndoAlt />, color: "#ef4444" },
-    { label: "Browse Deals", icon: <FaTags />, color: "#14b8a6" },
-  ];
-
-  // Task Assignment Buttons
-  const taskButtons = [
-    {
-      label: "Create a To-Do List",
-      icon: <FaClipboardList />,
-      color: "#3b82f6",
-    },
-    { label: "Assign a Task", icon: <FaTasks />, color: "#10b981" },
-    {
-      label: "Schedule a Meeting",
-      icon: <FaCalendarCheck />,
-      color: "#f59e0b",
-    },
-    { label: "Manage Team", icon: <FaUsersCog />, color: "#6366f1" },
-    { label: "Request a Service", icon: <FaToolbox />, color: "#ef4444" },
-  ];
-
   const buttons = mode === "chats" ? chatButtons : taskButtons;
 
   return (
-    <div className="fixed top-0 right-0 left-64 bottom-16">
-      <div className="absolute inset-0 flex items-center justify-center">
+    <div>
+      <div>
         <div
           style={{
             display: "flex",
@@ -95,18 +59,9 @@ const IntoMessages = ({ chatElementRef }: any) => {
             }}
           >
             {buttons.map((btn, index) => (
-              <button
-                key={index}
-                style={buttonStyle}
-                onClick={() => {
-                  chatElementRef.current.addMessage({
-                    text: btn.label,
-                    role: "user",
-                  });
-                }}
-              >
+              <button id={"prompt" + index} key={index} style={buttonStyle}>
                 <span style={{ color: btn.color, fontSize: "16px" }}>
-                  {btn.icon}
+                  {React.createElement(btn.icon)}
                 </span>
                 {btn.label}
               </button>
