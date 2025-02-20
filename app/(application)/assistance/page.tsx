@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { chatButtons, taskButtons } from "./components/predefinedButtons";
 import Payment from "@/components/Payment";
 import Loader from "@/components/loader";
+import { toast } from "sonner";
+import axios from "axios";
 
 export default function Page() {
   const chatElementRef: any = useRef(null);
@@ -24,15 +26,6 @@ export default function Page() {
       if (deepChat) {
         const shadowRoot = deepChat.shadowRoot;
         if (shadowRoot) {
-          const paymentButton: any = shadowRoot.getElementById("takePayment");
-          if (paymentButton) {
-            paymentButton.addEventListener("click", (event: any) => {
-              const buttonId = event.target.id;
-              console.log("CLICKED");
-              setLoading(true);
-              setShowCheckout(true);
-            });
-          }
           const buttons = shadowRoot.querySelectorAll("button");
           if (buttons.length > 0) {
             buttons.forEach((button) => {
@@ -56,6 +49,53 @@ export default function Page() {
     return () => clearTimeout(timer);
   }, [mode, id, newChat]);
 
+  useEffect(() => {
+    const attachButtonClickListener = () => {
+      const deepChat = document.querySelector("deep-chat");
+      if (deepChat) {
+        const shadowRoot = deepChat.shadowRoot;
+        if (shadowRoot) {
+          const paymentButton: any =
+            shadowRoot.getElementById("takePayment120");
+          if (paymentButton) {
+            paymentButton.addEventListener("click", (event: any) => {
+              const buttonId = event.target.id;
+              setLoading(true);
+              setShowCheckout(true);
+            });
+          }
+        }
+      }
+    };
+
+    // Delay to ensure deep-chat is fully loaded
+    const timer = setTimeout(attachButtonClickListener, 500);
+    return () => clearTimeout(timer);
+  }, [id, showCheckout]);
+
+  const handleAddTask = async () => {
+    try {
+      const response = await axios.post(
+        `https://api.ecoboutiquemarket.com/taskPayment`,
+        {
+          amount: 1000,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      
+      //Todo: make payment status true of the task
+      setLoading(false);
+      setShowCheckout(false);
+    } catch (error: any) {
+      setLoading(false);
+      setShowCheckout(false);
+      toast.error(error?.response?.data?.message);
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <div className="min-h-dvh max-h-dvh bg-gray-50 flex justify-between">
       {loading && <Loader />}
@@ -63,16 +103,13 @@ export default function Page() {
         <Payment
           price={100}
           onSuccess={() => {
-            setLoading(false);
-            setShowCheckout(false);
+            handleAddTask();
           }}
           onCancel={() => {
-            setLoading(false);
             setShowCheckout(false);
           }}
           onPaymentCreatedIntent={() => {
             setLoading(false);
-            setShowCheckout(false);
           }}
         />
       ) : (
