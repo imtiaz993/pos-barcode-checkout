@@ -102,6 +102,7 @@ export const chatData = [
 export const taskData = [
   {
     id: 1,
+    paymentStatus: true,
     chats: [
       {
         text: "I need to complete a project report by tomorrow.",
@@ -147,6 +148,7 @@ export const taskData = [
   },
   {
     id: 2,
+    paymentStatus: false,
     chats: [
       {
         text: "I Need a website design.",
@@ -196,6 +198,7 @@ export const taskData = [
   },
   {
     id: 3,
+    paymentStatus: false,
     chats: [
       { text: "Plan a team outing for next weekend.", role: "user" },
       {
@@ -241,6 +244,7 @@ export const taskData = [
   },
   {
     id: 4,
+    paymentStatus: false,
     chats: [
       { text: "Create a shopping list, please.", role: "user" },
       {

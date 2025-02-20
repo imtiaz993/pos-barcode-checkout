@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { chatData, taskData } from "./data";
 import IntoMessages from "./IntoMessages";
-import { useRef } from "react";
 
 const ChatModule = ({ chatElementRef }: any) => {
   const DeepChat = dynamic(
@@ -24,6 +23,21 @@ const ChatModule = ({ chatElementRef }: any) => {
       {/* If you don't want to or can't edit the target service, you can process the outgoing message using
     responseInterceptor and the incoming message using responseInterceptor:
     https://deepchat.dev/docs/interceptors */}
+
+      {mode === "tasks" &&
+        taskData.find((chat: any) => chat.id == currentChat)?.paymentStatus && (
+          <div className="flex justify-end mr-2">
+            <button
+              type="submit"
+              className={`bg-blue-600 text-white py-1.5 px-5 my-2 text-sm rounded-lg hover:bg-blue-700 transition ${
+                false ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={false}
+            >
+              {false ? "Processing..." : "Refund"}
+            </button>
+          </div>
+        )}
       <DeepChat
         ref={chatElementRef}
         // introMessage={{
