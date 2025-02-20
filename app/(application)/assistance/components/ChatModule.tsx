@@ -26,7 +26,7 @@ const ChatModule = ({ chatElementRef }: any) => {
 
       {mode === "tasks" &&
         taskData.find((chat: any) => chat.id == currentChat)?.paymentStatus && (
-          <div className="flex justify-end mr-2">
+          <div className="mt-10 flex justify-end mr-2">
             <button
               type="submit"
               className={`bg-blue-600 text-white py-1.5 px-5 my-2 text-sm rounded-lg hover:bg-blue-700 transition ${

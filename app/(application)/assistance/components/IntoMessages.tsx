@@ -42,6 +42,7 @@ const IntoMessages = () => {
               fontWeight: "bold",
               color: "#1f2937",
               marginBottom: "24px",
+              textAlign: "center",
             }}
           >
             {mode === "chats"

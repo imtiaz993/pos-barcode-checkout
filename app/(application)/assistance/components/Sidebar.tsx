@@ -7,7 +7,7 @@ import { IoMdMenu } from "react-icons/io";
 import { chatData, taskData } from "./data";
 import { MdOutlineAddTask } from "react-icons/md";
 
-const Sidebar = () => {
+const Sidebar = ({ setNewChat }: any) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const storeId = searchParams.get("storeId");
@@ -33,7 +33,8 @@ const Sidebar = () => {
             <button
               className="text-black rounded-full md:hidden"
               onClick={() => {
-                router.push(
+                setNewChat((prev: any) => !prev);
+                router.replace(
                   `/assistance?mode=${mode}&type=${type}&region=${region}&storeId=${storeId}`
                 );
               }}
@@ -55,7 +56,7 @@ const Sidebar = () => {
           isDrawerOpen ? "block" : "hidden"
         } md:block`}
       >
-        <div className="flex flex-col h-full w-full md:w-64">
+        <div className="bg-white flex flex-col h-full w-full md:w-64">
           <div className="px-4 md:px-2 py-2 border-b border-gray-700 font-semibold flex justify-between items-center">
             <button
               onClick={() => router.back()}
@@ -65,11 +66,12 @@ const Sidebar = () => {
             </button>
             <button
               className="text-black p-2 rounded-full hidden md:block"
-              onClick={() =>
-                router.push(
+              onClick={() => {
+                setNewChat((prev: any) => !prev);
+                router.replace(
                   `/assistance?mode=${mode}&type=${type}&region=${region}&storeId=${storeId}`
-                )
-              }
+                );
+              }}
             >
               <FaPen />
             </button>

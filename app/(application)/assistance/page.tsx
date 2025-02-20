@@ -2,7 +2,7 @@
 import Sidebar from "./components/Sidebar";
 import ChatModule from "./components/ChatModule";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { chatButtons, taskButtons } from "./components/predefinedButtons";
 import Payment from "@/components/Payment";
 import Loader from "@/components/loader";
@@ -11,10 +11,12 @@ export default function Page() {
   const chatElementRef: any = useRef(null);
   const searchParams = useSearchParams();
   const mode: any = searchParams.get("mode");
+  const id: any = searchParams.get("id");
   const predefinedButtons = mode === "chats" ? chatButtons : taskButtons;
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [newChat, setNewChat] = useState(null);
 
   useEffect(() => {
     const attachButtonClickListener = () => {
@@ -37,9 +39,8 @@ export default function Page() {
               button.addEventListener("click", (event: any) => {
                 const buttonId = event.target.id;
                 const index = buttonId.split("prompt")[1];
-                chatElementRef?.current.addMessage({
+                chatElementRef?.current.submitUserMessage({
                   text: predefinedButtons[Number(index)].label,
-                  role: "user",
                 });
               });
             });
@@ -53,7 +54,7 @@ export default function Page() {
     // Delay to ensure deep-chat is fully loaded
     const timer = setTimeout(attachButtonClickListener, 500);
     return () => clearTimeout(timer);
-  }, [mode]);
+  }, [mode, id, newChat]);
 
   return (
     <div className="min-h-dvh max-h-dvh bg-gray-50 flex justify-between">
@@ -77,7 +78,7 @@ export default function Page() {
       ) : (
         <></>
       )}
-      <Sidebar />
+      <Sidebar setNewChat={setNewChat} />
       <ChatModule chatElementRef={chatElementRef} />
     </div>
   );

@@ -234,7 +234,7 @@ export const taskData = [
 
         <button id="takePayment" 
                 style="background-color: #2563eb; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
-            Start Planning - Pay Now
+            Start Task - Pay Now
         </button>
 </div>
 `,
@@ -278,7 +278,7 @@ export const taskData = [
 
         <button id="takePayment" 
                 style="background-color: #2563eb; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
-            Start Shopping - Pay Now
+            Start Task - Pay Now
         </button>
 </div>
 `,
