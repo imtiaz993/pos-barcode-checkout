@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     const querySnapshot = await getDocs(
-      query(collection(db, "users"), where("phone", "==", phone))
+      query(collection(db, "users-passkey"), where("phone", "==", phone))
     );
 
     if (querySnapshot.empty) {

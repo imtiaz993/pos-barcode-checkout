@@ -37,7 +37,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
 
   const getPasskeyInfo = async () => {
     const querySnapshot: any = await getDocs(
-      query(collection(db, "users"), where("phone", "==", phone))
+      query(collection(db, "users-passkey"), where("phone", "==", phone))
     );
     if (!querySnapshot.empty) {
       setPassKeySaved(true);
@@ -186,7 +186,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
               publicKey: verifyResponse.credentialPublicKey,
             };
 
-            await setDoc(doc(db, "users", phone), userData, { merge: true });
+            await setDoc(doc(db, "users-passkey", phone), userData, { merge: true });
           } catch (error) {
             console.log(error);
           }

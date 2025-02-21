@@ -210,7 +210,7 @@ const PhoneAuthentication = ({
       setDisabled(true);
       try {
         const querySnapshot: any = await getDocs(
-          query(collection(db, "users"), where("phone", "==", values.phone))
+          query(collection(db, "users-passkey"), where("phone", "==", values.phone))
         );
         setLoading(true);
         if (!querySnapshot.empty && isAvailable) {

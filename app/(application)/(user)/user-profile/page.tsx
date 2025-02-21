@@ -70,7 +70,7 @@ export default function ProfilePage() {
         publicKey: verifyResponse.credentialPublicKey,
       };
 
-      await setDoc(doc(db, "users", userData.phone), userData, { merge: true });
+      await setDoc(doc(db, "users-passkey", userData.phone), userData, { merge: true });
       toast.success("Passkey enrolled successfully!");
 
       getPasskeyInfo(() => {
@@ -85,7 +85,7 @@ export default function ProfilePage() {
   const deletePasskey = async () => {
     try {
       const phone: any = user?.phoneNumber;
-      await deleteDoc(doc(db, "users", phone));
+      await deleteDoc(doc(db, "users-passkey", phone));
       toast.success("Passkey removed successfully!");
       getPasskeyInfo(() => {
         setRemoving(true);
@@ -98,7 +98,7 @@ export default function ProfilePage() {
 
   const getPasskeyInfo = async (onSuccess?: any) => {
     const querySnapshot: any = await getDocs(
-      query(collection(db, "users"), where("phone", "==", user?.phoneNumber))
+      query(collection(db, "users-passkey"), where("phone", "==", user?.phoneNumber))
     );
     if (onSuccess) {
       onSuccess();

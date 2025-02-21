@@ -75,7 +75,7 @@ export default function Page() {
 
   const handleAddTask = async (setLoading: any, paymentIntent: any) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `https://api.ecoboutiquemarket.com/taskPayment`,
         {
           amount: 1000,
