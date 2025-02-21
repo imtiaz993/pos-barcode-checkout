@@ -2,7 +2,7 @@
 import Sidebar from "./components/Sidebar";
 import ChatModule from "./components/ChatModule";
 import { useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { chatButtons, taskButtons } from "./components/predefinedButtons";
 import Payment from "@/components/Payment";
 import Loader from "@/components/loader";
@@ -19,6 +19,7 @@ export default function Page() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newChat, setNewChat] = useState(null);
+  const [newTask, setNewTask] = useState(null);
 
   useEffect(() => {
     const attachButtonClickListener = () => {
@@ -55,8 +56,7 @@ export default function Page() {
       if (deepChat) {
         const shadowRoot = deepChat.shadowRoot;
         if (shadowRoot) {
-          const paymentButton: any =
-            shadowRoot.getElementById("takePayment120");
+          const paymentButton: any = shadowRoot.getElementById("takePayment");
           if (paymentButton) {
             paymentButton.addEventListener("click", (event: any) => {
               const buttonId = event.target.id;
@@ -71,7 +71,7 @@ export default function Page() {
     // Delay to ensure deep-chat is fully loaded
     const timer = setTimeout(attachButtonClickListener, 500);
     return () => clearTimeout(timer);
-  }, [id, showCheckout]);
+  }, [id, showCheckout, newTask]);
 
   const handleAddTask = async () => {
     try {
@@ -84,7 +84,7 @@ export default function Page() {
           headers: { "Content-Type": "application/json" },
         }
       );
-      
+
       //Todo: make payment status true of the task
       setLoading(false);
       setShowCheckout(false);
@@ -116,7 +116,7 @@ export default function Page() {
         <></>
       )}
       <Sidebar setNewChat={setNewChat} />
-      <ChatModule chatElementRef={chatElementRef} />
+      <ChatModule chatElementRef={chatElementRef} setNewTask={setNewTask} />
     </div>
   );
 }

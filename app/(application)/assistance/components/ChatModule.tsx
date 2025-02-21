@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { chatData, taskData } from "./data";
 import IntoMessages from "./IntoMessages";
 
-const ChatModule = ({ chatElementRef }: any) => {
+const ChatModule = ({ chatElementRef, setNewTask }: any) => {
   const DeepChat = dynamic(
     () => import("deep-chat-react").then((mod) => mod.DeepChat),
     {
@@ -107,11 +107,20 @@ const ChatModule = ({ chatElementRef }: any) => {
         }}
         requestBodyLimits={{ maxMessages: 1 }}
         requestInterceptor={(details: any) => {
-          console.log(details);
-          return details;
+          const request = {
+            ...details, // Preserve all existing properties
+            body: {
+              ...details.body, // Keep existing body properties
+              identifier: mode, // Dynamically add identifier
+            },
+          };
+
+          return request;
         }}
         responseInterceptor={(response: any) => {
-          console.log(response);
+          if (response.html) {
+            setNewTask(true);
+          }
           return response;
         }}
       >
