@@ -1,9 +1,6 @@
-import errorHandler from "@/utils/errorHandler";
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "edge";
-
-async function handler(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     let identifier;
     if (req.headers.get("content-type")?.includes("multipart/form-data")) {
@@ -22,13 +19,12 @@ async function handler(req: NextRequest) {
       //Identifier means Chats or Tasks
       identifier = messageRequestBody.identifier;
     }
-    if (identifier == "chats") {
-      return NextResponse.json({
-        text: "This is a response from Next.js server. Thank you for your message!",
-      });
-    } else {
-      return NextResponse.json({
-        html: `    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
+    return identifier === "chats"
+      ? NextResponse.json({
+          text: "This is a response from Next.js server. Thank you for your message!",
+        })
+      : NextResponse.json({
+          html: `    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
         <h2 style="color: #333;">Task Title</h2>
 
         <h3 style="color: #555;">Step by Step Breakdown</h3>
@@ -61,15 +57,12 @@ async function handler(req: NextRequest) {
             Start Task - Pay Now
         </button>
     </div>`,
-      });
-    }
+        });
   } catch (error) {
-    console.error("Error processing request:", error);
+    console.error("API Error:", error);
     return NextResponse.json(
-      { error: "Failed to process request" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
 }
-
-export const POST = errorHandler(handler);
