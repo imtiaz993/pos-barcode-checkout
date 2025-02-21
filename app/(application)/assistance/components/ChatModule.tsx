@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { chatData, taskData } from "./data";
 import IntoMessages from "./IntoMessages";
+import Refund from "./Refund";
 
 const ChatModule = ({ chatElementRef, setNewTask }: any) => {
   const DeepChat = dynamic(
@@ -26,17 +27,12 @@ const ChatModule = ({ chatElementRef, setNewTask }: any) => {
 
       {mode === "tasks" &&
         taskData.find((chat: any) => chat.id == currentChat)?.paymentStatus && (
-          <div className="mt-10 flex justify-end mr-2">
-            <button
-              type="submit"
-              className={`bg-blue-600 text-white py-1.5 px-5 my-2 text-sm rounded-lg hover:bg-blue-700 transition ${
-                false ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={false}
-            >
-              {false ? "Processing..." : "Refund"}
-            </button>
-          </div>
+          <Refund
+            paymentIntentId={
+              taskData.find((chat: any) => chat.id == currentChat)
+                ?.paymentIntent?.id
+            }
+          />
         )}
       <DeepChat
         ref={chatElementRef}

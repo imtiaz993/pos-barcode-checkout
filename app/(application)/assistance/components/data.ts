@@ -103,6 +103,42 @@ export const taskData = [
   {
     id: 1,
     paymentStatus: true,
+    paymentIntent: {
+      id: "pi_3QupsVAMfCopMv5P0xzInbR2",
+      object: "payment_intent",
+      amount: 10000,
+      amount_details: {
+        tip: {},
+      },
+      automatic_payment_methods: {
+        allow_redirects: "always",
+        enabled: true,
+      },
+      canceled_at: null,
+      cancellation_reason: null,
+      capture_method: "automatic",
+      client_secret:
+        "pi_3QupkjAMfCopMv5P3DsHgSRY_secret_zyAPzfrWMtjYuyPt3HfWrvyDO",
+      confirmation_method: "automatic",
+      created: 1740119425,
+      currency: "usd",
+      description: null,
+      last_payment_error: null,
+      livemode: false,
+      next_action: null,
+      payment_method: "pm_1QupkwAMfCopMv5PZWXwKSaI",
+      payment_method_configuration_details: {
+        id: "pmc_1QSPBDAMfCopMv5PxM4p6b0P",
+        parent: null,
+      },
+      payment_method_types: ["card", "link", "cashapp", "amazon_pay"],
+      processing: null,
+      receipt_email: null,
+      setup_future_usage: "off_session",
+      shipping: null,
+      source: null,
+      status: "succeeded",
+    },
     chats: [
       {
         text: "I need to complete a project report by tomorrow.",

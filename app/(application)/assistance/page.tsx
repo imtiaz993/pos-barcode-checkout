@@ -73,19 +73,21 @@ export default function Page() {
     return () => clearTimeout(timer);
   }, [id, showCheckout, newTask]);
 
-  const handleAddTask = async () => {
+  const handleAddTask = async (setLoading: any, paymentIntent: any) => {
     try {
       const response = await axios.post(
         `https://api.ecoboutiquemarket.com/taskPayment`,
         {
           amount: 1000,
+          id: id,
+          paymentIntent: paymentIntent,
         },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
 
-      //Todo: make payment status true of the task
+      //Todo: make payment status true of the task & add paymentIntent
       setLoading(false);
       setShowCheckout(false);
     } catch (error: any) {
@@ -102,9 +104,7 @@ export default function Page() {
       {showCheckout ? (
         <Payment
           price={100}
-          onSuccess={() => {
-            handleAddTask();
-          }}
+          onSuccess={handleAddTask}
           onCancel={() => {
             setShowCheckout(false);
           }}
