@@ -83,33 +83,51 @@ const Sidebar = ({ setNewChat }: any) => {
               <FaTimes className="text-lg" />
             </button>
           </div>
-          <div className="p-1 pb-2 grid grid-cols-2">
+          <div className="m-1 mb-2 grid grid-cols-2 relative  bg-gray-200 rounded overflow-hidden">
+            {/* Animated Background */}
             <div
-              className={`flex items-center justify-center gap-1.5 px-4 md:px-2 py-1 cursor-pointer rounded-l ${
-                mode === "chats" ? "bg-blue-600 text-white" : "bg-gray-200"
-              } `}
+              className={`absolute top-0 bottom-0 w-1/2 bg-blue-600 transition-all duration-300 ${
+                mode === "tasks" ? "translate-x-full" : "translate-x-0"
+              }`}
+            ></div>
+
+            <div
+              className="relative px-4 md:px-2 py-1.5 cursor-pointer text-sm font-medium text-gray-700 transition-colors duration-300"
               onClick={() => {
                 router.replace(
                   `/assistance?mode=${"chats"}&type=${type}&region=${region}&storeId=${storeId}`
                 );
               }}
             >
-              <FaHistory className="text-xs" /> Chats
+              <span
+                className={`${
+                  mode === "chats" ? "text-white" : "text-gray-700"
+                } flex-1 flex items-center justify-center gap-1.5   z-10`}
+              >
+                <FaHistory className="text-xs" />
+                Chats
+              </span>
             </div>
+
             <div
-              className={`flex items-center justify-center gap-1.5 px-4 md:px-2 py-1 cursor-pointer rounded-r ${
-                mode === "tasks" ? "bg-blue-600 text-white" : "bg-gray-200"
-              }`}
+              className="relative px-4 md:px-2 py-1.5 cursor-pointer text-sm font-medium text-gray-700 transition-colors duration-300"
               onClick={() => {
                 router.replace(
                   `/assistance?mode=${"tasks"}&type=${type}&region=${region}&storeId=${storeId}`
                 );
               }}
             >
-              <FaTasks className="text-xs" />
-              Tasks
+              <span
+                className={`${
+                  mode === "tasks" ? "text-white" : "text-gray-700"
+                } flex-1 flex items-center justify-center gap-1.5  z-10`}
+              >
+                <FaTasks className="text-xs" />
+                Tasks
+              </span>
             </div>
           </div>
+
           <ul className="flex-1 overflow-auto">
             {(mode === "chats" ? chatData : taskData).map((chat, index) => (
               <Link

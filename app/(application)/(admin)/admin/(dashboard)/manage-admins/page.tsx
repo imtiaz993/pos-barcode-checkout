@@ -3,10 +3,12 @@
 import Loader from "@/components/loader";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import CreateAdmin from "./components/CreateAdmin";
 
 const Page = () => {
   const [admins, setAdmins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -22,15 +24,25 @@ const Page = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
   return (
     <>
       {loading && <Loader />}
+      {showPopup && <CreateAdmin setShowPopup={setShowPopup} />}
       <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-2 sm:px-4 py-2">
         <div className="w-full mx-auto  mt-3 sm:mt-4 flex flex-col min-h-[calc(100dvh-82px)]">
-          <h1 className="mb-3 sm:mb-5 text-lg sm:text-2xl font-semibold text-gray-700">
-            All Admins
-          </h1>
+          <div className="flex justify-between mb-3 sm:mb-5 ">
+            <h1 className="text-lg sm:text-2xl font-semibold text-gray-700">
+              All Admins
+            </h1>
+            <button
+              onClick={() => {
+                setShowPopup(true);
+              }}
+              className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+            >
+              Add Admin
+            </button>
+          </div>
           <div className="bg-white shadow-lg rounded-lg flex-grow flex flex-col overflow-hidden">
             <div className="overflow-auto flex-grow">
               <table className="w-full text-left border-collapse text-sm sm:text-base">

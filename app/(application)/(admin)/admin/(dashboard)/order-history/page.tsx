@@ -193,14 +193,11 @@ const Page = () => {
               </button>
 
               {filtersVisible && (
-                <div className="fixed sm:absolute sm:right-0 sm:top-9 inset-0 sm:inset-auto z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.8)] sm:bg-transparent">
+                <div className="fixed sm:absolute sm:right-0 sm:top-9 inset-0 sm:inset-auto z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.3)] sm:bg-transparent">
                   <div className="bg-white border px-5 py-5 rounded-lg w-11/12 sm:w-1/2 lg:w-1/3 transform transition-all min-w-96 max-w-lg sm:shadow-xl">
                     <div className="flex justify-between mb-2">
                       <h2 className="text-lg font-semibold">Filters</h2>
-                      <button
-                        onClick={() => setFiltersVisible(false)}
-                        className="text-red-500 hover:text-red-700 sm:hidden"
-                      >
+                      <button onClick={() => setFiltersVisible(false)}>
                         <IoMdClose className="text-lg" />
                       </button>
                     </div>
