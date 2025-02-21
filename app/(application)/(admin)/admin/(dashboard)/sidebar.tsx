@@ -17,6 +17,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
     { href: "/admin/order-history", label: "Order History" },
     { href: "/admin/manage-users", label: "Manage Users" },
     { href: "/admin/manage-admins", label: "Manage Admins" },
+    { href: "/admin/manage-managers", label: "Manage Managers" },
   ];
 
   return (

@@ -8,7 +8,7 @@ import { IoMdClose } from "react-icons/io";
 import { toast } from "sonner";
 import * as Yup from "yup";
 
-const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
+const CreateManager = ({ setShowPopup, fetchUsers }: any) => {
   const [mode, setMode] = useState("sso");
   const auth = getAuth(app);
 
@@ -35,9 +35,9 @@ const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
           if (!userSnap.exists()) {
             await setDoc(userRef, { email: values.email });
             setShowPopup(false);
-            toast.success("Admin added successfully!");
+            toast.success("Manager added successfully!");
           } else {
-            toast.error("Admin already exists!");
+            toast.error("Manager already exists!");
           }
         } else {
           const data = await createUserWithEmailAndPassword(
@@ -47,13 +47,13 @@ const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
           );
           console.log(data.user.uid);
 
-          await axios.post("/api/firebase/set-admin", {
+          await axios.post("/api/firebase/set-manager", {
             uid: data.user.uid,
           });
 
           setShowPopup(false);
           fetchUsers();
-          toast.success("Admin added successfully!");
+          toast.success("Manager added successfully!");
         }
       } catch (error) {
         console.error("Error during signInWithEmailAndPassword", error);
@@ -68,7 +68,7 @@ const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
       <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.3)]">
         <div className="bg-white border px-5 py-5 rounded-lg w-11/12 lg:w-1/3 transform transition-all min-w-96 max-w-lg sm:shadow-xl">
           <div className="flex justify-between mb-2">
-            <h2 className="text-lg font-semibold">Create New Admin</h2>
+            <h2 className="text-lg font-semibold">Create New Manager</h2>
             <button
               disabled={formik.isSubmitting}
               onClick={() => setShowPopup(false)}
@@ -191,4 +191,4 @@ const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
   );
 };
 
-export default CreateAdmin;
+export default CreateManager;

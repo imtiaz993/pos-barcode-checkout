@@ -8,13 +8,13 @@ export async function GET() {
     const listUsers = await auth.listUsers();
 
     const users = listUsers.users.filter((user: any) => {
-      return user?.customClaims?.admin == true;
+      return user?.customClaims?.manager == true;
     });
 
-    return NextResponse.json({ admins: users });
+    return NextResponse.json({ managers: users });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch admins" },
+      { error: "Failed to fetch managers" },
       { status: 500 }
     );
   }

@@ -3,17 +3,17 @@
 import Loader from "@/components/loader";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import CreateAdmin from "./components/CreateAdmin";
+import CreateManager from "./components/CreateManager";
 
 const Page = () => {
-  const [admins, setAdmins] = useState<any[]>([]);
+  const [managers, setManagers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
 
   const fetchUsers = async () => {
     try {
-      const data: any = await axios.get("/api/firebase/getAdmins");
-      setAdmins(data.data.admins);
+      const data: any = await axios.get("/api/firebase/getManagers");
+      setManagers(data.data.managers);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -28,13 +28,13 @@ const Page = () => {
     <>
       {loading && <Loader />}
       {showPopup && (
-        <CreateAdmin setShowPopup={setShowPopup} fetchUsers={fetchUsers} />
+        <CreateManager setShowPopup={setShowPopup} fetchUsers={fetchUsers} />
       )}
       <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-2 sm:px-4 py-2">
         <div className="w-full mx-auto  mt-3 sm:mt-4 flex flex-col min-h-[calc(100dvh-82px)]">
           <div className="flex justify-between mb-3 sm:mb-5 ">
             <h1 className="text-lg sm:text-2xl font-semibold text-gray-700">
-              All Admins
+              All Managers
             </h1>
             <button
               onClick={() => {
@@ -42,7 +42,7 @@ const Page = () => {
               }}
               className="text-sm bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
             >
-              Add Admin
+              Add Manager
             </button>
           </div>
           <div className="bg-white shadow-lg rounded-lg flex-grow flex flex-col overflow-hidden">
@@ -59,8 +59,8 @@ const Page = () => {
                   </tr>
                 </thead>
                 <tbody className="text-xs sm:text-base">
-                  {admins.length > 0 ? (
-                    admins.map((admin, index) => (
+                  {managers.length > 0 ? (
+                    managers.map((manager, index) => (
                       <tr
                         key={index}
                         className={`border-b ${
@@ -69,22 +69,21 @@ const Page = () => {
                       >
                         <td className="p-2 sm:p-4 whitespace-nowrap">
                           {" "}
-                          {admin.uid}
+                          {manager.uid}
                         </td>
                         <td className="p-2 sm:p-4 whitespace-nowrap">
-                          {admin.email}
-                        </td>
-                        <td className="p-2 sm:p-4 whitespace-nowrap">
-                          {new Date(admin.metadata.creationTime).toLocaleString(
-                            "en-US",
-                            {
-                              timeZone: "UTC",
-                            }
-                          )}
+                          {manager.email}
                         </td>
                         <td className="p-2 sm:p-4 whitespace-nowrap">
                           {new Date(
-                            admin.metadata.lastSignInTime
+                            manager.metadata.creationTime
+                          ).toLocaleString("en-US", {
+                            timeZone: "UTC",
+                          })}
+                        </td>
+                        <td className="p-2 sm:p-4 whitespace-nowrap">
+                          {new Date(
+                            manager.metadata.lastSignInTime
                           ).toLocaleString("en-US", {
                             timeZone: "UTC",
                           })}
