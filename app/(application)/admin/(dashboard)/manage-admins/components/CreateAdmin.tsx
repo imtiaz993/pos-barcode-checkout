@@ -1,4 +1,5 @@
-import { app, db } from "@/app/firebase";
+import { app, auth, db } from "@/app/firebase";
+import admin from "@/utils/firebaseAdmin";
 import axios from "axios";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -10,7 +11,6 @@ import * as Yup from "yup";
 
 const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
   const [mode, setMode] = useState("sso");
-  const auth = getAuth(app);
 
   const formik = useFormik({
     initialValues: {
@@ -40,15 +40,13 @@ const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
             toast.error("Admin already exists!");
           }
         } else {
-          const data = await createUserWithEmailAndPassword(
-            auth,
-            values.email,
-            values.password
-          );
-          console.log(data.user.uid);
+          const { data } = await axios.post("/api/firebase/create-user", {
+            email: values.email,
+            password: values.password,
+          });
 
           await axios.post("/api/firebase/set-admin", {
-            uid: data.user.uid,
+            uid: data.data.uid,
           });
 
           setShowPopup(false);

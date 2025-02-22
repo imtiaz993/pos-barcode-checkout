@@ -40,15 +40,13 @@ const CreateManager = ({ setShowPopup, fetchUsers }: any) => {
             toast.error("Manager already exists!");
           }
         } else {
-          const data = await createUserWithEmailAndPassword(
-            auth,
-            values.email,
-            values.password
-          );
-          console.log(data.user.uid);
+          const { data } = await axios.post("/api/firebase/create-user", {
+            email: values.email,
+            password: values.password,
+          });
 
           await axios.post("/api/firebase/set-manager", {
-            uid: data.user.uid,
+            uid: data.data.uid,
           });
 
           setShowPopup(false);
