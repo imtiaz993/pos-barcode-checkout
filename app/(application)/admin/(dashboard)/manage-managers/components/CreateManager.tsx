@@ -52,7 +52,7 @@ const CreateManager = ({ setShowPopup, fetchUsers }: any) => {
           toast.success("Manager added successfully!");
         }
       } catch (error: any) {
-        console.error("Error during signInWithEmailAndPassword", error);
+        console.log("Error during signInWithEmailAndPassword", error);
         toast.error(error.response.data.error);
       } finally {
         setSubmitting(false);

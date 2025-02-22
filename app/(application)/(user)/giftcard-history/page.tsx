@@ -28,7 +28,7 @@ const Page = () => {
       .catch((error) => {
         toast.error(error?.response?.data?.message);
         setLoading(false);
-        console.error("Error fetching client secret:", error);
+        console.log("Error fetching client secret:", error);
       });
   }, []);
 

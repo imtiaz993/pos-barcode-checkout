@@ -15,7 +15,7 @@ export async function POST(request: any) {
       message: `User with UID ${uid} is now an admin.`,
     });
   } catch (error: any) {
-    console.error("Error setting admin role:", error);
+    console.log("Error setting admin role:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error verifying registration:", error);
+    console.log("Error verifying registration:", error);
     return NextResponse.json(
       { error: error.message || "Verification failed" },
       { status: 500 }

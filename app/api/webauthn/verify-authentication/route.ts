@@ -41,13 +41,13 @@ export async function POST(request: Request) {
         requireUserVerification: true,
       });
     } catch (err: any) {
-      console.error("Error verifying WebAuthn authentication:", err);
+      console.log("Error verifying WebAuthn authentication:", err);
       return NextResponse.json({ error: err.message }, { status: 400 });
     }
 
     return NextResponse.json({ verification });
   } catch (error) {
-    console.error("Unhandled error:", error);
+    console.log("Unhandled error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

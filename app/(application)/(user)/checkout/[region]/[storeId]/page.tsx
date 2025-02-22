@@ -102,7 +102,7 @@ const POS = () => {
     } catch (error: any) {
       setProductFetching(false);
       toast.error(error?.response?.data?.message);
-      console.error("Error fetching product:", error);
+      console.log("Error fetching product:", error);
     }
   };
 

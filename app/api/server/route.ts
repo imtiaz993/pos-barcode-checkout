@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     let identifier;
+    let messages;
     if (req.headers.get("content-type")?.includes("multipart/form-data")) {
       const formData = await req.formData();
       formData.forEach((value, key) => {
@@ -14,14 +15,27 @@ export async function POST(req: NextRequest) {
       });
     } else {
       const messageRequestBody = await req.json();
-      console.log("JSON Request Body:", messageRequestBody);
-      const messages = messageRequestBody.messages;
+      messages = messageRequestBody.messages;
       //Identifier means Chats or Tasks
       identifier = messageRequestBody.identifier;
     }
     return identifier === "chats"
       ? NextResponse.json({
-          text: "This is a response from Next.js server. Thank you for your message!",
+          html: `
+    <div style="padding: 10px; background: #fff; border-radius: 8px;">
+        <div style="border-left: 3px solid #007bff; padding-left: 10px; color: #555; font-style: italic; margin-bottom: 5px;">
+            ${
+              messages[0].text.length > 100
+                ? messages[0].text.slice(0, 100) + "..."
+                : messages[0].text
+            }
+        </div>
+        <div>
+            Thankyou for sending the message.
+        </div>
+    </div>
+
+`,
         })
       : NextResponse.json({
           html: `    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
@@ -59,7 +73,7 @@ export async function POST(req: NextRequest) {
     </div>`,
         });
   } catch (error) {
-    console.error("API Error:", error);
+    console.log("API Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

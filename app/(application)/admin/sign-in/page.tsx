@@ -66,11 +66,11 @@ const EmailAuthentication = () => {
           }
         } catch (error: any) {
           toast.error(error.response.data.error);
-          console.error("Error calling API:", error);
+          console.log("Error calling API:", error);
         }
       } catch (error: any) {
         formik.setFieldError("email", error.message);
-        console.error("Error during signInWithEmailAndPassword", error);
+        console.log("Error during signInWithEmailAndPassword", error);
       } finally {
         setLoading(false);
       }

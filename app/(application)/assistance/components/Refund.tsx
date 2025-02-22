@@ -23,7 +23,7 @@ const Refund = ({ paymentIntentId }: any) => {
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
-      console.error("Error:", error);
+      console.log("Error:", error);
     }
   };
 

@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     return Response.json({ success: true, refund });
   } catch (error: any) {
-    console.error("Refund Error:", error);
+    console.log("Refund Error:", error);
     return Response.json(
       { success: false, message: error.message },
       { status: 500 }

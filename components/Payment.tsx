@@ -203,7 +203,7 @@ const Payment = ({
       })
       .catch((error) => {
         onPaymentCreatedIntent();
-        console.error("Error fetching client secret:", error);
+        console.log("Error fetching client secret:", error);
       });
   }, []);
 

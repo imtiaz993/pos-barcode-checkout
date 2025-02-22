@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       authenticationOptions: authenticationOptionsJSON,
     });
   } catch (error) {
-    console.error("Error generating authentication options:", error);
+    console.log("Error generating authentication options:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

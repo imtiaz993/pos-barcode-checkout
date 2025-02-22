@@ -84,7 +84,7 @@ export default function Page() {
         setShowCheckout(true);
       } catch (error) {
         toast.error("Something went wrong. Please try again.");
-        console.error(error);
+        console.log(error);
       }
     },
   });
@@ -121,7 +121,7 @@ export default function Page() {
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
-      console.error("Error:", error);
+      console.log("Error:", error);
     }
   };
 

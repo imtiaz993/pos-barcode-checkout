@@ -26,7 +26,7 @@ export default function Page() {
         `/sign-in?type=/activate-gift-card&phone_number=${phone_number}`
       );
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.log("Error during logout:", error);
     }
   };
 

@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(registrationOptions, { status: 200 });
   } catch (error) {
-    console.error("Error generating registration options:", error);
+    console.log("Error generating registration options:", error);
     return NextResponse.json(
       { error: "Failed to generate registration options" },
       { status: 500 }

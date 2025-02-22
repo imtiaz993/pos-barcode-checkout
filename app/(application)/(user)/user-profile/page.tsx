@@ -137,7 +137,7 @@ export default function ProfilePage() {
         setGiftCardBalance(0);
         setGiftCardBalanceLoading(false);
         toast.error(error?.response?.data?.message);
-        console.error("Error fetching client secret:", error);
+        console.log("Error fetching client secret:", error);
       });
     getPasskeyInfo();
   }, []);
@@ -202,7 +202,7 @@ export default function ProfilePage() {
 
         toast.success("Profile updated successfully!");
       } catch (error: any) {
-        console.error("Error updating profile:", error);
+        console.log("Error updating profile:", error);
         toast.error("Error updating profile");
       }
     },
@@ -226,7 +226,7 @@ export default function ProfilePage() {
       await logout();
       router.push(`/sign-in?type=${type}&region=${region}&storeId=${storeId}`);
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.log("Error during logout:", error);
     }
   };
 

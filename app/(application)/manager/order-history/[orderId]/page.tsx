@@ -43,7 +43,7 @@ const OrderDetail = () => {
           error?.response?.data?.message || "Failed to fetch order details"
         );
         setLoading(false);
-        console.error("Error fetching order details:", error);
+        console.log("Error fetching order details:", error);
       });
   }, [orderId]);
 

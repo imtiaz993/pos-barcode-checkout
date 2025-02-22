@@ -19,7 +19,7 @@ export const logout = async (): Promise<void> => {
   try {
     await signOut(auth);
   } catch (error) {
-    console.error("Error during logout:", error);
+    console.log("Error during logout:", error);
     throw error;
   }
 };

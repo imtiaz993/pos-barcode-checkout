@@ -94,7 +94,7 @@ export default function Page() {
       setLoading(false);
       setShowCheckout(false);
       toast.error(error?.response?.data?.message);
-      console.error("Error:", error);
+      console.log("Error:", error);
     }
   };
 

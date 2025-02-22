@@ -11,7 +11,7 @@ async function fetchCustomerByPhone(phone: any) {
 
     return customers.data.length > 0 ? customers.data[0] : null;
   } catch (error) {
-    console.error("Error fetching customer by phone:", error);
+    console.log("Error fetching customer by phone:", error);
     throw error;
   }
 }
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       paymentMethods: paymentMethods.data,
     });
   } catch (error: any) {
-    console.error("Error creating PaymentIntent:", error);
+    console.log("Error creating PaymentIntent:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

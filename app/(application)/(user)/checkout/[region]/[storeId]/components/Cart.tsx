@@ -64,7 +64,7 @@ const Cart = (props: any) => {
           }
         } catch (error: any) {
           toast.error(error?.response?.data?.message);
-          console.error("Error fetching product:", error);
+          console.log("Error fetching product:", error);
         }
       } else {
         if (
@@ -175,7 +175,7 @@ const Cart = (props: any) => {
       );
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
-      console.error("Error fetching product:", error);
+      console.log("Error fetching product:", error);
     }
   };
 
@@ -190,7 +190,7 @@ const Cart = (props: any) => {
       );
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
-      console.error("Error fetching product:", error);
+      console.log("Error fetching product:", error);
     }
   };
 
@@ -269,7 +269,7 @@ const Cart = (props: any) => {
     } catch (error: any) {
       setLoading(false);
       toast.error(error?.response?.data?.message);
-      console.error("Error submitting:", error);
+      console.log("Error submitting:", error);
     }
   };
 
@@ -285,7 +285,7 @@ const Cart = (props: any) => {
         setGiftCardBalance(res.data.balance);
       } catch (error: any) {
         toast.error(error?.response?.data?.message);
-        console.error("Error fetching product:", error);
+        console.log("Error fetching product:", error);
       }
     };
     fetchGiftCard();

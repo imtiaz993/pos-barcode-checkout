@@ -17,7 +17,7 @@ const Page = () => {
       setAdmins(data.data.admins);
     } catch (error: any) {
       toast.error(error.response.data.error);
-      console.error("Error fetching users:", error);
+      console.log("Error fetching users:", error);
     } finally {
       setLoading(false);
     }

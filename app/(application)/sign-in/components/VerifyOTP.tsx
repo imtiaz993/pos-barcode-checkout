@@ -149,7 +149,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
           console.log("Error during OTP verification:", error);
       }
 
-      console.error("Error during signInWithPhoneNumber", error);
+      console.log("Error during signInWithPhoneNumber", error);
     } finally {
       setLoading(false);
     }
