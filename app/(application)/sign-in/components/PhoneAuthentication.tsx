@@ -106,9 +106,13 @@ const PhoneAuthentication = ({
       setLoading(false);
       setDisabled(false);
 
-      const firebaseError = error.message || "UNKNOWN_ERROR";
+      const firebaseError = error.code || "UNKNOWN_ERROR";
       switch (firebaseError) {
-        case "USER_DISABLED":
+        case "auth/user-disabled":
+          formik.setFieldError(
+            "phone",
+            "Your account has been disabled by Admin."
+          );
           break;
         case "INVALID_PHONE_NUMBER":
         case "auth/invalid-phone-number":

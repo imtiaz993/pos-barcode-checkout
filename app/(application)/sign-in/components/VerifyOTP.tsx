@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import axios from "axios";
 import Footer from "@/components/Footer";
+import { toast } from "sonner";
 
 const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
   const router = useRouter();
@@ -106,32 +107,48 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       const auth = getAuth(app);
       await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
     } catch (error: any) {
-      const firebaseError = error.message || "UNKNOWN_ERROR";
+      const firebaseError = error.code || "UNKNOWN_ERROR";
 
       switch (firebaseError) {
-        case "USER_DISABLED":
-          setError("Your account has been disabled. Please contact support.");
+        case "auth/missing-verification-id":
+          setError("Verification ID is missing. Please request a new OTP.");
           break;
-        case "INVALID_PHONE_NUMBER":
-        case "auth/invalid-phone-number":
-          setError("Invalid phone number. Please enter a valid one.");
+        case "auth/invalid-verification-id":
+          setError("Invalid verification ID. Please request a new OTP.");
           break;
-        case "QUOTA_EXCEEDED":
-        case "auth/quota-exceeded":
-          setError("Too many requests. Please try again later.");
+        case "auth/missing-verification-code":
+          setError("Please enter the OTP.");
           break;
-        case "TOO_MANY_ATTEMPTS_TRY_LATER":
-        case "auth/too-many-requests":
-          setError("Too many attempts. Please wait before trying again.");
+        case "auth/invalid-verification-code":
+          setError("Incorrect OTP. Please try again.");
           break;
-        case "OPERATION_NOT_ALLOWED":
-        case "auth/operation-not-allowed":
-          setError("Phone sign-in is not enabled. Please contact support.");
+        case "auth/code-expired":
+          setError("OTP has expired. Please request a new one.");
+          break;
+        case "auth/session-expired":
+          setError(
+            "Your session has expired. Please restart the login process."
+          );
+          break;
+        case "auth/captcha-check-failed":
+          setError(
+            "reCAPTCHA verification failed. Please refresh and try again."
+          );
+          break;
+        case "auth/account-exists-with-different-credential":
+          setError(
+            "This phone number is linked to another account. Try signing in with a different method."
+          );
+          break;
+        case "auth/credential-already-in-use":
+          setError("This phone number is already linked to another account.");
           break;
         default:
-          // Fallback for other unknown error codes
-          setError("Failed to send OTP. Please try again.");
+          // Fallback for unknown errors
+          setError("Failed to verify OTP. Please try again.");
+          console.log("Error during OTP verification:", error);
       }
+
       console.error("Error during signInWithPhoneNumber", error);
     } finally {
       setLoading(false);
@@ -188,7 +205,8 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
             await setDoc(doc(db, "users-passkey", phone), userData, {
               merge: true,
             });
-          } catch (error) {
+          } catch (error: any) {
+            toast.error(error.response.data.error);
             console.log(error);
           }
         }
@@ -199,9 +217,49 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
         } else {
           router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         setLoading(false);
-        setError("Invalid OTP. Please try again.");
+        const firebaseError = error.code || "UNKNOWN_ERROR";
+        switch (firebaseError) {
+          case "auth/missing-verification-id":
+            setError("Verification ID is missing. Please request a new OTP.");
+            break;
+          case "auth/invalid-verification-id":
+            setError("Invalid verification ID. Please request a new OTP.");
+            break;
+          case "auth/missing-verification-code":
+            setError("Please enter the OTP.");
+            break;
+          case "auth/invalid-verification-code":
+            setError("Incorrect OTP. Please try again.");
+            break;
+          case "auth/code-expired":
+            setError("OTP has expired. Please request a new one.");
+            break;
+          case "auth/session-expired":
+            setError(
+              "Your session has expired. Please restart the login process."
+            );
+            break;
+          case "auth/captcha-check-failed":
+            setError(
+              "reCAPTCHA verification failed. Please refresh and try again."
+            );
+            break;
+          case "auth/account-exists-with-different-credential":
+            setError(
+              "This phone number is linked to another account. Try signing in with a different method."
+            );
+            break;
+          case "auth/credential-already-in-use":
+            setError("This phone number is already linked to another account.");
+            break;
+          default:
+            // Fallback for unknown errors
+            setError("Failed to verify OTP. Please try again.");
+            console.log("Error during OTP verification:", error);
+        }
+        ("Invalid OTP. Please try again.");
         console.log("Error during confirmationResult.confirm", error);
       }
     },
