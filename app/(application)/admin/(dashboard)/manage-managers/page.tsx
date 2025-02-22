@@ -40,7 +40,7 @@ const Page = () => {
       {showPopup && (
         <CreateManager setShowPopup={setShowPopup} fetchUsers={fetchUsers} />
       )}
-      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-2 sm:px-4 py-4">
+      <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-2 sm:px-4 py-2">
         <div className="w-full mx-auto mt-3 sm:mt-4 flex flex-col min-h-[calc(100dvh-82px)]">
           {/* Header */}
           <div className="flex justify-between items-center mb-4 sm:mb-6">
