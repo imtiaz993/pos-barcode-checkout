@@ -2,6 +2,7 @@ import Link from "next/link";
 import { IoMdClose } from "react-icons/io";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { FaHistory } from "react-icons/fa"; // Import icons
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
   const pathname = usePathname();
@@ -13,7 +14,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
     }
   }, [pathname]);
 
-  const links = [{ href: "/manager/order-history", label: "Order History" }];
+  const links = [
+    {
+      href: "/manager/order-history",
+      label: "Order History",
+      icon: <FaHistory />,
+    },
+  ];
 
   return (
     <div>
@@ -33,12 +40,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
             <li key={link.href}>
               <Link
                 href={link.href}
-                className={`block px-2 py-2 lg: rounded ${
+                className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-3 rounded ${
                   pathname === link.href
                     ? "text-white bg-blue-500"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
+                <span className="text-lg">{link.icon}</span>
                 {link.label}
               </Link>
             </li>

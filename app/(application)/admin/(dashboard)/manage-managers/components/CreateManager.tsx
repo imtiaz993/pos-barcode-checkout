@@ -75,8 +75,7 @@ const CreateManager = ({ setShowPopup, fetchUsers }: any) => {
           </div>
 
           <div className="space-y-4 mt-4">
-            <div className="m-1 mb-2 grid grid-cols-2 relative  bg-gray-200 rounded overflow-hidden">
-              {/* Animated Background */}
+            {/* <div className="m-1 mb-2 grid grid-cols-2 relative  bg-gray-200 rounded overflow-hidden">
               <div
                 className={`absolute top-0 bottom-0 w-1/2 bg-blue-600 transition-all duration-300 ${
                   mode === "password" ? "translate-x-full" : "translate-x-0"
@@ -112,7 +111,7 @@ const CreateManager = ({ setShowPopup, fetchUsers }: any) => {
                   Email/Password
                 </span>
               </div>
-            </div>
+            </div> */}
             <div>
               <form onSubmit={formik.handleSubmit} className="mt-6">
                 <label htmlFor="email" className="block text-sm font-medium">
