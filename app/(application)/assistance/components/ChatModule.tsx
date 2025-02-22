@@ -84,14 +84,13 @@ const ChatModule = ({ chatElementRef, setNewTask }: any) => {
         // }}
         displayLoadingBubble={true}
         // textToSpeech={true}
-        speechToText={{ webSpeech: { language: "en-US" } }}
+        speechToText={true}
         dragAndDrop={true}
         images={{ button: { position: "dropup-menu" } }}
         gifs={{ button: { position: "dropup-menu" } }}
         camera={{ button: { position: "dropup-menu" } }}
         audio={{ button: { position: "dropup-menu" } }}
         mixedFiles={{ button: { position: "dropup-menu" } }}
-        microphone={{ button: { position: "outside-right" } }}
         //@ts-ignore
         history={
           (mode === "chats" ? chatData : taskData).find(
