@@ -1,7 +1,5 @@
-import { app, auth, db } from "@/app/firebase";
-import admin from "@/utils/firebaseAdmin";
+import { db } from "@/app/firebase";
 import axios from "axios";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useFormik } from "formik";
 import { useState } from "react";
@@ -53,8 +51,9 @@ const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
           fetchUsers();
           toast.success("Admin added successfully!");
         }
-      } catch (error) {
-        console.error("Error during signInWithEmailAndPassword", error);
+      } catch (error: any) {
+        console.log("Error during signInWithEmailAndPassword", error);
+        toast.error(error.response.data.error);
       } finally {
         setSubmitting(false);
       }

@@ -70,7 +70,9 @@ export default function ProfilePage() {
         publicKey: verifyResponse.credentialPublicKey,
       };
 
-      await setDoc(doc(db, "users-passkey", userData.phone), userData, { merge: true });
+      await setDoc(doc(db, "users-passkey", userData.phone), userData, {
+        merge: true,
+      });
       toast.success("Passkey enrolled successfully!");
 
       getPasskeyInfo(() => {
@@ -98,7 +100,10 @@ export default function ProfilePage() {
 
   const getPasskeyInfo = async (onSuccess?: any) => {
     const querySnapshot: any = await getDocs(
-      query(collection(db, "users-passkey"), where("phone", "==", user?.phoneNumber))
+      query(
+        collection(db, "users-passkey"),
+        where("phone", "==", user?.phoneNumber)
+      )
     );
     if (onSuccess) {
       onSuccess();
@@ -170,7 +175,7 @@ export default function ProfilePage() {
     onSubmit: async (values) => {
       try {
         if (!user) {
-          return alert("No user is signed in!");
+          return toast.error("No user is signed in!");
         }
 
         // Update name
@@ -221,7 +226,6 @@ export default function ProfilePage() {
       await logout();
       router.push(`/sign-in?type=${type}&region=${region}&storeId=${storeId}`);
     } catch (error) {
-      alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
     }
   };

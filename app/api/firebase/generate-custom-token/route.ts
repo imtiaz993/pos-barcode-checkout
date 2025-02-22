@@ -22,11 +22,8 @@ export async function POST(request: any) {
     return NextResponse.json({
       firebaseToken,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error setting admin role:", error);
-    return NextResponse.json(
-      { error: "Failed to set admin role." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

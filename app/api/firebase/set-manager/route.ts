@@ -14,11 +14,8 @@ export async function POST(request: any) {
     return NextResponse.json({
       message: `User with UID ${uid} is now an manager.`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error setting manager role:", error);
-    return NextResponse.json(
-      { error: "Failed to set manager role." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

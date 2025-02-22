@@ -21,11 +21,7 @@ export async function POST(request: any) {
       data: data,
       message: `User created.`,
     });
-  } catch (error) {
-    console.error("Error setting admin role:", error);
-    return NextResponse.json(
-      { error: "Failed to set admin role." },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

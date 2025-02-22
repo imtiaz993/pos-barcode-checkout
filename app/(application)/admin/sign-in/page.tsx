@@ -9,6 +9,7 @@ import { app } from "@/app/firebase";
 import { useRouter } from "next/navigation";
 import { checkAuthState } from "@/utils/firebaseAuth";
 import axios from "axios";
+import { toast } from "sonner";
 
 const EmailAuthentication = () => {
   const router = useRouter();
@@ -63,11 +64,12 @@ const EmailAuthentication = () => {
               router.replace("/admin/order-history");
             }
           }
-        } catch (error) {
+        } catch (error: any) {
+          toast.error(error.response.data.error);
           console.error("Error calling API:", error);
         }
-      } catch (error) {
-        formik.setFieldError("email", "Invalid email or password");
+      } catch (error: any) {
+        formik.setFieldError("email", error.message);
         console.error("Error during signInWithEmailAndPassword", error);
       } finally {
         setLoading(false);

@@ -12,10 +12,7 @@ export async function GET() {
     });
 
     return NextResponse.json({ admins: users });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch admins" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

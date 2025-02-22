@@ -14,10 +14,7 @@ export async function GET() {
     });
 
     return NextResponse.json({ users: phoneAuthUsers });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch users" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

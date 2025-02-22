@@ -4,6 +4,7 @@ import Loader from "@/components/loader";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CreateManager from "./components/CreateManager";
+import { toast } from "sonner";
 
 const Page = () => {
   const [managers, setManagers] = useState<any[]>([]);
@@ -14,7 +15,8 @@ const Page = () => {
     try {
       const data: any = await axios.get("/api/firebase/getManagers");
       setManagers(data.data.managers);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.response.data.error);
       console.error("Error fetching users:", error);
     } finally {
       setLoading(false);

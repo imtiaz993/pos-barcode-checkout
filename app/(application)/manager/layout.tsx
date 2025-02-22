@@ -41,7 +41,6 @@ const Layout = ({ children }: any) => {
       await logout();
       router.push("/admin/sign-in");
     } catch (error) {
-      alert("Failed to log out. Please try again.");
       console.error("Error during logout:", error);
     }
   };

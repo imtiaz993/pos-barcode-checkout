@@ -106,8 +106,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
       const auth = getAuth(app);
       await signInWithPhoneNumber(auth, phone, recaptchaVerifier.current);
     } catch (error: any) {
-      const firebaseError =
-        error?.response?.data?.error?.message || "UNKNOWN_ERROR";
+      const firebaseError = error.message || "UNKNOWN_ERROR";
 
       switch (firebaseError) {
         case "USER_DISABLED":
@@ -186,7 +185,9 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
               publicKey: verifyResponse.credentialPublicKey,
             };
 
-            await setDoc(doc(db, "users-passkey", phone), userData, { merge: true });
+            await setDoc(doc(db, "users-passkey", phone), userData, {
+              merge: true,
+            });
           } catch (error) {
             console.log(error);
           }

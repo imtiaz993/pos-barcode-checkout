@@ -1,6 +1,5 @@
-import { app, db } from "@/app/firebase";
+import { db } from "@/app/firebase";
 import axios from "axios";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useFormik } from "formik";
 import { useState } from "react";
@@ -10,7 +9,6 @@ import * as Yup from "yup";
 
 const CreateManager = ({ setShowPopup, fetchUsers }: any) => {
   const [mode, setMode] = useState("sso");
-  const auth = getAuth(app);
 
   const formik = useFormik({
     initialValues: {
@@ -53,8 +51,9 @@ const CreateManager = ({ setShowPopup, fetchUsers }: any) => {
           fetchUsers();
           toast.success("Manager added successfully!");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error during signInWithEmailAndPassword", error);
+        toast.error(error.response.data.error);
       } finally {
         setSubmitting(false);
       }

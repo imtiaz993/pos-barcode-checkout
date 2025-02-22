@@ -74,10 +74,12 @@ const PhoneAuthentication = ({
             }
           })
           .catch((error: any) => {
+            toast.error(error.message);
             console.error("Login error:", error.message);
           });
       }
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.response.data.error);
       console.error("Error fetching users:", error);
     }
   };
@@ -103,14 +105,10 @@ const PhoneAuthentication = ({
     } catch (error: any) {
       setLoading(false);
       setDisabled(false);
-      const firebaseError =
-        error?.response?.data?.error?.message || "UNKNOWN_ERROR";
+
+      const firebaseError = error.message || "UNKNOWN_ERROR";
       switch (firebaseError) {
         case "USER_DISABLED":
-          formik.setFieldError(
-            "phone",
-            "Your account has been disabled. Please contact support."
-          );
           break;
         case "INVALID_PHONE_NUMBER":
         case "auth/invalid-phone-number":
@@ -210,7 +208,10 @@ const PhoneAuthentication = ({
       setDisabled(true);
       try {
         const querySnapshot: any = await getDocs(
-          query(collection(db, "users-passkey"), where("phone", "==", values.phone))
+          query(
+            collection(db, "users-passkey"),
+            where("phone", "==", values.phone)
+          )
         );
         setLoading(true);
         if (!querySnapshot.empty && isAvailable) {
