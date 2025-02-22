@@ -37,19 +37,31 @@ const EmailAuthentication = () => {
           values.email,
           values.password
         );
-        try {
-          await axios.post("/api/firebase/set-admin", {
-            uid: data.user.uid,
-          });
 
+        try {
           await data.user.getIdToken(true); // Refresh token
 
           // Get updated user claims
           const tokenResult = await data.user.getIdTokenResult();
           const claims = tokenResult.claims;
-          if (claims.admin) {
+
+          if (claims.manager) {
             localStorage.setItem("user", JSON.stringify(data.user));
-            router.replace("/admin/order-history");
+            router.replace("/manager/order-history");
+          } else {
+            if (!claims.admin) {
+              await axios.post("/api/firebase/set-admin", {
+                uid: data.user.uid,
+              });
+              await data.user.getIdToken(true); // Refresh token
+              // Get updated user claims
+              await data.user.getIdTokenResult();
+              localStorage.setItem("user", JSON.stringify(data.user));
+              router.replace("/admin/order-history");
+            } else {
+              localStorage.setItem("user", JSON.stringify(data.user));
+              router.replace("/admin/order-history");
+            }
           }
         } catch (error) {
           console.error("Error calling API:", error);
