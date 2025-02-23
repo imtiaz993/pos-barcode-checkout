@@ -145,7 +145,7 @@ export const taskData = [
         role: "user",
       },
       {
-        html: `    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
+        html: `    <div style=" margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
         <h2 style="color: #333;">Project Report Completion</h2>
 
         <h3 style="color: #555;">Step by Step Breakdown</h3>
@@ -191,7 +191,7 @@ export const taskData = [
         role: "user",
       },
       {
-        html: `<div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
+        html: `<div style=" margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
         <h2 style="color: #333;">Website Design</h2>
 
         <h3 style="color: #555;">Step by Step Breakdown</h3>
@@ -238,7 +238,7 @@ export const taskData = [
     chats: [
       { text: "Plan a team outing for next weekend.", role: "user" },
       {
-        html: `<div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
+        html: `<div style=" margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
         <h2 style="color: #333;">Team Outing Plan</h2>
 
         <h3 style="color: #555;">Step by Step Breakdown</h3>
@@ -284,7 +284,7 @@ export const taskData = [
     chats: [
       { text: "Create a shopping list, please.", role: "user" },
       {
-        html: `<div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
+        html: `<div style=" margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
         <h2 style="color: #333;">Shopping List</h2>
 
         <h3 style="color: #555;">Step by Step Breakdown</h3>

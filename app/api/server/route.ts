@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 `,
         })
       : NextResponse.json({
-          html: `    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
+          html: `    <div style=" margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
         <h2 style="color: #333;">Task Title</h2>
 
         <h3 style="color: #555;">Step by Step Breakdown</h3>
