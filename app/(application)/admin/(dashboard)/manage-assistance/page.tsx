@@ -7,10 +7,13 @@ import { FaPaperPlane, FaComments } from "react-icons/fa";
 import Sidebar from "./sidebar";
 import { chatData } from "@/app/(application)/assistance/components/data";
 import { HiOutlineBadgeCheck } from "react-icons/hi";
+import { MdFeedback } from "react-icons/md";
+import Feedback from "./Feedback";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
   const [currentChat, setCurrentChat] = useState(chatData[0]);
+  const [showPopup, setShowPopup] = useState(false);
 
   const fetchChats = async () => {
     try {
@@ -33,6 +36,7 @@ const Page = () => {
   return (
     <>
       {loading && <Loader />}
+      {showPopup && <Feedback setShowPopup={setShowPopup} />}
 
       <div className="min-h-[calc(100dvh-60px-16px)] mx-auto px-2 sm:px-4 py-2">
         <div className="w-full mx-auto mt-3 sm:mt-4 flex flex-col min-h-[calc(100dvh-82px)]">
@@ -91,7 +95,7 @@ const Page = () => {
                                 <textarea
                                   className="px-3 sm:px-2 py-1 resize-none border w-full outline-none"
                                   value={chat.text}
-                                  rows={2}
+                                  rows={3}
                                 />
                               )}
                               {chat?.html && (
@@ -103,7 +107,16 @@ const Page = () => {
                               )}
                             </td>
                             <td className="px-3 sm:px-4 text-center border-b border-r border-black">
-                              <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg text-sm flex items-center justify-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setShowPopup(true);
+                                }}
+                                className="bg-blue-500 hover:bg-blue-600 text-white w-full px-2 py-1 mb-1 rounded-lg text-sm flex items-center justify-center gap-2"
+                              >
+                                <MdFeedback />
+                                Fedback
+                              </button>
+                              <button className="bg-blue-500 hover:bg-blue-600 text-white w-full px-2 py-1 rounded-lg text-sm flex items-center justify-center gap-2">
                                 <FaPaperPlane />
                                 Send
                               </button>
