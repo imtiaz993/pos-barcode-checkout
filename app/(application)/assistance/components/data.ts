@@ -29,12 +29,20 @@ export const chatData = [
   {
     id: 1,
     chats: [
-      { text: "Show me a modern city", role: "user" },
+      { text: "Send me some random files", role: "user" },
       {
         files: [
           {
             src: "https://images.pexels.com/photos/302769/pexels-photo-302769.jpeg?auto=compress&cs=tinysrgb&w=1200",
             type: "image",
+          },
+          {
+            src: "https://file-examples.com/storage/feaef0a3ad67b78fd9cc1df/2017/11/file_example_MP3_700KB.mp3",
+            type: "audio",
+          },
+          {
+            src: "https://videos.pexels.com/video-files/8371253/8371253-uhd_2732_1440_25fps.mp4",
+            type: "video",
           },
         ],
         role: "ai",

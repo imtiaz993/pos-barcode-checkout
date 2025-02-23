@@ -4,6 +4,8 @@ import Loader from "@/components/loader";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { FaPaperPlane, FaComments } from "react-icons/fa";
+import { AiOutlineFile } from "react-icons/ai";
+
 import Sidebar from "./sidebar";
 import { chatData } from "@/app/(application)/assistance/components/data";
 import { HiOutlineBadgeCheck } from "react-icons/hi";
@@ -83,6 +85,63 @@ const Page = () => {
                                   {chat?.text && chat.text.length > 100
                                     ? chat.text.slice(0, 100) + "..."
                                     : chat.text}
+                                  {chat?.files &&
+                                    chat?.files.length > 0 &&
+                                    chat?.files.map((file: any) => (
+                                      <div className="mt-2 p-2 border rounded bg-gray-50 flex items-center space-x-3">
+                                        {(() => {
+                                          const fileUrl = file.src;
+                                          const fileType = file.type;
+                                          if (fileType === "image") {
+                                            return (
+                                              <img
+                                                src={fileUrl}
+                                                alt="Uploaded"
+                                                className="max-w-[300px] rounded"
+                                              />
+                                            );
+                                          }
+
+                                          if (fileType === "video") {
+                                            return (
+                                              <video
+                                                controls
+                                                className="max-w-[300px] rounded"
+                                              >
+                                                <source src={fileUrl} />
+                                                Your browser does not support
+                                                the video tag.
+                                              </video>
+                                            );
+                                          }
+
+                                          if (fileType === "audio") {
+                                            return (
+                                              <audio
+                                                controls
+                                                className="w-full"
+                                              >
+                                                <source src={fileUrl} />
+                                                Your browser does not support
+                                                the audio tag.
+                                              </audio>
+                                            );
+                                          }
+
+                                          return (
+                                            <a
+                                              href={fileUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="flex items-center space-x-2 text-blue-600 hover:underline"
+                                            >
+                                              <AiOutlineFile className="text-2xl text-gray-500" />
+                                              <span>{fileUrl}</span>
+                                            </a>
+                                          );
+                                        })()}
+                                      </div>
+                                    ))}
                                 </div>
                               </div>
                             </td>
@@ -105,6 +164,61 @@ const Page = () => {
                                   }}
                                 ></div>
                               )}
+
+                              {chat?.files &&
+                                chat?.files.length > 0 &&
+                                chat?.files.map((file: any) => (
+                                  <div className="mt-2 p-2 border rounded bg-gray-50 flex items-center space-x-3">
+                                    {(() => {
+                                      const fileUrl = file.src;
+                                      const fileType = file.type;
+                                      if (fileType === "image") {
+                                        return (
+                                          <img
+                                            src={fileUrl}
+                                            alt="Uploaded"
+                                            className="max-w-[300px] rounded"
+                                          />
+                                        );
+                                      }
+
+                                      if (fileType === "video") {
+                                        return (
+                                          <video
+                                            controls
+                                            className="max-w-[300px] rounded"
+                                          >
+                                            <source src={fileUrl} />
+                                            Your browser does not support the
+                                            video tag.
+                                          </video>
+                                        );
+                                      }
+
+                                      if (fileType === "audio") {
+                                        return (
+                                          <audio controls className="w-full">
+                                            <source src={fileUrl} />
+                                            Your browser does not support the
+                                            audio tag.
+                                          </audio>
+                                        );
+                                      }
+
+                                      return (
+                                        <a
+                                          href={fileUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center space-x-2 text-blue-600 hover:underline"
+                                        >
+                                          <AiOutlineFile className="text-2xl text-gray-500" />
+                                          <span>{fileUrl}</span>
+                                        </a>
+                                      );
+                                    })()}
+                                  </div>
+                                ))}
                             </td>
                             <td className="px-3 sm:px-4 text-center border-b border-r border-black">
                               <button
