@@ -8,9 +8,9 @@ import { AiOutlineFile } from "react-icons/ai";
 
 import Sidebar from "./sidebar";
 import { chatData } from "@/app/(application)/assistance/components/data";
-import { HiOutlineBadgeCheck } from "react-icons/hi";
 import { MdFeedback } from "react-icons/md";
 import Feedback from "./Feedback";
+import EditableMessage from "./EditableMessage";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -59,9 +59,17 @@ const Page = () => {
             <div className="bg-white shadow-lg rounded-lg flex-grow flex flex-col overflow-hidden ml-2">
               <div className="overflow-auto flex-grow">
                 <div className="flex justify-end pb-2">
-                  <button className="text-sm bg-blue-600 text-white py-2 px-4 flex items-center gap-2 rounded-lg hover:bg-blue-700 transition">
-                    <HiOutlineBadgeCheck /> Auto Approve
-                  </button>
+                  <label className="flex items-center text-sm font-medium select-none">
+                    <input
+                      // checked={true}
+                      onChange={(e) => {
+                        console.log(e.target.checked);
+                      }}
+                      className="mr-1 w-4 h-4"
+                      type="checkbox"
+                    />
+                    Auto Approve
+                  </label>
                 </div>
                 <table className="w-full text-left border-collapse text-sm sm:text-base">
                   <thead className="sticky top-0 bg-gray-100">
@@ -150,13 +158,7 @@ const Page = () => {
                           <tr key={index}>
                             <td className="w-full text-gray-700 border-b border-l border-black">
                               {/* Could be text, file or html from server */}
-                              {chat?.text && (
-                                <textarea
-                                  className="px-3 sm:px-2 py-1 resize-none border w-full outline-none"
-                                  value={chat.text}
-                                  rows={3}
-                                />
-                              )}
+                              {chat?.text && <EditableMessage chat={chat} />}
                               {chat?.html && (
                                 <div
                                   dangerouslySetInnerHTML={{
