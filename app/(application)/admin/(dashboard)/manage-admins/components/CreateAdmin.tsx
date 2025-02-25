@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import * as Yup from "yup";
 
 const CreateAdmin = ({ setShowPopup, fetchUsers }: any) => {
-  const [mode, setMode] = useState("sso");
+  const [mode, setMode] = useState("password");
 
   const formik = useFormik({
     initialValues: {
