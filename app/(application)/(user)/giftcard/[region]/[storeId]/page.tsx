@@ -25,23 +25,6 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
 
   const presetAmounts = [10, 25, 50, 100, 250, 500];
-  const giftCardThemes = [
-    "Birthday",
-    "Thank You",
-    "Christmas",
-    "Anniversary",
-    "Wedding",
-    "New Baby",
-    "Graduation",
-    "Get Well Soon",
-    "Mother's Day",
-    "Father's Day",
-    "Housewarming",
-    "Valentine's Day",
-    "New Year",
-    "Baby Shower",
-    "Back to School",
-  ];
 
   const formik = useFormik({
     initialValues: {

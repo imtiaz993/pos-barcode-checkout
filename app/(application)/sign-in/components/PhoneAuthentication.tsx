@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import axios from "axios";
 import Footer from "@/components/Footer";
+import { getFirebaseError } from "@/utils/firebaseErrors";
 
 const PhoneAuthentication = ({
   setConfirmationResult,
@@ -107,50 +108,9 @@ const PhoneAuthentication = ({
       setDisabled(false);
 
       const firebaseError = error.code || "UNKNOWN_ERROR";
-      switch (firebaseError) {
-        case "auth/user-disabled":
-          formik.setFieldError(
-            "phone",
-            "Your account has been disabled by Admin."
-          );
-          break;
-        case "INVALID_PHONE_NUMBER":
-        case "auth/invalid-phone-number":
-          formik.setFieldError(
-            "phone",
-            "Invalid phone number. Please enter a valid one."
-          );
-          break;
-        case "QUOTA_EXCEEDED":
-        case "auth/quota-exceeded":
-          formik.setFieldError(
-            "phone",
-            "Too many requests. Please try again later."
-          );
-          break;
-        case "TOO_MANY_ATTEMPTS_TRY_LATER":
-        case "auth/too-many-requests":
-          formik.setFieldError(
-            "phone",
-            "Too many attempts. Please wait before trying again."
-          );
-          break;
-        case "OPERATION_NOT_ALLOWED":
-        case "auth/operation-not-allowed":
-          formik.setFieldError(
-            "phone",
-            "Phone sign-in is not enabled. Please contact support."
-          );
-          break;
-        default:
-          // Fallback for other unknown error codes
-          formik.setFieldError(
-            "phone",
-            "Failed to send OTP. Please try again."
-          );
-
-          console.log("Error during signInWithPhoneNumber", error);
-      }
+      getFirebaseError(firebaseError, (error: any) => {
+        formik.setFieldError("phone", error);
+      });
     }
   };
   const loginWithPasskey = async (values: any, querySnapshot: any) => {
