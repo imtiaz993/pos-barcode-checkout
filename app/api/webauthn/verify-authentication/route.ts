@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { db } from "@/utils/firebase";
 import { verifyAuthenticationResponse } from "@simplewebauthn/server";
 
 export async function POST(request: Request) {
@@ -35,8 +34,8 @@ export async function POST(request: Request) {
       verification = await verifyAuthenticationResponse({
         response: authenticationResponse,
         expectedChallenge: challenge,
-        expectedOrigin: process.env.VERCEL_APP_URL || "",
-        expectedRPID: process.env.RPID || "",
+        expectedOrigin: process.env.VERCEL_APP_URL!,
+        expectedRPID: process.env.RPID!,
         authenticator: dbAuthenticator,
         requireUserVerification: true,
       });

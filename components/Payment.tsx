@@ -11,7 +11,7 @@ import Loader from "@/components/loader";
 import { auth } from "@/utils/firebase";
 
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
 const PaymentForm = ({

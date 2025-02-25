@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { generateRegistrationOptions } from "@simplewebauthn/server";
-import { generateChallenge } from "@/lib/auth";
+import { generateChallenge } from "@/utils/auth";
 
 export async function POST(request: NextRequest) {
   try {
