@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/app/firebase";
+import { db } from "@/utils/firebase";
 import { generateAuthenticationOptions } from "@simplewebauthn/server";
 import { collection, getDocs, query, where } from "firebase/firestore";
 

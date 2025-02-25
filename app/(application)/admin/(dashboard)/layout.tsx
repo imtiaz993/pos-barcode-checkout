@@ -6,7 +6,7 @@ import { checkAuthState, logout } from "@/utils/firebaseAuth";
 import { IoMdMenu } from "react-icons/io";
 import Sidebar from "./sidebar";
 import { getAuth } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app } from "@/utils/firebase";
 import Image from "next/image";
 
 const Layout = ({ children }: any) => {

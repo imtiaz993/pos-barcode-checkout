@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app } from "@/utils/firebase";
 import { useRouter } from "next/navigation";
 import { checkAuthState } from "@/utils/firebaseAuth";
 import axios from "axios";

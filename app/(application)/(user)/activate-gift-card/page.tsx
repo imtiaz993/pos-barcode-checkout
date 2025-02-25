@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
-import { auth } from "@/app/firebase";
+import { auth } from "@/utils/firebase";
 import Loader from "@/components/loader";
 import { logout } from "@/utils/firebaseAuth";
 

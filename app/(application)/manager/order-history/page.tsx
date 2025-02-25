@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";
 import { getAuth } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app } from "@/utils/firebase";
 import Pagination from "react-js-pagination";
 import { IoMdFunnel, IoMdClose } from "react-icons/io";
 import { FaFilter, FaRegEye } from "react-icons/fa";

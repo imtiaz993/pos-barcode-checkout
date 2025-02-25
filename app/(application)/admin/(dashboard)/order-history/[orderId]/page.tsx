@@ -7,7 +7,7 @@ import axios from "axios";
 import Loader from "@/components/loader";
 import { toast } from "sonner";
 import { getAuth } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app } from "@/utils/firebase";
 import {
   FaStore,
   FaRegCalendarAlt,

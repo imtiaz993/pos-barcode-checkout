@@ -10,7 +10,7 @@ import {
   RecaptchaVerifier,
   signInWithCustomToken,
 } from "firebase/auth";
-import { app, db } from "@/app/firebase";
+import { app, db } from "@/utils/firebase";
 import { supported } from "@github/webauthn-json";
 import { startAuthentication } from "@simplewebauthn/browser";
 

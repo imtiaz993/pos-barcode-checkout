@@ -1,4 +1,4 @@
-import { db } from "@/app/firebase";
+import { db } from "@/utils/firebase";
 import axios from "axios";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useFormik } from "formik";

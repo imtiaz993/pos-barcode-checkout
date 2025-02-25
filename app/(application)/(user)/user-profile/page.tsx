@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { getAuth, updateProfile, updatePhoneNumber } from "firebase/auth";
 import { PhoneAuthProvider, RecaptchaVerifier } from "firebase/auth";
-import { app, db } from "@/app/firebase";
+import { app, db } from "@/utils/firebase";
 import { logout } from "@/utils/firebaseAuth";
 import { supported } from "@github/webauthn-json";
 import axios from "axios";

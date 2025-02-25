@@ -3,7 +3,7 @@ import axios from "axios";
 import { getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { app } from "@/app/firebase";
+import { app } from "@/utils/firebase";
 import { toast } from "sonner";
 import Loader from "@/components/loader";
 import Link from "next/link";

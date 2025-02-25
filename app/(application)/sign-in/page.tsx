@@ -6,7 +6,7 @@ import { checkAuthState } from "@/utils/firebaseAuth";
 import PhoneAuthentication from "./components/PhoneAuthentication";
 import VerifyOTP from "./components/VerifyOTP";
 import { getAuth } from "firebase/auth";
-import { app } from "@/app/firebase";
+import { app } from "@/utils/firebase";
 import Footer from "@/components/Footer";
 
 const PhoneAuth = () => {

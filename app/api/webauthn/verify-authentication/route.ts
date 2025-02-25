@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/app/firebase";
+import { db } from "@/utils/firebase";
 import { verifyAuthenticationResponse } from "@simplewebauthn/server";
 
 export async function POST(request: Request) {

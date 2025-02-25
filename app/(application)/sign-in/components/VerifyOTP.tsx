@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
-import { app, db } from "@/app/firebase";
+import { app, db } from "@/utils/firebase";
 import { supported } from "@github/webauthn-json";
 import { startRegistration } from "@simplewebauthn/browser";
 import {
