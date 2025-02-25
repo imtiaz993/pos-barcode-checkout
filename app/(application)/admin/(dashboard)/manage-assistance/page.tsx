@@ -229,7 +229,7 @@ const Page = () => {
                                 }}
                                 className="bg-blue-500 hover:bg-blue-600 text-white w-full px-2 py-1 mb-1 rounded-lg text-sm flex items-center justify-center gap-2"
                               >
-                                <MdFeedback />
+                                <MdFeedback className="text-lg" />
                                 Fedback
                               </button>
                               <button className="bg-blue-500 hover:bg-blue-600 text-white w-full px-2 py-1 rounded-lg text-sm flex items-center justify-center gap-2">
