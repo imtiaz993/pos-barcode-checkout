@@ -38,7 +38,9 @@ const PhoneAuth = () => {
               `${type}?gift_card=${gift_card}&phone_number=${phone_number}`
             );
           } else {
-            router.replace(`${type != "null" ? +"/" : ""}${region}/${storeId}`);
+            router.replace(
+              `${type != "null" ? `/${type}` : ""}${region}/${storeId}`
+            );
           }
         }
         return;
