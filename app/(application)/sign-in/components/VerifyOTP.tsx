@@ -133,7 +133,7 @@ const VerifyOTP = ({ confirmationResult, phone, recaptchaVerifier }: any) => {
           );
         } else {
           router.replace(
-            `${type != "null" ? `/${type}` : ""}${region}/${storeId}`
+            `${type != "null" ? `${type}` : ""}/${region}/${storeId}`
           );
         }
       } catch (error) {

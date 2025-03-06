@@ -39,7 +39,7 @@ const PhoneAuth = () => {
             );
           } else {
             router.replace(
-              `${type != "null" ? `/${type}` : ""}${region}/${storeId}`
+              `${type != "null" ? `${type}` : ""}/${region}/${storeId}`
             );
           }
         }
